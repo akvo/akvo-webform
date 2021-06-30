@@ -23,6 +23,9 @@ dci () {
 export -f dci
 
 frontend_build () {
+
+    echo "PUBLIC_URL=/" > frontend/.env
+
     dc run \
        --rm \
        --no-deps \
@@ -33,4 +36,5 @@ frontend_build () {
         --tag "${image_prefix}/frontend:latest" \
         --tag "${image_prefix}/frontend:${CI_COMMIT}" frontend
 }
+
 frontend_build
