@@ -1,0 +1,11 @@
+---
+version: "3"
+services:
+  frontend:
+    image: akvo/akvo-node-14-alpine:20210106.152005.1864760
+    ports:
+      - 3001:3001
+    command: ["./start.sh"]
+    volumes:
+      - ./frontend:/app:delegated
+    working_dir: /app
