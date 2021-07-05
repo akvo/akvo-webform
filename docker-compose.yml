@@ -4,8 +4,25 @@ services:
   frontend:
     image: akvo/akvo-node-14-alpine:20210106.152005.1864760
     ports:
-      - 3001:3001
+      - 3000:3000
     command: ["./start.sh"]
     volumes:
       - ./frontend:/app:delegated
     working_dir: /app
+  backend:
+    image: amancevice/pandas:0.24.2-slim
+    ports:
+      - 5000:5000
+    environment:
+      - BASIC_ADMIN=admin
+      - BASIC_PWD=admin
+      - FLOW_SERVICE_URL=https://flow-services.akvotest.org
+      - AUTH0_URL=https://akvotest.eu.auth0.com
+      - SQLALCHEMY_DATABASE_URI=
+    command: ["./dev.sh"]
+    volumes:
+      - ./backend:/app:delegated
+#      - site_packages:/usr/local/lib/python3.7/site-packages
+    working_dir: /app
+#volumes:
+#  site_packages:
