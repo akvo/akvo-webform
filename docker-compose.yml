@@ -22,7 +22,4 @@ services:
     command: ["./dev.sh"]
     volumes:
       - ./backend:/app:delegated
-#      - site_packages:/usr/local/lib/python3.7/site-packages
     working_dir: /app
-#volumes:
-#  site_packages:
