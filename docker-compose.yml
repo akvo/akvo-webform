@@ -9,6 +9,8 @@ services:
     volumes:
       - ./frontend:/app:delegated
     working_dir: /app
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
   backend:
     image: amancevice/pandas:0.24.2-slim
     ports:
