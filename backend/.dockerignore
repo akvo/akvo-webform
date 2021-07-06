@@ -1,0 +1,8 @@
+.dockerignore
+.gitignore
+/docker-entrypoint-initdb.d
+/migrations
+/.pip
+/*.sh
+/package.json
+/test-connection.py

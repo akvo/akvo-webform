@@ -1,10 +1,12 @@
 ---
 version: "3"
 services:
+  mainnetwork:
+    image: alpine:3.14.0
+    command: ["tail", "-f", "/dev/null"]
   frontend:
+    network_mode: service:mainnetwork
     image: akvo/akvo-node-14-alpine:20210106.152005.1864760
-    ports:
-      - 3000:3000
     command: ["./start.sh"]
     volumes:
       - ./frontend:/app:delegated
@@ -13,9 +15,8 @@ services:
       - REACT_APP_API_URL=http://localhost:3000/api
       - REACT_APP_CAPTCHA_KEY
   backend:
+    network_mode: service:mainnetwork
     image: amancevice/pandas:0.24.2-slim
-    ports:
-      - 5000:5000
     environment:
       - BASIC_ADMIN=admin
       - BASIC_PWD=webform

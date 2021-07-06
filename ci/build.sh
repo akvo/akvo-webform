@@ -37,4 +37,13 @@ frontend_build () {
         --tag "${image_prefix}/frontend:${CI_COMMIT}" frontend
 }
 
+backend_build () {
+
+    docker build \
+        --tag "${image_prefix}/backend:latest" \
+        --tag "${image_prefix}/backend:${CI_COMMIT}" backend
+}
+
+
 frontend_build
+backend_build

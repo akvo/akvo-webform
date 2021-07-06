@@ -1,0 +1,12 @@
+---
+version: "3"
+services:
+  mainnetwork:
+    ports:
+      - 8080:80
+  frontend:
+    image: eu.gcr.io/akvo-lumen/akvo-webform/frontend:latest
+    command: ["nginx", "-g", "daemon off;"]
+  backend:
+    image: eu.gcr.io/akvo-lumen/akvo-webform/backend:latest
+    command: ["python", "app.py"]
