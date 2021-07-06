@@ -13,14 +13,12 @@ dc () {
         --ansi never \
         "$@"
 }
-export -f dc
 
 # Docker compose using CI env
 dci () {
     dc -f docker-compose.yml \
        -f docker-compose.ci.yml "$@"
 }
-export -f dci
 
 frontend_build () {
 
@@ -47,3 +45,10 @@ backend_build () {
 
 frontend_build
 backend_build
+
+#test-connection
+if ! dci run -T ci ./basic.sh; then
+  dci logs
+  echo "Build failed when running basic.sh"
+  exit 1
+fi

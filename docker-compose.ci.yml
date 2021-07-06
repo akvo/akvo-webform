@@ -1,12 +1,22 @@
 ---
 version: "3"
 services:
-  mainnetwork:
-    ports:
-      - 8080:80
+# mainnetwork:
+#   ports:
+#     - 8080:80
   frontend:
     image: eu.gcr.io/akvo-lumen/akvo-webform/frontend:latest
     command: ["nginx", "-g", "daemon off;"]
   backend:
     image: eu.gcr.io/akvo-lumen/akvo-webform/backend:latest
     command: ["python", "app.py"]
+  ci:
+    network_mode: service:mainnetwork
+    image: alpine:3.14.0
+    volumes:
+      - ./ci/test:/test:ro
+    working_dir: /test
+    entrypoint: ./entrypoint.sh
+    depends_on:
+      - backend
+      - frontend
