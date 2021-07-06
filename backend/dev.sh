@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 set -eu
-if [[ ! -d .pip ]]; then
-    pip install --cache-dir=.pip -r requirements.txt
-    pip check
-fi
+pip install --cache-dir=.pip -r requirements.txt
+pip check
 python ./app.py
