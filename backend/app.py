@@ -94,6 +94,9 @@ def make_tree(path):
                 tree['children'].append(dict(name=name, parent=tree))
     return tree
 
+@app.route('/health-check')
+def health_check():
+    return "OK"
 
 @app.route('/')
 @auth.login_required
