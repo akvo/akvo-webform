@@ -64,6 +64,11 @@ spec:
                 secretKeyRef:
                   name: akvo-webform
                   key: auth0-pwd
+            - name: AUTH0_URL
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: auth0-url
             - name: AUTH0_CLIENT_FLOW
               valueFrom:
                 secretKeyRef:
