@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: akvo-webform
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      run: akvo-webform
+  template:
+    metadata:
+      labels:
+        run: akvo-webform
+        akvo-webform-version: "${CI_COMMIT}"
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3000'
+    spec:
+      containers:
+        - name: frontend
+          image: eu.gcr.io/akvo-lumen/akvo-webform/frontend:${CI_COMMIT}
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "64Mi"
+        - name: backend
+          image: eu.gcr.io/akvo-lumen/akvo-webform/backend:${CI_COMMIT}
+          ports:
+            - containerPort: 5000
+          env:
+            - name: BASIC_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: basic-admin
+            - name: BASIC_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: basic-pwd
+            - name: FLOW_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: flow-service-url
+            - name: AUTH0_USER
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: auth0-user
+            - name: AUTH0_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: auth0-pwd
+            - name: AUTH0_CLIENT_FLOW
+              valueFrom:
+                secretKeyRef:
+                  name: akvo-webform
+                  key: auth0-client-flow
+            - name: SQLALCHEMY_DATABASE_URI
+              value: "only-if-have-save"
+          readinessProbe:
+            httpGet:
+              path: /health-check
+              port: 5000
+            initialDelaySeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 5000
+            initialDelaySeconds: 30
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "1024Mi"
