@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=password
     restart: always
     volumes:
-      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./db/docker-entrypoint-initdb.d/000-init.sql:/docker-entrypoint-initdb.d/000-init.sql
       - pg-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
@@ -39,11 +39,11 @@ services:
       - AUTH0_URL
       - AUTH0_CLIENT_FLOW
       - SQLALCHEMY_DATABASE_URI=postgresql://akvotc:password@db:5432/webforms
+    restart: always
     depends_on:
       - db
     network_mode: service:mainnetwork
   ci:
-    network_mode: service:mainnetwork
     image: alpine:3.14.0
     volumes:
       - ./ci/test:/test:ro
@@ -53,6 +53,7 @@ services:
       - backend
       - frontend
       - db
+    network_mode: service:mainnetwork
   mainnetwork:
     image: alpine:3.14.0
     command: ["tail", "-f", "/dev/null"]
