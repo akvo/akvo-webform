@@ -20,10 +20,10 @@ services:
     depends_on:
       - db
       - backend
-    network_mode: service:mainnetwork
     volumes:
       - ./frontend:/app:delegated
     working_dir: /app
+    network_mode: service:mainnetwork
   backend:
     image: eu.gcr.io/akvo-lumen/akvo-webform/backend:latest
     command: ["sh", "run.sh"]
@@ -38,7 +38,7 @@ services:
       - AUTH0_PWD
       - AUTH0_URL
       - AUTH0_CLIENT_FLOW
-      - SQLALCHEMY_DATABASE_URI=postgresql://akvotc:password@0.0.0.0:5432/webforms
+      - SQLALCHEMY_DATABASE_URI=postgresql://akvotc:password@db:5432/webforms
     depends_on:
       - db
     network_mode: service:mainnetwork
