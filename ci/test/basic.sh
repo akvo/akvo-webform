@@ -13,6 +13,6 @@ http_get() {
     curl --verbose --url "${url}" "$@" 2>&1 | grep "< HTTP.*${code}"
 }
 
-http_get "http://localhost/index.html" 200
-http_get "http://localhost/api/seap/293680912/update" 200
+http_get "http://localhost/api/docs" 200
+http_get "http://localhost/api/seap/293680912" 200
 http_get "http://localhost/seap/293680912" 200
