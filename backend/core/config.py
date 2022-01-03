@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from routes.form_instance import form_instance_route
 from routes.form import form_route
 
 app = FastAPI(
@@ -18,7 +17,6 @@ app = FastAPI(
     },
 )
 
-app.include_router(form_instance_route)
 app.include_router(form_route)
 
 

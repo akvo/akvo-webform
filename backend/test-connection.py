@@ -14,7 +14,7 @@ while i <= max_attempts:
         if conn:
             success = True
             break
-    except:
+    except ValueError:
         i += 1
 if success:
     print('OK')
