@@ -3,6 +3,14 @@
 
 set -euo pipefail
 
+RETRIES=15
+
+until psql -h db:5432 -U akvotc -w password -d webforms -c "select 1" &>/dev/null 2>&1 || [ $RETRIES -eq 0 ];
+do
+  echo "Waiting for postgres server, $((RETRIES--)) remaining attempts..."
+  sleep 1
+done
+
 wait4ports -q -s 1 -t 60 tcp://localhost:80 tcp://localhost:5000
 
 http_get() {
@@ -14,5 +22,5 @@ http_get() {
 }
 
 http_get "http://localhost/api/docs" 200
-# http_get "http://localhost/api/seap/293680912" 200
+http_get "http://localhost/api/seap/293680912" 200
 # http_get "http://localhost/seap/293680912" 200
