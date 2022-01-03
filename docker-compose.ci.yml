@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=password
     restart: always
     volumes:
-      - ./db/docker-entrypoint-initdb.d.ci:/docker-entrypoint-initdb.d
+      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - pg-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
