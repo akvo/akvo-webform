@@ -4,6 +4,24 @@ services:
   mainnetwork:
     image: alpine:3.14.0
     command: ["tail", "-f", "/dev/null"]
+  backend:
+    image: amancevice/pandas:0.24.2-slim
+    working_dir: /app
+    command: ["./dev.sh"]
+    volumes:
+      - ./backend:/app:delegated
+    environment:
+      - BASIC_ADMIN=admin
+      - BASIC_PWD=webform
+      - FLOW_SERVICE_URL
+      - AUTH0_USER
+      - AUTH0_PWD
+      - AUTH0_URL
+      - AUTH0_CLIENT_FLOW
+      - SQLALCHEMY_DATABASE_URI
+    depends_on:
+      - db
+    network_mode: service:mainnetwork
   frontend:
     network_mode: service:mainnetwork
     image: akvo/akvo-node-14-alpine:20210106.152005.1864760
@@ -14,19 +32,16 @@ services:
     environment:
       - REACT_APP_API_URL=http://localhost:3000/api
       - REACT_APP_CAPTCHA_KEY
-  backend:
-    network_mode: service:mainnetwork
-    image: amancevice/pandas:0.24.2-slim
-    environment:
-      - BASIC_ADMIN=admin
-      - BASIC_PWD=webform
-      - FLOW_SERVICE_URL
-      - AUTH0_USER
-      - AUTH0_PWD
-      - AUTH0_URL
-      - AUTH0_CLIENT_FLOW
-      - SQLALCHEMY_DATABASE_URI
-    command: ["./dev.sh"]
+    depends_on:
+      - backend
+  db:
+    image: postgres:12-alpine
     volumes:
-      - ./backend:/app:delegated
-    working_dir: /app
+      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+volumes:
+  pg-data:

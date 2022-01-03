@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 
-set -eu
-
-connection="$(python test-connection.py)"
-
-if [[ "${connection}" != "OK" ]]; then
-    echo "Unable to connect to PostgreSQL"
-    exit 1
+if [[ -z "${SKIP_MIGRATION}" ]]; then
+    alembic upgrade head
 fi
 
-flask db upgrade
-python app.py
+python main.py

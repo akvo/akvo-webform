@@ -11,14 +11,14 @@ if len(sys.argv) < 2:
     print("Example: dump.py <instance_name> <form_id>")
     exit(0)
 
-
 questions = []
 form_instance = sys.argv[1]
 form_id = sys.argv[2]
 
 api = "https://tech-consultancy.akvo.org/akvo-flow-web-api"
-form = r.get("{}/{}/{}/update".format(api,form_instance,form_id))
+form = r.get("{}/{}/{}/update".format(api, form_instance, form_id))
 form = form.json()
+
 
 def get_question(q, qg):
     global questions
@@ -77,6 +77,7 @@ def get_question(q, qg):
             "dependency_answer": dependency_answer
         })
 
+
 if type(form["questionGroup"]) == list:
     for qgi, qg in enumerate(form["questionGroup"]):
         if type(qg["question"]) == list:
@@ -91,9 +92,9 @@ if type(form["questionGroup"]) == dict:
     if type(form["questionGroup"]["question"]) == dict:
         get_question(form["questionGroup"]["question"], form["questionGroup"])
 
-form = pd.DataFrame(questions).groupby(
-    ['gid','gname','id','qname','type','dependency','dependency_answer','options']
-).first()
+form = pd.DataFrame(questions).groupby([
+    'gid', 'gname', 'id', 'qname', 'type', 'dependency', 'dependency_answer',
+    'options'
+]).first()
 
-form.to_excel("{}/{}_form_{}.xlsx".format(os.getcwd(),form_instance,form_id))
-
+form.to_excel("{}/{}_form_{}.xlsx".format(os.getcwd(), form_instance, form_id))

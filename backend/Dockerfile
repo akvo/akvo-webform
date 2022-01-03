@@ -5,8 +5,9 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN set -e; \
-    pip install --no-cache-dir -r requirements.txt && \
+    pip -q install --upgrade pip && \
+    pip -q install --no-cache-dir -r requirements.txt && \
     pip check
 
 
-CMD ["python", "app.py"]
+CMD ["sh", "run.sh"]
