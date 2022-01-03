@@ -14,5 +14,5 @@ http_get() {
 }
 
 http_get "http://localhost/api/docs" 200
-http_get "http://localhost/api/seap/293680912" 200
-http_get "http://localhost/seap/293680912" 200
+# http_get "http://localhost/api/seap/293680912" 200
+# http_get "http://localhost/seap/293680912" 200
