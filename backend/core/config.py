@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from routes.form import form_route
+from routes.cascade import cascade_route
 
 app = FastAPI(
     root_path="/api",
@@ -18,6 +19,7 @@ app = FastAPI(
 )
 
 app.include_router(form_route)
+app.include_router(cascade_route)
 
 
 @app.get("/", tags=["Dev"])

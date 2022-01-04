@@ -7,6 +7,7 @@ from io import BytesIO
 from zipfile import ZipFile
 from fastapi import APIRouter, Request
 from data.flow import xml_survey
+from typing import List
 
 form_route = APIRouter()
 
@@ -31,19 +32,13 @@ def readxml(xml_path: str):
     return response
 
 
-def download_cascade(cascade_list, ziploc, check):
+def download_cascade(cascade_list: List[str], ziploc: str) -> None:
     for cascade in cascade_list:
         cascade_file = ziploc + '/' + cascade.split('/surveys/')[1]
         cascade_file = cascade_file.replace('.zip', '')
-        download = False
-        if check == 'update':
-            download = True
-        if not os.path.exists(cascade_file):
-            download = True
-        if download:
-            zip_url = httpx.get(cascade)
-            z = ZipFile(BytesIO(zip_url.content))
-            z.extractall(ziploc)
+        zip_url = httpx.get(cascade)
+        z = ZipFile(BytesIO(zip_url.content))
+        z.extractall(ziploc)
 
 
 @form_route.get('/form/{instance:path}/{survey_id:path}',
@@ -61,7 +56,11 @@ def form(req: Request, instance: str, survey_id: int):
     z.extractall(ziploc)
     response = readxml(xml_path=f'{ziploc}/{survey_id}.xml')
     cascade_list = []
+    for qg in response['questionGroup']:
+        for q in qg['question']:
+            if q['type'] == 'cascade':
+                cascade_list.append(q['cascadeResource'])
     if len(cascade_list) > 0:
-        cascade_list = [f'{instance}{c}.zip' for c in cascade_list]
+        cascade_list = [f'{instance}/{c}.zip' for c in cascade_list]
         download_cascade(cascade_list, ziploc)
     return response
