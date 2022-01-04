@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 from typing_extensions import TypedDict
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 import inspect
 
 
@@ -54,15 +54,27 @@ class Levels(TypedDict):
 
 @optional('altText')
 class Help(BaseModel):
-    altText: Optional[List[AltText]]
-    text: Optional[str] = None
+    altText: Optional[List[AltText]] = []
+    text: Optional[str] = ""
+
+    @validator("text", pre=True, always=True)
+    def set_text(cls, text):
+        return text or ""
+
+    @validator("altText", pre=True, always=True)
+    def set_alt_text(cls, altText):
+        return altText or []
 
 
 @optional('altText')
 class Option(BaseModel):
-    altText: Optional[List[AltText]]
+    altText: Optional[List[AltText]] = []
     value: str
     text: str
+
+    @validator("altText", pre=True, always=True)
+    def set_alt_text(cls, altText):
+        return altText or []
 
 
 class Options(BaseModel):
@@ -74,7 +86,7 @@ class Options(BaseModel):
 @optional('altText', 'cascadeResource', 'help', 'levels', 'validationRule',
           'options')
 class Question(BaseModel):
-    altText: Optional[List[AltText]]
+    altText: Optional[List[AltText]] = []
     help: Optional[Help]
     cascadeResource: str
     id: int
@@ -86,19 +98,27 @@ class Question(BaseModel):
     options: Options
     validationRule: Optional[ValidationRule]
 
+    @validator("altText", pre=True, always=True)
+    def set_alt_text(cls, altText):
+        return altText or []
+
 
 @optional('altText')
 class QuestionGroup(BaseModel):
-    altText: Optional[List[AltText]]
+    altText: Optional[List[AltText]] = []
     heading: str
     question: List[Question]
     repeatable: bool
+
+    @validator("altText", pre=True, always=True)
+    def set_alt_text(cls, altText):
+        return altText or []
 
 
 @optional('alias')
 class FormBase(BaseModel):
     alias: str
-    altText: Optional[List[AltText]]
+    altText: Optional[List[AltText]] = []
     app: str
     defaultLanguageCode: str
     name: str
@@ -107,3 +127,7 @@ class FormBase(BaseModel):
     surveyGroupName: str
     surveyId: int
     version: float
+
+    @validator("altText", pre=True, always=True)
+    def set_alt_text(cls, altText):
+        return altText or []
