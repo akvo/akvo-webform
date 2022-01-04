@@ -27,7 +27,7 @@ def readxml(xml_path: str):
                                      'level', 'altText'
                                  })
         survey = json.dumps(survey).replace('"true"', 'true').replace(
-            '"false"', 'false')
+            '"false"', 'false').replace('"answer-value"', '"answerValue"')
         survey = json.loads(survey)
         response = survey['survey']
     return response

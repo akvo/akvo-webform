@@ -230,7 +230,7 @@ class QuestionType extends Component {
       let match = false;
       childs = childs.find((x) => parseInt(x.dependency.question) === id);
       if (childs) {
-        dependentValue = childs.dependency["answer-value"].split("|");
+        dependentValue = childs.dependency.answerValue.split("|");
         parsedValue = parsedValue.map((x) => x.text);
         match = dependentValue.some((r) => parsedValue.includes(r));
         if (!match) {

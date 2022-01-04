@@ -16,7 +16,7 @@ import Overview from "./component/Overview";
 import OverviewButton from "./component/OverviewButton";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { PopupError } from "./util/Popup.js";
-import { API_URL, READ_CACHE } from "./util/Environment.js";
+import { API_URL } from "./util/Environment.js";
 import Dexie from "dexie";
 
 class Home extends Component {
@@ -89,8 +89,7 @@ class Home extends Component {
   getSurvey() {
     localStorage.setItem("_formId", this.surveyId);
     localStorage.setItem("_instanceId", this.instance);
-    let SURVEY_API =
-      API_URL + this.instance + "/" + this.surveyId + "/" + READ_CACHE;
+    let SURVEY_API = API_URL + "form/" + this.instance + "/" + this.surveyId;
     axios
       .get(SURVEY_API)
       .then((res) => {

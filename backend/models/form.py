@@ -21,6 +21,7 @@ def optional(*fields):
 
 class QuestionType(Enum):
     cascade = "cascade"
+    caddisfly = "caddisfly"
     option = "option"
     free = "free"
     date = "date"
@@ -83,9 +84,15 @@ class Options(BaseModel):
     option: List[Option]
 
 
+class DependencyQuestion(BaseModel):
+    answerValue: str
+    question: int
+
+
 @optional('altText', 'cascadeResource', 'help', 'levels', 'validationRule',
-          'options')
+          'options', 'dependency')
 class Question(BaseModel):
+    localeNameFlag: bool
     altText: Optional[List[AltText]] = []
     help: Optional[Help]
     cascadeResource: str
@@ -95,6 +102,7 @@ class Question(BaseModel):
     order: int
     text: str
     type: QuestionType
+    dependency: DependencyQuestion
     options: Options
     validationRule: Optional[ValidationRule]
 

@@ -97,7 +97,7 @@ const generateLang = (questions) => {
   let list = ["en"];
   questions = questions.map((x) => {
     let lang = { en: x.text };
-    if (x.altText !== undefined) {
+    if (x.altText.length) {
       let listLang = Array.isArray(x.altText)
         ? false
         : { [x.altText.language]: x.altText.text };
@@ -127,7 +127,7 @@ const generateLang = (questions) => {
           : [x.options.option];
         listOpt = listOpt.map((c, oi) => {
           let langopt = { en: c.text };
-          if (c.altText !== undefined) {
+          if (c.altText.length) {
             let listLangOpt = Array.isArray(c.altText)
               ? false
               : { [c.altText.language]: c.altText.text };
@@ -177,7 +177,7 @@ const getGroupAttributes = (group, questions, answers) => {
   questions = questions.filter((x) => {
     let show = true;
     if (x.dependency) {
-      let dependency_values = x.dependency["answer-value"].split("|");
+      let dependency_values = x.dependency.answerValue.split("|");
       let answer_dependency = localStorage.getItem(x.dependency.question)
         ? JSON.parse(localStorage.getItem(x.dependency.question))
         : false;
@@ -337,8 +337,8 @@ const showHideQuestions = (orig, group) => {
       show = false;
     }
     if (dependent) {
-      if (dependent["answer-value"].includes("|") > -1) {
-        answer_value = dependent["answer-value"].split("|");
+      if (dependent.answerValue.includes("|") > -1) {
+        answer_value = dependent.answerValue.split("|");
         answer_value = answer_value.map((b) => {
           if (!isNaN(b)) {
             b = parseInt(b);
@@ -382,7 +382,7 @@ const showHideQuestions = (orig, group) => {
     }
     if (group) {
       if (dependent && answer) {
-        answer_value = dependent["answer-value"].split("|");
+        answer_value = dependent.answerValue.split("|");
         answer_value.forEach((a, i) => {
           if (answer.includes(a)) {
             show = true;
@@ -479,7 +479,7 @@ const getValidAnswers = (answers, questions) => {
     let q;
     q = questions[i];
     if (q.dependency !== undefined) {
-      dependent = q.dependency["answer-value"];
+      dependent = q.dependency.answerValue;
       dependent_value = dependent.split("|");
       answered = localStorage.getItem(q.dependency.question);
       answered = JSON.parse(answered);
