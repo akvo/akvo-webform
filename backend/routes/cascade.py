@@ -17,8 +17,8 @@ class CascadeDict(TypedDict):
 
 @cascade_route.get('/cascade/{instance:path}/{sqlite:path}/{level:path}',
                    response_model=List[CascadeDict],
-                   summary="get cascade",
-                   tags=["Cascade"])
+                   summary="Get Akvo Flow Form Cascade by Level",
+                   tags=["Akvo Flow Webform"])
 def cascade(req: Request, instance: str, sqlite: str, level: int):
     location = f'./static/xml/{instance}/{sqlite}'
     if not os.path.exists(location):

@@ -44,18 +44,19 @@ def download_form(ziploc: str, instance: str, survey_id: int):
 
 
 @form_route.get('/form/{instance:path}/{survey_id:path}',
-                summary="get form",
+                summary="Get Akvo Flow Webform Format",
                 response_model=FormBase,
                 response_model_exclude_none=True,
-                tags=["Form"])
+                tags=["Akvo Flow Webform"])
 def form(req: Request, instance: str, survey_id: int):
     ziploc = f'./static/xml/{instance}'
     return download_form(ziploc, instance, survey_id)
 
 
 @form_route.get('/xls-form/{instance:path}/{survey_id:path}',
-                summary="download xls form",
-                tags=["Form"])
+                summary="Download XLS Form for ODK",
+                response_class=FileResponse,
+                tags=["Assets"])
 def xls_form(req: Request, instance: str, survey_id: int):
     ziploc = f'./static/xml/{instance}'
     res = download_form(ziploc, instance, survey_id)
