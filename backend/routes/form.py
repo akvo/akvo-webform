@@ -1,39 +1,19 @@
-import xmltodict
-import json
 import os
 import httpx
-from lxml import etree
 from io import BytesIO
 from zipfile import ZipFile
 from fastapi import APIRouter, Request
+from fastapi.responses import FileResponse
 from data.flow import xml_survey
 from typing import List
 from models.form import FormBase
+from util.util import readxml
+from util.odk import odk
 
 form_route = APIRouter()
 
 
-def readxml(xml_path: str):
-    with open(xml_path) as survey:
-        encoding = etree.parse(survey)
-        encoding = encoding.docinfo.encoding
-    with open(xml_path) as survey:
-        survey = xmltodict.parse(survey.read(),
-                                 encoding=encoding,
-                                 attr_prefix='',
-                                 cdata_key='text',
-                                 force_list={
-                                     'questionGroup', 'question', 'option',
-                                     'level', 'altText'
-                                 })
-        survey = json.dumps(survey).replace('"true"', 'true').replace(
-            '"false"', 'false').replace('"answer-value"', '"answerValue"')
-        survey = json.loads(survey)
-        response = survey['survey']
-    return response
-
-
-def download_cascade(cascade_list: List[str], ziploc: str) -> None:
+def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
     for cascade in cascade_list:
         cascade_file = ziploc + '/' + cascade.split('/surveys/')[1]
         cascade_file = cascade_file.replace('.zip', '')
@@ -42,13 +22,7 @@ def download_cascade(cascade_list: List[str], ziploc: str) -> None:
         z.extractall(ziploc)
 
 
-@form_route.get('/form/{instance:path}/{survey_id:path}',
-                summary="get form",
-                response_model=FormBase,
-                response_model_exclude_none=True,
-                tags=["Form"])
-def form(req: Request, instance: str, survey_id: int):
-    ziploc = f'./static/xml/{instance}'
+def download_form(ziploc: str, instance: str, survey_id: int):
     if not os.path.exists(ziploc):
         os.mkdir(ziploc)
     instance = xml_survey(instance)
@@ -65,5 +39,29 @@ def form(req: Request, instance: str, survey_id: int):
                 cascade_list.append(q['cascadeResource'])
     if len(cascade_list) > 0:
         cascade_list = [f'{instance}/{c}.zip' for c in cascade_list]
-        download_cascade(cascade_list, ziploc)
+        download_sqlite_asset(cascade_list, ziploc)
     return response
+
+
+@form_route.get('/form/{instance:path}/{survey_id:path}',
+                summary="get form",
+                response_model=FormBase,
+                response_model_exclude_none=True,
+                tags=["Form"])
+def form(req: Request, instance: str, survey_id: int):
+    ziploc = f'./static/xml/{instance}'
+    return download_form(ziploc, instance, survey_id)
+
+
+@form_route.get('/xls-form/{instance:path}/{survey_id:path}',
+                summary="download xls form",
+                tags=["Form"])
+def xls_form(req: Request, instance: str, survey_id: int):
+    ziploc = f'./static/xml/{instance}'
+    res = download_form(ziploc, instance, survey_id)
+    file_path = f'{ziploc}/{survey_id}.xlsx'
+    odk(res, file_path)
+    ftype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    return FileResponse(path=file_path,
+                        filename=f'{survey_id}.xlsx',
+                        media_type=ftype)
