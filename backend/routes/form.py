@@ -8,6 +8,7 @@ from zipfile import ZipFile
 from fastapi import APIRouter, Request
 from data.flow import xml_survey
 from typing import List
+from models.form import FormBase
 
 form_route = APIRouter()
 
@@ -43,6 +44,8 @@ def download_cascade(cascade_list: List[str], ziploc: str) -> None:
 
 @form_route.get('/form/{instance:path}/{survey_id:path}',
                 summary="get form",
+                response_model=FormBase,
+                response_model_exclude_none=True,
                 tags=["Form"])
 def form(req: Request, instance: str, survey_id: int):
     ziploc = f'./static/xml/{instance}'

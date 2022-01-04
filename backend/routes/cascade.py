@@ -2,11 +2,21 @@ import pandas as pd
 import os
 import sqlite3
 from fastapi import APIRouter, Request
+from typing import List
+from typing_extensions import TypedDict
 
 cascade_route = APIRouter()
 
 
+class CascadeDict(TypedDict):
+    id: int
+    name: str
+    code: str
+    parent: int
+
+
 @cascade_route.get('/cascade/{instance:path}/{sqlite:path}/{level:path}',
+                   response_model=List[CascadeDict],
                    summary="get cascade",
                    tags=["Cascade"])
 def cascade(req: Request, instance: str, sqlite: str, level: int):
