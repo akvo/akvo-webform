@@ -1,0 +1,70 @@
+{
+  "name": "flow-web",
+  "homepage": "https://tech-consultancy.akvotest.org/akvo-flow-web",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/core": "^10.0.22",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@material-ui/core": "^4.2.1",
+    "@material-ui/icons": "^4.2.1",
+    "@sweetalert/with-react": "^0.1.1",
+    "@uppy/aws-s3": "^1.6.4",
+    "@uppy/core": "^1.10.4",
+    "axios": "^0.21.1",
+    "bootstrap": "^4.3.1",
+    "datauritoblob": "^1.0.0",
+    "dexie": "^3.0.1",
+    "dotenv": "^8.2.0",
+    "exif-js": "^2.3.0",
+    "filepond-plugin-image-preview": "^4.5.0",
+    "jszip": "^3.4.0",
+    "leaflet": "^1.6.0",
+    "react": "^16.8.6",
+    "react-animations": "^1.0.0",
+    "react-dom": "^16.8.6",
+    "react-google-recaptcha": "^2.0.1",
+    "react-helmet": "^5.2.1",
+    "react-icons": "^3.7.0",
+    "react-leaflet": "^2.6.0",
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.0.1",
+    "react-storage-hooks": "^3.0.3",
+    "react-tooltip": "^4.2.6",
+    "reactstrap": "^8.0.0",
+    "redux": "^4.0.4",
+    "redux-thunk": "^2.3.0",
+    "reselect": "^4.0.0",
+    "sweetalert2": "^9.10.12",
+    "uuid": "^3.3.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "filepond": "^4.7.3",
+    "http-proxy-middleware": "^1.0.6",
+    "react-filepond": "^7.0.1",
+    "react-spinners": "^0.6.1",
+    "sweetalert": "^2.1.2"
+  }
+}

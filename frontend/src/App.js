@@ -1,36 +1,25 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Home from "./Home";
-import Error from "./Error";
-import { createStore } from "redux";
-import { Provider } from "react-redux";
-import { questionReducers } from "./reducers/questionReducers.js";
-import { CACHE_URL } from "./util/Environment.js";
+import logo from './logo.svg';
+import './App.css';
 
-const store = createStore(questionReducers);
-
-class App extends Component {
-  render() {
-    let path = "/:instance/:surveyid";
-    if (CACHE_URL) {
-      path = path + "/:cacheid";
-    }
-    return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path={"/"} render={(props) => <Error />} />
-            <Route exact path={"/:instance"} render={(props) => <Error />} />
-            <Route
-              exact
-              path={path}
-              render={(props) => <Home key="home" {...props} />}
-            />
-          </Switch>
-        </BrowserRouter>
-      </Provider>
-    );
-  }
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
+  );
 }
 
 export default App;
