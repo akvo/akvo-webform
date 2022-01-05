@@ -64,6 +64,8 @@ class Help(BaseModel):
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
+        if altText == [None]:
+            return []
         return altText or []
 
 
@@ -75,6 +77,8 @@ class Option(BaseModel):
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
+        if altText == [None]:
+            return []
         return altText or []
 
 
@@ -108,6 +112,8 @@ class Question(BaseModel):
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
+        if altText == [None]:
+            return []
         return altText or []
 
 
@@ -123,7 +129,7 @@ class QuestionGroup(BaseModel):
         return altText or []
 
 
-@optional('alias')
+@optional('alias', 'altText')
 class FormBase(BaseModel):
     alias: str
     altText: Optional[List[AltText]] = []
@@ -138,4 +144,6 @@ class FormBase(BaseModel):
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
+        if altText == [None]:
+            return []
         return altText or []
