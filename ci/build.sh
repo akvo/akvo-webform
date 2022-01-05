@@ -27,7 +27,7 @@ frontend_build () {
        --rm \
        --no-deps \
        frontend \
-       bash release.sh
+       sh release.sh
 
     docker build \
         --tag "${image_prefix}/frontend:latest" \
