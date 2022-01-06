@@ -2,12 +2,12 @@ import os
 import httpx
 from io import BytesIO
 from zipfile import ZipFile
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 from data.flow import xml_survey
 from typing import List
 from models.form import FormBase
-from util.util import readxml
+from util.util import readxml, Cipher
 from util.odk import odk
 
 form_route = APIRouter()
@@ -43,21 +43,35 @@ def download_form(ziploc: str, instance: str, survey_id: int):
     return response
 
 
-@form_route.get('/form/{instance:path}/{survey_id:path}',
+@form_route.get('/generate/{instance:path}/{fid:path}',
+                summary="Get form url",
+                response_model=str,
+                tags=["Dev"])
+def generate(req: Request, instance: str, fid: int):
+    return Cipher(f"{instance}-{fid}").encode()
+
+
+@form_route.get('/form/{id:path}',
                 summary="Get Akvo Flow Webform Format",
                 response_model=FormBase,
                 response_model_exclude_none=True,
                 tags=["Akvo Flow Webform"])
-def form(req: Request, instance: str, survey_id: int):
+def form(req: Request, id: str):
+    instance, survey_id = Cipher(id).decode()
+    if not instance:
+        raise HTTPException(status_code=404, detail="Not Found")
     ziploc = f'./static/xml/{instance}'
     return download_form(ziploc, instance, survey_id)
 
 
-@form_route.get('/xls-form/{instance:path}/{survey_id:path}',
+@form_route.get('/xls-form/{id:path}',
                 summary="Download XLS Form for ODK",
                 response_class=FileResponse,
                 tags=["Assets"])
-def xls_form(req: Request, instance: str, survey_id: int):
+def xls_form(req: Request, id: str):
+    instance, survey_id = Cipher(id).decode()
+    if not instance:
+        raise HTTPException(status_code=404, detail="Not Found")
     ziploc = f'./static/xml/{instance}'
     res = download_form(ziploc, instance, survey_id)
     file_path = f'{ziploc}/{survey_id}.xlsx'
