@@ -26,7 +26,10 @@ def download_form(ziploc: str, instance: str, survey_id: int):
     if not os.path.exists(ziploc):
         os.mkdir(ziploc)
     instance = xml_survey(instance)
-    zip_url = httpx.get(f'{instance}/{survey_id}.zip')
+    try:
+        zip_url = httpx.get(f'{instance}/{survey_id}.zip')
+    except httpx.UnsupportedProtocol:
+        raise HTTPException(status_code=404, detail="Not Found")
     if zip_url.status_code == 403:
         return {"message": "Form is not available"}
     z = ZipFile(BytesIO(zip_url.content))
@@ -58,7 +61,7 @@ def generate(req: Request, instance: str, fid: int):
                 tags=["Akvo Flow Webform"])
 def form(req: Request, id: str):
     instance, survey_id = Cipher(id).decode()
-    if not instance:
+    if instance is None:
         raise HTTPException(status_code=404, detail="Not Found")
     ziploc = f'./static/xml/{instance}'
     return download_form(ziploc, instance, survey_id)
@@ -70,7 +73,7 @@ def form(req: Request, id: str):
                 tags=["Assets"])
 def xls_form(req: Request, id: str):
     instance, survey_id = Cipher(id).decode()
-    if not instance:
+    if instance is None:
         raise HTTPException(status_code=404, detail="Not Found")
     ziploc = f'./static/xml/{instance}'
     res = download_form(ziploc, instance, survey_id)
