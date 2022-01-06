@@ -14,7 +14,7 @@ def readxml(xml_path: str):
                                  cdata_key='text',
                                  force_list={
                                      'questionGroup', 'question', 'option',
-                                     'level', 'altText'
+                                     'level', 'altText', 'dependency'
                                  })
         survey = json.dumps(survey).replace('"true"', 'true').replace(
             '"false"', 'false').replace('"answer-value"', '"answerValue"')

@@ -89,8 +89,14 @@ class Options(BaseModel):
 
 
 class DependencyQuestion(BaseModel):
-    answerValue: str
+    answerValue: List[str]
     question: int
+
+    @validator("answerValue", pre=True, always=True)
+    def set_answer_value(cls, answerValue):
+        if "|" in answerValue:
+            return answerValue.split("|")
+        return [answerValue]
 
 
 @optional('altText', 'cascadeResource', 'help', 'levels', 'validationRule',
@@ -106,7 +112,7 @@ class Question(BaseModel):
     order: int
     text: str
     type: QuestionType
-    dependency: DependencyQuestion
+    dependency: List[DependencyQuestion]
     options: Options
     validationRule: Optional[ValidationRule]
 
