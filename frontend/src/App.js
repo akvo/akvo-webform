@@ -8,27 +8,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path=":surveyInstance/:formId" element={<Home />} />
-        <Route
-          path=":surveyInstance"
-          element={
-            <ErrorPage
-              status={505}
-              title={"Error Loading Form"}
-              messages={["Form Id is not Defined"]}
-            />
-          }
-        />
+        <Route path=":formId" element={<Home />} />
         <Route
           path=""
           element={
             <ErrorPage
               status={505}
               title={"Error Loading Form"}
-              messages={[
-                "Survey Instance is not defined",
-                "Form Id is not defined",
-              ]}
+              messages={["Form Id is not defined"]}
             />
           }
         />
