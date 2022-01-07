@@ -59,14 +59,6 @@ def download_form(ziploc: str, instance: str, survey_id: int):
     return response
 
 
-@form_route.get('/generate/{instance:path}/{fid:path}',
-                summary="Get form url",
-                response_model=str,
-                tags=["Dev"])
-def generate(req: Request, instance: str, fid: int):
-    return Cipher(f"{instance}-{fid}").encode()
-
-
 @form_route.get('/form/{id:path}',
                 summary="Get Akvo Flow Webform Format",
                 response_model=FormBase,

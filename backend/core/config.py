@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routes.form import form_route
 from routes.cascade import cascade_route
+from core.dev import Dev, dev_route
 
 app = FastAPI(
     root_path="/api",
@@ -17,6 +18,7 @@ app = FastAPI(
         "url": "https://www.gnu.org/licenses/agpl-3.0.en.html",
     },
 )
+dev = Dev()
 
 app.include_router(form_route)
 app.include_router(cascade_route)
@@ -30,3 +32,7 @@ def read_main():
 @app.get("/health-check", tags=["Dev"])
 def health_check():
     return "OK"
+
+
+if dev.status:
+    app.include_router(dev_route)
