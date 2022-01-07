@@ -9,7 +9,9 @@ from typing import List
 from models.form import FormBase
 from util.util import readxml, Cipher
 from util.odk import odk
+from core.dev import Dev
 
+dev = Dev()
 form_route = APIRouter()
 
 
@@ -30,6 +32,10 @@ def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
 
 def download_form(ziploc: str, instance: str, survey_id: int):
     instance = xml_survey(instance)
+    dev = Dev()
+    xml_path = f"{ziploc}/{survey_id}.xml"
+    if dev.get_cached(xml_path):
+        return readxml(xml_path=xml_path)
     try:
         zip_url = httpx.get(f'{instance}/{survey_id}.zip')
         zip_url.raise_for_status()
@@ -41,7 +47,7 @@ def download_form(ziploc: str, instance: str, survey_id: int):
         os.mkdir(ziploc)
     z = ZipFile(BytesIO(zip_url.content))
     z.extractall(ziploc)
-    response = readxml(xml_path=f'{ziploc}/{survey_id}.xml')
+    response = readxml(xml_path=xml_path)
     cascade_list = []
     for qg in response['questionGroup']:
         for q in qg['question']:
