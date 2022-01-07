@@ -17,21 +17,28 @@ def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
     for cascade in cascade_list:
         cascade_file = ziploc + '/' + cascade.split('/surveys/')[1]
         cascade_file = cascade_file.replace('.zip', '')
-        zip_url = httpx.get(cascade)
+        try:
+            zip_url = httpx.get(cascade)
+            zip_url.raise_for_status()
+        except httpx.HTTPError as exc:
+            raise HTTPException(
+                status_code=exc.response.status_code,
+                detail=f"Error while requesting {exc.request.url!r}.")
         z = ZipFile(BytesIO(zip_url.content))
         z.extractall(ziploc)
 
 
 def download_form(ziploc: str, instance: str, survey_id: int):
-    if not os.path.exists(ziploc):
-        os.mkdir(ziploc)
     instance = xml_survey(instance)
     try:
         zip_url = httpx.get(f'{instance}/{survey_id}.zip')
-    except httpx.UnsupportedProtocol:
-        raise HTTPException(status_code=404, detail="Not Found")
-    if zip_url.status_code == 403:
-        return {"message": "Form is not available"}
+        zip_url.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status_code=exc.response.status_code,
+            detail=f"Error while requesting {exc.request.url!r}.")
+    if not os.path.exists(ziploc):
+        os.mkdir(ziploc)
     z = ZipFile(BytesIO(zip_url.content))
     z.extractall(ziploc)
     response = readxml(xml_path=f'{ziploc}/{survey_id}.xml')
