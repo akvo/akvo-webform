@@ -2,17 +2,26 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
+import db from "../lib/db";
 
 const Home = () => {
-  const [data, setData] = useState("Loading...");
+  const [data, setData] = useState(false);
   const [error, setError] = useState(false);
   const { formId } = useParams();
+
+  const initForm = async ({ app, version, name }) => {
+    try {
+      await db.forms.add({ formId, app, version, name });
+    } catch (e) {
+      console.log(`Failed to add data`);
+    }
+  };
 
   useEffect(() => {
     api
       .get(`form/${formId}`)
       .then((res) => {
-        setData(res.data);
+        initForm(res.data);
       })
       .catch((e) => {
         const { status, statusText } = e.response;
