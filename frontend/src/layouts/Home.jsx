@@ -2,18 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
-import { initForm } from "../lib/db";
+import db, { initForm } from "../lib/db";
+import generateForm from "../lib/form";
+import { useLiveQuery } from "dexie-react-hooks";
 
 const Home = () => {
-  const [data, setData] = useState(false);
   const [error, setError] = useState(false);
   const { formId } = useParams();
+  const form = useLiveQuery(() => db.forms.get(formId));
 
   useEffect(() => {
     api
       .get(`form/${formId}`)
       .then((res) => {
-        initForm({ formId: formId, ...res.data });
+        const formData = generateForm(res.data);
+        initForm({ formId: formId, ...formData });
       })
       .catch((e) => {
         const { status, statusText } = e.response;
@@ -32,7 +35,11 @@ const Home = () => {
     );
   }
 
-  return <div>{JSON.stringify(data)}</div>;
+  if (!form) {
+    console.log("Loading");
+  }
+
+  return <div>{JSON.stringify(form)}</div>;
 };
 
 export default Home;
