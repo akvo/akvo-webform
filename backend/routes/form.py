@@ -17,17 +17,19 @@ form_route = APIRouter()
 
 def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
     for cascade in cascade_list:
-        cascade_file = ziploc + '/' + cascade.split('/surveys/')[1]
+        cascade_file = cascade.split("/surveys/")[1]
+        cascade_file = f"{ziploc}/{cascade_file}"
         cascade_file = cascade_file.replace('.zip', '')
-        try:
-            zip_url = httpx.get(cascade)
-            zip_url.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise HTTPException(
-                status_code=exc.response.status_code,
-                detail=f"Error while requesting {exc.request.url!r}.")
-        z = ZipFile(BytesIO(zip_url.content))
-        z.extractall(ziploc)
+        if not os.path.exists(cascade_file):
+            try:
+                zip_url = httpx.get(cascade)
+                zip_url.raise_for_status()
+            except httpx.HTTPError as exc:
+                raise HTTPException(
+                    status_code=exc.response.status_code,
+                    detail=f"Error while requesting {exc.request.url!r}.")
+            z = ZipFile(BytesIO(zip_url.content))
+            z.extractall(ziploc)
 
 
 def download_form(ziploc: str, instance: str, survey_id: int):
