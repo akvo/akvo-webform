@@ -2,10 +2,7 @@ import Dexie from "dexie";
 
 const db = new Dexie("akvo");
 db.version(1).stores({
-  forms: "formId, app, version, name, questionGroup",
-  questionGroup: "id, formId, version, active, repeat",
-  question:
-    "id, order, formId, questionGroupId, localeNameFlag, mandatory, active",
+  forms: "formId, app, version",
 });
 
 Dexie.exists("akvo")
@@ -23,36 +20,9 @@ Dexie.exists("akvo")
     console.error(e);
   });
 
-export const initForm = ({ formId, app, version, name, questionGroup }) => {
+export const saveFormToDB = ({ formId, app, version, name, questionGroup }) => {
   db.forms.clear();
   db.forms.add({ formId, app, version, name, questionGroup });
-  db.questionGroup.bulkAdd(
-    questionGroup.map((x, xi) =>
-      Object.keys(x).reduce(
-        (o, k) => {
-          if (k !== "question") {
-            o[k] = x[k];
-          }
-          return o;
-        },
-        {
-          id: xi,
-          formId: formId,
-          version: version,
-          active: xi === 0 ? 1 : 0,
-          repeat: 1,
-        }
-      )
-    )
-  );
-  const question = questionGroup
-    .map((x, xi) => x.question.map((q) => ({ questionGroupId: xi, ...q })))
-    .flatMap((x) => x)
-    .map((x) => ({
-      ...x,
-      active: x.questionGroupId === 0 && !x?.dependency ? 1 : 0,
-    }));
-  db.question.bulkAdd(question);
 };
 
 export default db;

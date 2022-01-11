@@ -1,13 +1,18 @@
-import React from "react";
+import React, { createContext } from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
 import "antd/dist/antd.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { defaultValue } from "./lib/store";
+
+const Context = createContext(defaultValue);
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Context.Provider value={defaultValue}>
+      <App />
+    </Context.Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );
