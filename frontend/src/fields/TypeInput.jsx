@@ -1,18 +1,31 @@
 import React from "react";
-import { Form, Input } from "antd";
+import { Form, Input, InputNumber } from "antd";
+import Help from "../components/Help";
 
-const TypeInput = ({ id, text, keyform, required, rules, tooltip }) => {
+const TypeInput = ({
+  id,
+  text,
+  keyform,
+  mandatory,
+  rules,
+  help,
+  validationRule,
+}) => {
   return (
     <Form.Item
-      className="arf-field"
+      className="field"
       key={keyform}
       name={id}
       label={`${keyform + 1}. ${text}`}
       rules={rules}
-      required={required}
-      tooltip={tooltip?.text}
+      required={mandatory}
     >
-      <Input sytle={{ width: "100%" }} />
+      {help && <Help {...help} />}
+      {validationRule?.validationType === "numeric" ? (
+        <InputNumber sytle={{ width: "100%" }} />
+      ) : (
+        <Input sytle={{ width: "100%" }} />
+      )}
     </Form.Item>
   );
 };

@@ -1,12 +1,19 @@
 import React from "react";
-import { Col, Form } from "antd";
+import { Form } from "antd";
 import { validateDependency } from "../lib/form.js";
 import TypeOption from "../fields/TypeOption";
 import TypeDate from "../fields/TypeDate";
 import TypeInput from "../fields/TypeInput";
 
-const mapRules = ({ rule, type }) => {
-  if (type === "number") {
+const mapRules = ({ validationRule, type }) => {
+  if (type === "free" && validationRule?.validationType === "numeric") {
+    let rule = {};
+    if (validationRule?.minVal) {
+      rule = { min: validationRule?.minVal };
+    }
+    if (validationRule?.maxVal) {
+      rule = { ...rule, max: validationRule?.maxVal };
+    }
     return [{ ...rule, type: "number" }];
   }
   return [{}];

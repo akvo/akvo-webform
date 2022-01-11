@@ -1,25 +1,16 @@
 import React from "react";
-import { Space, Form, Radio, Select, Checkbox } from "antd";
+import { Space, Form, Radio, Checkbox } from "antd";
 
-const TypeOption = ({
-  options,
-  id,
-  text,
-  keyform,
-  required,
-  rules,
-  tooltip,
-}) => {
+const TypeOption = ({ options, id, text, keyform, required, rules, help }) => {
   const { option } = options;
   return (
     <Form.Item
-      className="arf-field"
+      className="field"
       key={keyform}
       name={id}
       label={`${keyform + 1}. ${text}`}
       rules={rules}
       required={required}
-      tooltip={tooltip?.text}
     >
       {options?.allowMultiple ? (
         <Checkbox.Group style={{ width: "100%" }}>
