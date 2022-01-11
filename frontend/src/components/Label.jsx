@@ -19,13 +19,14 @@ const Help = ({ text }) => {
   );
 };
 
-const Label = ({ keyform, text, mandatory }) => {
+const Label = ({ keyform, text, mandatory, help }) => {
   return (
     <div className="field-label">
       <p>
         {keyform + 1}. {text}{" "}
         {mandatory && <FaStarOfLife className="icon required" />}
       </p>
+      {help && <Help {...help} />}
     </div>
   );
 };
