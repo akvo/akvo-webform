@@ -20,3 +20,7 @@ body {
 .ant-input-number {
   width: 100% !important;
 }
+
+.ant-form-item-label > label {
+  align-items: baseline !important;
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, InputNumber } from "antd";
-import Help from "../components/Help";
+import Label from "../components/Label";
 
 const TypeInput = ({
   id,
@@ -16,11 +16,10 @@ const TypeInput = ({
       className="field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${text}`}
+      label={<Label keyform={keyform} text={text} help={help} />}
       rules={rules}
       required={mandatory}
     >
-      {help && <Help {...help} />}
       {validationRule?.validationType === "numeric" ? (
         <InputNumber sytle={{ width: "100%" }} />
       ) : (

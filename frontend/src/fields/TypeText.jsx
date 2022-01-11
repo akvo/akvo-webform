@@ -1,6 +1,7 @@
 import React from "react";
 import { Form } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import Label from "../components/Label";
 
 const TypeText = ({ id, text, keyform, required, rules, help }) => {
   return (
@@ -8,9 +9,9 @@ const TypeText = ({ id, text, keyform, required, rules, help }) => {
       className="field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${text}`}
       rules={rules}
       required={required}
+      label={<Label keyform={keyform} text={text} help={help} />}
     >
       <TextArea row={4} />
     </Form.Item>

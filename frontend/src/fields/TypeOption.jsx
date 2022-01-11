@@ -1,5 +1,6 @@
 import React from "react";
 import { Space, Form, Radio, Checkbox } from "antd";
+import Label from "../components/Label";
 
 const TypeOption = ({ options, id, text, keyform, required, rules, help }) => {
   const { option } = options;
@@ -8,7 +9,7 @@ const TypeOption = ({ options, id, text, keyform, required, rules, help }) => {
       className="field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${text}`}
+      label={<Label keyform={keyform} text={text} help={help} />}
       rules={rules}
       required={required}
     >

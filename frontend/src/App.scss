@@ -1,3 +1,7 @@
+#root {
+  height: 100vh;
+}
+
 .container {
   position: relative;
   font-family: "Roboto Condensed", sans-serif;
@@ -7,24 +11,24 @@
 .form-header {
   padding: 0px 20px;
   background: #fff;
-}
 
-.form-header.sticky {
-  top: 0px;
-  position: sticky;
-  position: -webkit-sticky;
-  min-width: 100%;
-  z-index: 1001;
-  border-bottom: 1px solid #f0f0f0;
-}
+  .sticky {
+    top: 0px;
+    position: sticky;
+    position: -webkit-sticky;
+    min-width: 100%;
+    z-index: 1001;
+    border-bottom: 1px solid #f0f0f0;
+  }
 
-.form-header h1 {
-  font-family: "Assistant", sans-serif;
-  line-height: 58px;
-  padding: 0px;
-  margin: 0px;
-  font-size: 18px;
-  font-weight: bold;
+  h1 {
+    font-family: "Assistant", sans-serif;
+    line-height: 58px;
+    padding: 0px;
+    margin: 0px;
+    font-size: 18px;
+    font-weight: bold;
+  }
 }
 
 .form-header h1,
@@ -39,41 +43,38 @@
 }
 
 .sidebar {
-  border-top: 1px solid #f0f0f0;
-}
+  .sticky {
+    top: 60px;
+    position: sticky;
+    position: -webkit-sticky;
+    height: fit-content;
+  }
 
-.sidebar.sticky {
-  border: none;
-  top: 60px;
-  position: sticky;
-  position: -webkit-sticky;
-  height: fit-content;
-}
+  .sidebar-header {
+    text-transform: uppercase;
+  }
 
-.sidebar .sidebar-header {
-  text-transform: uppercase;
-}
+  .sidebar-list {
+    cursor: pointer;
+    font-family: "Assistant", sans-serif;
+    padding: 10px 20px;
+    font-size: 14px;
 
-.sidebar .sidebar-list {
-  cursor: pointer;
-  font-family: "Assistant", sans-serif;
-  padding: 10px 20px;
-  font-size: 14px;
-}
+    &.active {
+      background: #f3f3f3;
+      font-weight: bold;
+    }
 
-.sidebar .sidebar-list.active {
-  background: #f3f3f3;
-  font-weight: bold;
-}
+    &.complete {
+      color: green;
+    }
 
-.sidebar .sidebar-list.complete {
-  color: green;
-}
-
-.sidebar .sidebar-list .icon {
-  margin-right: 10px;
-  padding: 0px;
-  margin-bottom: -2px;
+    .icon {
+      margin-right: 10px;
+      padding: 0px;
+      margin-bottom: -2px;
+    }
+  }
 }
 
 .field-group .field-group-header,
@@ -109,25 +110,30 @@
 
 .next {
   border-left: 1px solid #f0f0f0;
-  padding: 20px 25px;
+  padding: 20px 50px;
+
+  button {
+    border: none;
+    background-color: #888;
+    color: #fff;
+
+    &:hover {
+      background-color: #222;
+      color: #fff;
+    }
+  }
 }
 
-.next button {
-  border: none;
-  background-color: #888;
-  color: #fff;
-}
+.field-label {
+  .help {
+    button {
+      display: inline-block;
+    }
 
-.next button:hover {
-  background-color: #222;
-  color: #fff;
-}
-
-.help {
-  padding-bottom: 14px;
-
-  p {
-    font-size: 14px;
-    margin-top: 14px;
+    p {
+      font-size: 14px;
+      margin-top: 14px;
+      display: block;
+    }
   }
 }
