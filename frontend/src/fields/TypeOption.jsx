@@ -1,5 +1,5 @@
 import React from "react";
-import { Space, Form, Radio, Select } from "antd";
+import { Space, Form, Radio, Select, Checkbox } from "antd";
 
 const TypeOption = ({
   options,
@@ -11,7 +11,6 @@ const TypeOption = ({
   tooltip,
 }) => {
   const { option } = options;
-  console.log(options);
   return (
     <Form.Item
       className="arf-field"
@@ -22,7 +21,17 @@ const TypeOption = ({
       required={required}
       tooltip={tooltip?.text}
     >
-      {option.length < 3 ? (
+      {options?.allowMultiple ? (
+        <Checkbox.Group style={{ width: "100%" }}>
+          <Space direction="vertical">
+            {option.map((o, io) => (
+              <Checkbox key={io} value={o.value}>
+                {o.text}
+              </Checkbox>
+            ))}
+          </Space>
+        </Checkbox.Group>
+      ) : (
         <Radio.Group>
           <Space direction="vertical">
             {option.map((o, io) => (
@@ -32,14 +41,6 @@ const TypeOption = ({
             ))}
           </Space>
         </Radio.Group>
-      ) : (
-        <Select style={{ width: "100%" }} allowClear>
-          {option.map((o, io) => (
-            <Select.Option key={io} value={o.value}>
-              {o.text}
-            </Select.Option>
-          ))}
-        </Select>
       )}
     </Form.Item>
   );
