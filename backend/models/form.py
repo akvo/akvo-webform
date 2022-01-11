@@ -39,18 +39,21 @@ class AltText(TypedDict):
     type: str
 
 
-class ValidationRule(TypedDict):
-    allowDecimal: bool
-    signed: bool
-    validationType: ValidationType
-
-
 class Level(TypedDict):
     text: str
 
 
 class Levels(TypedDict):
     level: List[Level]
+
+
+@optional('maxVal', 'minVal')
+class ValidationRule(BaseModel):
+    allowDecimal: bool
+    signed: bool
+    maxVal: Optional[float] = None
+    minVal: Optional[float] = None
+    validationType: ValidationType
 
 
 @optional('altText')
