@@ -1,20 +1,20 @@
-import React from 'react'
-import { Form, Input } from 'antd'
+import React from "react";
+import { Form, Input } from "antd";
 
-const TypeInput = ({ id, name, keyform, required, rules, tooltip }) => {
+const TypeInput = ({ id, text, keyform, required, rules, tooltip }) => {
   return (
     <Form.Item
-      className='arf-field'
+      className="arf-field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${name}`}
+      label={`${keyform + 1}. ${text}`}
       rules={rules}
       required={required}
       tooltip={tooltip?.text}
     >
-      <Input sytle={{ width: '100%' }} />
+      <Input sytle={{ width: "100%" }} />
     </Form.Item>
-  )
-}
+  );
+};
 
-export default TypeInput
+export default TypeInput;

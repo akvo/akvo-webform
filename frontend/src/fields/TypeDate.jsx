@@ -1,13 +1,13 @@
 import React from "react";
 import { Form, DatePicker } from "antd";
 
-const TypeDate = ({ id, name, keyform, required, rules, tooltip }) => {
+const TypeDate = ({ id, text, keyform, required, rules, tooltip }) => {
   return (
     <Form.Item
       className="arf-field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${name}`}
+      label={`${keyform + 1}. ${text}`}
       rules={rules}
       required={required}
       tooltip={tooltip?.text}

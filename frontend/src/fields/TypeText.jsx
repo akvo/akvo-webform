@@ -1,21 +1,21 @@
-import React from 'react'
-import { Form } from 'antd'
-import TextArea from 'antd/lib/input/TextArea'
+import React from "react";
+import { Form } from "antd";
+import TextArea from "antd/lib/input/TextArea";
 
-const TypeText = ({ id, name, keyform, required, rules, tooltip }) => {
+const TypeText = ({ id, text, keyform, required, rules, tooltip }) => {
   return (
     <Form.Item
-      className='arf-field'
+      className="arf-field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${name}`}
+      label={`${keyform + 1}. ${text}`}
       rules={rules}
       required={required}
       tooltip={tooltip?.text}
     >
       <TextArea row={4} />
     </Form.Item>
-  )
-}
+  );
+};
 
-export default TypeText
+export default TypeText;

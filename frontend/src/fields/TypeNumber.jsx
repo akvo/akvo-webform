@@ -1,20 +1,20 @@
-import React from 'react'
-import { Form, InputNumber } from 'antd'
+import React from "react";
+import { Form, InputNumber } from "antd";
 
-const TypeNumber = ({ id, name, keyform, required, rules, tooltip }) => {
+const TypeNumber = ({ id, text, keyform, required, rules, tooltip }) => {
   return (
     <Form.Item
-      className='arf-field'
+      className="arf-field"
       key={keyform}
       name={id}
-      label={`${keyform + 1}. ${name}`}
+      label={`${keyform + 1}. ${text}`}
       rules={rules}
       required={required}
       tooltip={tooltip?.text}
     >
-      <InputNumber style={{ width: '100%' }} />
+      <InputNumber style={{ width: "100%" }} />
     </Form.Item>
-  )
-}
+  );
+};
 
-export default TypeNumber
+export default TypeNumber;
