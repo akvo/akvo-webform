@@ -6,6 +6,7 @@ import {
   MdRadioButtonUnchecked,
   MdRadioButtonChecked,
   MdCheckCircle,
+  MdRepeat,
 } from "react-icons/md";
 import intersection from "lodash/intersection";
 import ErrorPage from "./ErrorPage";
@@ -14,6 +15,7 @@ import { saveFormToDB } from "../lib/db";
 import generateForm from "../lib/form";
 import reducer, { defaultValue } from "../lib/store";
 import FormHeader from "../components/FormHeader";
+import FieldGroupHeader from "../components/FieldGroupHeader";
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -112,6 +114,7 @@ const Home = () => {
                 <MdRadioButtonUnchecked className="icon" />
               )}
               {item?.heading}
+              {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
             </List.Item>
           )}
         />
@@ -134,7 +137,7 @@ const Home = () => {
             return (
               <Card
                 key={key}
-                title={<div className="field-group-header">{g.heading}</div>}
+                title={<FieldGroupHeader {...g} />}
                 className={`field-group ${
                   activeGroup !== key ? "hidden" : ""
                 } ${key == forms?.questionGroup?.length - 1 ? "last" : ""}`}

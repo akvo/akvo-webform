@@ -9,11 +9,9 @@ import { defaultValue } from "./lib/store";
 const Context = createContext(defaultValue);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Context.Provider value={defaultValue}>
-      <App />
-    </Context.Provider>
-  </React.StrictMode>,
+  <Context.Provider value={defaultValue}>
+    <App />
+  </Context.Provider>,
   document.getElementById("root")
 );
 
