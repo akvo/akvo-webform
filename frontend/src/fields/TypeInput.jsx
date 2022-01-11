@@ -16,9 +16,16 @@ const TypeInput = ({
       className="field"
       key={keyform}
       name={id}
-      label={<Label keyform={keyform} text={text} help={help} />}
+      label={
+        <Label
+          keyform={keyform}
+          text={text}
+          help={help}
+          mandatory={mandatory}
+        />
+      }
       rules={rules}
-      required={mandatory}
+      required={false}
     >
       {validationRule?.validationType === "numeric" ? (
         <InputNumber sytle={{ width: "100%" }} />

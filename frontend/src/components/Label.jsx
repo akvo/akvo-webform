@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
+import { FaStarOfLife } from "react-icons/fa";
 
 const Help = ({ text }) => {
   const [show, setShow] = useState(false);
@@ -18,13 +19,13 @@ const Help = ({ text }) => {
   );
 };
 
-const Label = ({ keyform, text, help }) => {
+const Label = ({ keyform, text, mandatory }) => {
   return (
     <div className="field-label">
       <p>
-        {keyform + 1}. {text}
+        {keyform + 1}. {text}{" "}
+        {mandatory && <FaStarOfLife className="icon required" />}
       </p>
-      {help && <Help {...help} />}
     </div>
   );
 };

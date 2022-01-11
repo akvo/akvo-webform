@@ -2,16 +2,23 @@ import React from "react";
 import { Space, Form, Radio, Checkbox } from "antd";
 import Label from "../components/Label";
 
-const TypeOption = ({ options, id, text, keyform, required, rules, help }) => {
+const TypeOption = ({ options, id, text, keyform, mandatory, rules, help }) => {
   const { option } = options;
   return (
     <Form.Item
       className="field"
       key={keyform}
       name={id}
-      label={<Label keyform={keyform} text={text} help={help} />}
+      label={
+        <Label
+          keyform={keyform}
+          text={text}
+          help={help}
+          mandatory={mandatory}
+        />
+      }
       rules={rules}
-      required={required}
+      required={false}
     >
       {options?.allowMultiple ? (
         <Checkbox.Group style={{ width: "100%" }}>

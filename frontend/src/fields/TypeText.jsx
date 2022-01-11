@@ -3,15 +3,22 @@ import { Form } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import Label from "../components/Label";
 
-const TypeText = ({ id, text, keyform, required, rules, help }) => {
+const TypeText = ({ id, text, keyform, mandatory, rules, help }) => {
   return (
     <Form.Item
       className="field"
       key={keyform}
       name={id}
+      label={
+        <Label
+          keyform={keyform}
+          text={text}
+          help={help}
+          mandatory={mandatory}
+        />
+      }
       rules={rules}
-      required={required}
-      label={<Label keyform={keyform} text={text} help={help} />}
+      required={false}
     >
       <TextArea row={4} />
     </Form.Item>
