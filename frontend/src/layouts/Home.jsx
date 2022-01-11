@@ -13,6 +13,7 @@ import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
 import generateForm from "../lib/form";
 import reducer, { defaultValue } from "../lib/store";
+import FormHeader from "../components/FormHeader";
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -89,23 +90,7 @@ const Home = () => {
 
   return (
     <Row className="container">
-      <Col span={24} className="form-header sticky">
-        <Row align="middle" className="form-header-container">
-          <Col span={20}>
-            <h1>{forms?.name}</h1>
-          </Col>
-          <Col span={4}>
-            <Button
-              size="large"
-              className="submit"
-              htmlType="submit"
-              onClick={() => form.submit()}
-            >
-              Submit
-            </Button>
-          </Col>
-        </Row>
-      </Col>
+      <FormHeader forms={forms} submit={() => form.submit()} />
       <Col span={6} className="sidebar sticky">
         <List
           bordered={false}
