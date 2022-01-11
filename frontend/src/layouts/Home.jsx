@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Card, Button, Form, Input, List } from "antd";
+import { Row, Col, Card, Button, Form, List } from "antd";
 import Question from "../components/Question";
-import { MdRadioButtonChecked, MdCheckCircle } from "react-icons/md";
+import {
+  MdRadioButtonUnchecked,
+  MdRadioButtonChecked,
+  MdCheckCircle,
+} from "react-icons/md";
 import intersection from "lodash/intersection";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
@@ -116,8 +120,10 @@ const Home = () => {
             >
               {completeGroup.includes(key) ? (
                 <MdCheckCircle className="icon" />
-              ) : (
+              ) : activeGroup == key ? (
                 <MdRadioButtonChecked className="icon" />
+              ) : (
+                <MdRadioButtonUnchecked className="icon" />
               )}
               {item?.heading}
             </List.Item>

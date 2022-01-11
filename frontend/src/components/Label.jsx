@@ -13,7 +13,7 @@ const Help = ({ text }) => {
       >
         more info
       </Button>
-      {show && <p>{text}</p>}
+      {show && <p dangerouslySetInnerHTML={{ __html: text }} />}
     </div>
   );
 };
