@@ -90,13 +90,14 @@ const Home = () => {
   return (
     <Row className="container">
       <Col span={24} className="form-header sticky">
-        <Row align="middle">
+        <Row align="middle" className="form-header-container">
           <Col span={20}>
             <h1>{forms?.name}</h1>
           </Col>
           <Col span={4}>
             <Button
-              type="primary"
+              size="large"
+              className="submit"
               htmlType="submit"
               onClick={() => form.submit()}
             >
@@ -166,6 +167,7 @@ const Home = () => {
         {!lastGroup && (
           <Col span={24} className="next">
             <Button
+              size="large"
               type="default"
               onClick={() => {
                 if (!lastGroup) {
