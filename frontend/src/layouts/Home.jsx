@@ -124,7 +124,7 @@ const Home = () => {
           )}
         />
       </Col>
-      <Col span={18}>
+      <Col span={18} className="main">
         <Form
           form={form}
           layout="vertical"
@@ -143,7 +143,9 @@ const Home = () => {
               <Card
                 key={key}
                 title={<div className="field-group-header">{g.heading}</div>}
-                className={`field-group ${activeGroup !== key ? "hidden" : ""}`}
+                className={`field-group ${
+                  activeGroup !== key ? "hidden" : ""
+                } ${key == forms?.questionGroup?.length - 1 ? "last" : ""}`}
               >
                 {g?.description ? (
                   <p className="description">{g.description}</p>

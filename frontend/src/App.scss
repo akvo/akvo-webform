@@ -6,13 +6,15 @@
   position: relative;
   font-family: "Roboto Condensed", sans-serif;
   background: #fff;
+  min-height: 100%;
 }
 
 .form-header {
   padding: 0px 20px;
   background: #fff;
+  height: 60px;
 
-  .sticky {
+  &.sticky {
     top: 0px;
     position: sticky;
     position: -webkit-sticky;
@@ -43,7 +45,7 @@
 }
 
 .sidebar {
-  .sticky {
+  &.sticky {
     top: 60px;
     position: sticky;
     position: -webkit-sticky;
@@ -52,6 +54,10 @@
 
   .sidebar-header {
     text-transform: uppercase;
+    font-family: "Assistant", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0px 20px;
   }
 
   .sidebar-list {
@@ -77,34 +83,45 @@
   }
 }
 
-.field-group .field-group-header,
-.sidebar-header {
-  font-family: "Assistant", sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  padding: 0px 20px;
+.main {
+  min-height: calc(100vh - 60px);
 }
 
-.field-group p.description {
-  font-family: "Assistant", sans-serif;
-  font-size: 14px;
-  margin: 0px 20px 20px;
+.field-group {
+  min-height: calc(100vh - 132px);
+
+  &.last {
+    min-height: calc(100vh - 60px);
+  }
+
+  .field-group-header {
+    font-family: "Assistant", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0px 20px;
+  }
+
+  .description {
+    font-family: "Assistant", sans-serif;
+    font-size: 14px;
+    margin: 0px 20px 20px;
+  }
+
+  .field {
+    font-family: "Assistant", sans-serif;
+    padding: 0px 20px 10px;
+  }
+
+  .field-geo {
+    display: none !important;
+  }
+
+  .field-map {
+    margin-top: -65px;
+  }
 }
 
-.field-group .field {
-  font-family: "Assistant", sans-serif;
-  padding: 0px 20px 10px;
-}
-
-.field.field-geo {
-  display: none !important;
-}
-
-.field.field-map {
-  margin-top: -65px;
-}
-
-.field-group.hidden {
+.hidden {
   display: none;
 }
 
