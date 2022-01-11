@@ -150,12 +150,7 @@ const Home = () => {
                 ) : (
                   ""
                 )}
-                <Question
-                  fields={g.question}
-                  cascade={forms.cascade}
-                  form={form}
-                  current={current}
-                />
+                <Question fields={g.question} form={form} current={current} />
               </Card>
             );
           })}

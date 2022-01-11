@@ -1,3 +1,12 @@
+import intersection from "lodash/intersection";
+
+export const validateDependency = (dependency, value) => {
+  if (typeof value === "string") {
+    value = [value];
+  }
+  return intersection(dependency.answerValue, value)?.length > 0;
+};
+
 const getDependencyAncestors = (questions, current, dependencies) => {
   const ids = dependencies.map((x) => x.question);
   const ancestors = questions
