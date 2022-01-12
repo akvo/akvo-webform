@@ -26,7 +26,7 @@ services:
     network_mode: service:mainnetwork
   backend:
     image: eu.gcr.io/akvo-lumen/akvo-webform/backend:latest
-    command: ["sh", "run.sh"]
+    command: ["sh", "start.sh"]
     working_dir: /app
     volumes:
       - ./backend:/app:delegated
