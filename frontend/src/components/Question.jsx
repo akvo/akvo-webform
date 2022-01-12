@@ -30,7 +30,13 @@ const QuestionFields = ({ rules, index, field }) => {
   }
 };
 
-const Question = ({ fields, form, current }) => {
+const Question = ({ fields, form, current, repeat }) => {
+  fields = fields.map((field) => {
+    if (repeat) {
+      return { ...field, id: field.id + repeat / 10 };
+    }
+    return field;
+  });
   return fields.map((field, key) => {
     let rules = [];
     if (field?.mandatory) {
@@ -56,7 +62,13 @@ const Question = ({ fields, form, current }) => {
               })
               .filter((x) => x === false);
             return unmatches.length ? null : (
-              <QuestionFields rules={rules} index={key} field={field} />
+              <QuestionFields
+                repeat={repeat}
+                rules={rules}
+                form={form}
+                index={key}
+                field={field}
+              />
             );
           }}
         </Form.Item>
@@ -64,6 +76,7 @@ const Question = ({ fields, form, current }) => {
     }
     return (
       <QuestionFields
+        repeat={repeat}
         rules={rules}
         form={form}
         key={key}

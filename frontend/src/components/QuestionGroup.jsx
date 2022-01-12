@@ -28,7 +28,12 @@ const QuestionGroup = ({
               {group?.heading}-{r + 1}
             </div>
           )}
-          <Question fields={group.question} form={form} current={current} />
+          <Question
+            repeat={r}
+            fields={group.question}
+            form={form}
+            current={current}
+          />
         </div>
       ))}
     </Card>
