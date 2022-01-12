@@ -21,7 +21,7 @@ const Home = () => {
   const [error, setError] = useState(false);
   const { formId } = useParams();
   const [state, dispatch] = useReducer(reducer, defaultValue);
-  const { forms } = state;
+  const { forms, dataPointName } = state;
   const [form] = Form.useForm();
   const [current, setCurrent] = useState({});
   const [activeGroup, setActiveGroup] = useState(0);
@@ -51,6 +51,12 @@ const Home = () => {
       .filter((x) => x.complete);
     setCompleteGroup(completeQg.map((qg) => qg.i));
     setCurrent(values);
+    const isDpName = dataPointName.find(
+      (x) => x.id === parseInt(Object.keys(value)[0])
+    );
+    if (isDpName) {
+      dispatch({ type: "UPDATE DATAPOINTNAME", data: value });
+    }
     console.log({
       current: value,
       values: values,
@@ -86,13 +92,16 @@ const Home = () => {
   if (!forms) {
     console.log("Loading");
   }
-  console.log(forms);
 
   const lastGroup = activeGroup + 1 === forms?.questionGroup.length;
 
   return (
     <Row className="container">
-      <FormHeader forms={forms} submit={() => form.submit()} />
+      <FormHeader
+        forms={forms}
+        submit={() => form.submit()}
+        dataPointName={dataPointName}
+      />
       <Col span={6} className="sidebar sticky">
         <List
           bordered={false}

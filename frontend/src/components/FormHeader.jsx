@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Button, Dropdown, Menu, message } from "antd";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { BiBarcodeReader } from "react-icons/bi";
 
 const onClick = ({ key }) => {
   message.info(`Click on item ${key}`);
@@ -14,7 +15,11 @@ const menu = (
   </Menu>
 );
 
-const FormHeader = ({ submit, forms }) => {
+const FormHeader = ({ submit, forms, dataPointName }) => {
+  dataPointName = dataPointName
+    .filter((x) => x.value)
+    .map((x) => x.value)
+    .join(" - ");
   return (
     <Col span={24} className="form-header sticky">
       <Row
@@ -22,11 +27,15 @@ const FormHeader = ({ submit, forms }) => {
         className="form-header-container"
         justify="space-around"
       >
-        <Col span={18} className="right">
+        <Col span={12} className="right">
           <h1 className="logo">A.</h1>
           <h1>{forms?.name}</h1>
         </Col>
-        <Col span={6} className="left">
+        <Col span={12} className="left">
+          <div className="datapoint">
+            {dataPointName.length && <BiBarcodeReader className="icon" />}
+            {dataPointName}
+          </div>
           <Button
             size="large"
             className="lang"

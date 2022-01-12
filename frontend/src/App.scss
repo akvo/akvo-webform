@@ -55,6 +55,19 @@
     .left {
       text-align: right;
 
+      .datapoint {
+        display: inline-block;
+        padding-right: 25px;
+        font-weight: bold;
+        line-height: 25px;
+        color: red;
+
+        .icon {
+          font-size: 24px;
+          margin-bottom: -6px;
+        }
+      }
+
       button {
         font-weight: bold;
         font-size: 14px;
@@ -103,6 +116,7 @@
 }
 
 .form-header h1,
+.form-header .left .datapoint,
 .field-group .field-group-header,
 .sidebar .sidebar-list,
 .ant-dropdown ul.menu-dropdown li.ant-dropdown-menu-item,
