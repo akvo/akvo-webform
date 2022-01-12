@@ -119,7 +119,7 @@ const Home = () => {
             >
               {completeGroup.includes(key) ? (
                 <MdCheckCircle className="icon" />
-              ) : activeGroup == key ? (
+              ) : activeGroup === key ? (
                 <MdRadioButtonChecked className="icon" />
               ) : (
                 <MdRadioButtonUnchecked className="icon" />

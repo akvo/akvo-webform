@@ -2,7 +2,6 @@ export const defaultValue = {
   forms: {
     altText: [],
     name: "Loading...",
-    questionGroup: "Loading...",
     surveyId: null,
     questionGroup: [
       {

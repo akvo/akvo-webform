@@ -18,7 +18,7 @@ const QuestionGroup = ({
     <Card
       title={<FieldGroupHeader state={state} dispatch={dispatch} {...group} />}
       className={`field-group ${activeGroup !== group.index ? "hidden" : ""} ${
-        group.index == questionGroup?.length ? "last" : ""
+        group.index === questionGroup?.length ? "last" : ""
       }`}
     >
       {repeats.map((r) => (
