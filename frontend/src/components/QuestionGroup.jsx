@@ -2,6 +2,7 @@ import React from "react";
 import { Card } from "antd";
 import FieldGroupHeader from "./FieldGroupHeader";
 import Question from "./Question";
+import range from "lodash/range";
 
 const QuestionGroup = ({
   form,
@@ -12,6 +13,7 @@ const QuestionGroup = ({
   state,
   dispatch,
 }) => {
+  const repeats = range(group.repeat);
   return (
     <Card
       title={<FieldGroupHeader state={state} dispatch={dispatch} {...group} />}
@@ -19,12 +21,16 @@ const QuestionGroup = ({
         group.index == questionGroup?.length ? "last" : ""
       }`}
     >
-      {group?.repeatable && (
-        <div className="repeat-title">
-          {group?.heading}-{group?.repeat}
+      {repeats.map((r) => (
+        <div key={r}>
+          {group?.repeatable && (
+            <div className="repeat-title">
+              {group?.heading}-{r + 1}
+            </div>
+          )}
+          <Question fields={group.question} form={form} current={current} />
         </div>
-      )}
-      <Question fields={group.question} form={form} current={current} />
+      ))}
     </Card>
   );
 };
