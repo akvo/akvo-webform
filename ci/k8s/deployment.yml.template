@@ -78,7 +78,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: akvo-webform
-                  key: sqlalchemy_database_uri
+                  key: sqlalchemy-database-uri
           readinessProbe:
             httpGet:
               path: /health-check
