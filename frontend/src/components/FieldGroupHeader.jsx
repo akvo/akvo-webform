@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import { Row, Col, Input, Button } from "antd";
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { MdRepeat } from "react-icons/md";
 
-const FieldGroupHeader = ({ heading, repeatable }) => {
-  const [repeat, setRepeat] = useState(1);
+const FieldGroupHeader = ({ index, heading, repeatable, state, dispatch }) => {
+  const { forms } = state;
+  const current = forms?.questionGroup.find((x) => x.index === index);
+  const { repeat } = current;
+  const updateRepeat = (value) => {
+    const updated = forms.questionGroup.map((x) => {
+      if (x.index === index) {
+        return { ...current, repeat: value };
+      }
+      return x;
+    });
+    dispatch({
+      type: "UPDATE FORM",
+      forms: { ...state.forms, questionGroup: updated },
+    });
+  };
   if (!repeatable) {
     return <div className="field-group-header">{heading}</div>;
   }
-  const reduceRepeat = (current, number) => {};
   return (
     <div className="field-group-header">
       <div className="field-group-heading">{heading}</div>
@@ -23,7 +36,7 @@ const FieldGroupHeader = ({ heading, repeatable }) => {
           <Input.Group className="field" compact>
             <Button
               icon={<MinusOutlined />}
-              onClick={() => setRepeat(repeat - 1)}
+              onClick={() => updateRepeat(repeat - 1)}
               disabled={repeat < 2}
               className={repeat < 2 ? "disabled" : ""}
             />
@@ -34,7 +47,7 @@ const FieldGroupHeader = ({ heading, repeatable }) => {
             />
             <Button
               icon={<PlusOutlined />}
-              onClick={() => setRepeat(repeat + 1)}
+              onClick={() => updateRepeat(repeat + 1)}
             />
           </Input.Group>
         </Col>

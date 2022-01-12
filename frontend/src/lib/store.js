@@ -8,6 +8,7 @@ export const defaultValue = {
       {
         altText: [],
         heading: "Loading...",
+        index: 1,
         question: [
           {
             id: 0,
@@ -37,6 +38,7 @@ export const defaultValue = {
           },
         ],
         repeatable: true,
+        repeat: 1,
       },
     ],
   },
@@ -51,12 +53,15 @@ export const defaultValue = {
   },
 };
 
-const addAnswer = (answer, data) => {
-  answer = answer.filter((x) => x.id !== data.id);
-  return [...answer, data];
-};
-const removeAnswer = (answer, data) => {
-  return answer.filter((x) => x.id !== data.id);
+const initForms = ({ forms }) => {
+  const questionGroup = forms.questionGroup.map((qg, index) => {
+    return {
+      index: index,
+      repeat: 1,
+      ...qg,
+    };
+  });
+  return { ...forms, questionGroup: questionGroup };
 };
 
 const initDataPointName = ({ questionGroup }) => {
@@ -64,6 +69,14 @@ const initDataPointName = ({ questionGroup }) => {
     .map((qg) => qg?.question.filter((q) => q.localeNameFlag))
     .flatMap((q) => q)
     .map((x) => ({ id: x.id, value: false }));
+};
+
+const addAnswer = (answer, data) => {
+  answer = answer.filter((x) => x.id !== data.id);
+  return [...answer, data];
+};
+const removeAnswer = (answer, data) => {
+  return answer.filter((x) => x.id !== data.id);
 };
 
 const updateDataPointName = (state, data) => {
@@ -86,8 +99,13 @@ const reducer = (state, action) => {
     case "INIT FORM":
       return {
         ...state,
-        forms: action.forms,
+        forms: initForms(action),
         dataPointName: initDataPointName(action.forms),
+      };
+    case "UPDATE FORM":
+      return {
+        ...state,
+        forms: action.forms,
       };
     case "ADD ANSWER":
       return { ...state, answers: addAnswer(state.answer, action.data) };

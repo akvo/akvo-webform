@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Card, Button, Form, List } from "antd";
-import Question from "../components/Question";
 import {
   MdRadioButtonUnchecked,
   MdRadioButtonChecked,
@@ -15,7 +14,7 @@ import { saveFormToDB } from "../lib/db";
 import generateForm from "../lib/form";
 import reducer, { defaultValue } from "../lib/store";
 import FormHeader from "../components/FormHeader";
-import FieldGroupHeader from "../components/FieldGroupHeader";
+import QuestionGroup from "../components/QuestionGroup";
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -26,6 +25,7 @@ const Home = () => {
   const [current, setCurrent] = useState({});
   const [activeGroup, setActiveGroup] = useState(0);
   const [completeGroup, setCompleteGroup] = useState([]);
+  const [repeat, setRepeat] = useState(1);
 
   const onComplete = (values) => {
     console.log(values);
@@ -101,6 +101,8 @@ const Home = () => {
         forms={forms}
         submit={() => form.submit()}
         dataPointName={dataPointName}
+        repeat={repeat}
+        setRepeat={setRepeat}
       />
       <Col span={6} className="sidebar sticky">
         <List
@@ -142,22 +144,17 @@ const Home = () => {
           onFinish={onComplete}
           onFinishFailed={onCompleteFailed}
         >
-          {forms?.questionGroup.map((g, key) => {
+          {forms?.questionGroup.map((group, key) => {
             return (
-              <Card
+              <QuestionGroup
                 key={key}
-                title={<FieldGroupHeader {...g} />}
-                className={`field-group ${
-                  activeGroup !== key ? "hidden" : ""
-                } ${key == forms?.questionGroup?.length - 1 ? "last" : ""}`}
-              >
-                {g?.description ? (
-                  <p className="description">{g.description}</p>
-                ) : (
-                  ""
-                )}
-                <Question fields={g.question} form={form} current={current} />
-              </Card>
+                form={form}
+                current={current}
+                activeGroup={activeGroup}
+                state={state}
+                dispatch={dispatch}
+                group={group}
+              />
             );
           })}
         </Form>
