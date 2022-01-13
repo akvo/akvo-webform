@@ -18,7 +18,7 @@ const QuestionField = ({ rules, index, field, form }) => {
     case "photo":
       return <TypeFile keyform={index} rules={rules} {...field} />;
     default:
-      return <TypeInput keyform={index} rules={rules} {...field} />;
+      return <TypeInput keyform={index} form={form} rules={rules} {...field} />;
   }
 };
 

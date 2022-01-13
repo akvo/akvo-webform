@@ -19,12 +19,15 @@ const Help = ({ text }) => {
   );
 };
 
-const Label = ({ keyform, text, mandatory, help }) => {
+const Label = ({ keyform, text, mandatory, help, requireDoubleEntry }) => {
   return (
     <div className="field-label">
       <p>
         {keyform + 1}. {text}{" "}
         {mandatory && <FaStarOfLife className="icon required" />}
+        {requireDoubleEntry && (
+          <i className="double-entry-text">Require Double Entry</i>
+        )}
       </p>
       {help && <Help {...help} />}
     </div>

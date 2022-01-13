@@ -118,7 +118,7 @@ class Question(BaseModel):
     dependency: List[DependencyQuestion]
     options: Options
     validationRule: Optional[ValidationRule]
-    requireDoubleEntry: Optional[bool] = []
+    requireDoubleEntry: Optional[bool] = None
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
