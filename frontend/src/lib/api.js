@@ -17,8 +17,8 @@ const API = () => {
       : config;
   };
   return {
-    get: (url, params, config = {}) =>
-      axios({ url, ...getConfig(), ...config }),
+    get: (url, data = {}, config = {}) =>
+      axios({ url, data, ...getConfig(), ...config }),
     post: (url, data, config = {}) =>
       axios({ url, method: "POST", data, ...getConfig(), ...config }),
     put: (url, data, config) =>

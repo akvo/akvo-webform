@@ -13,8 +13,7 @@ import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
 import generateForm from "../lib/form";
 import reducer, { defaultValue } from "../lib/store";
-import FormHeader from "../components/FormHeader";
-import QuestionGroup from "../components/QuestionGroup";
+import { QuestionGroup, FormHeader } from "../components";
 
 const Home = () => {
   const [error, setError] = useState(false);

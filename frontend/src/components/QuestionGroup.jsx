@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "antd";
-import FieldGroupHeader from "./FieldGroupHeader";
 import Question from "./Question";
+import FieldGroupHeader from "./FieldGroupHeader";
 import range from "lodash/range";
 
 const QuestionGroup = ({

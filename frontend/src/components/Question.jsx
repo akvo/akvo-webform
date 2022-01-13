@@ -1,9 +1,7 @@
 import React from "react";
 import { Form } from "antd";
 import { validateDependency } from "../lib/form.js";
-import TypeOption from "../fields/TypeOption";
-import TypeDate from "../fields/TypeDate";
-import TypeInput from "../fields/TypeInput";
+import QuestionField from "./QuestionField";
 
 const mapRules = ({ validationRule, type }) => {
   if (type === "free" && validationRule?.validationType === "numeric") {
@@ -17,17 +15,6 @@ const mapRules = ({ validationRule, type }) => {
     return [{ ...rule, type: "number" }];
   }
   return [{}];
-};
-
-const QuestionFields = ({ rules, index, field }) => {
-  switch (field.type) {
-    case "option":
-      return <TypeOption keyform={index} rules={rules} {...field} />;
-    case "date":
-      return <TypeDate keyform={index} rules={rules} {...field} />;
-    default:
-      return <TypeInput keyform={index} rules={rules} {...field} />;
-  }
 };
 
 const Question = ({ fields, form, current, repeat }) => {
@@ -62,7 +49,7 @@ const Question = ({ fields, form, current, repeat }) => {
               })
               .filter((x) => x === false);
             return unmatches.length ? null : (
-              <QuestionFields
+              <QuestionField
                 repeat={repeat}
                 rules={rules}
                 form={form}
@@ -75,7 +62,7 @@ const Question = ({ fields, form, current, repeat }) => {
       );
     }
     return (
-      <QuestionFields
+      <QuestionField
         repeat={repeat}
         rules={rules}
         form={form}
