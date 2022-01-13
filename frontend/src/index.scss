@@ -40,4 +40,22 @@ body {
       border: 1px solid #ff4d4f;
     }
   }
+
+  .ant-checkbox-inner {
+    border: 1px solid #6a6a6a;
+  }
+
+  .ant-checkbox-checked {
+    .ant-checkbox-inner {
+      background-color: #6a6a6a;
+    }
+  }
+
+  .ant-radio-inner {
+    border-color: #6a6a6a;
+
+    &::after {
+      background-color: #6a6a6a;
+    }
+  }
 }

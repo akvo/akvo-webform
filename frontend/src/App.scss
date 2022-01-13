@@ -210,6 +210,30 @@
     min-height: calc(100vh - 95px);
   }
 
+  .field-label {
+    .help {
+      .ant-btn {
+        border-color: #6a6a6a;
+        font-size: 12px;
+        padding: 2px 10px;
+        border-radius: 5px;
+
+        &:focus,
+        &:visited,
+        &:hover {
+          background-color: #6a6a6a;
+          color: #fff;
+        }
+      }
+
+      p {
+        font-size: 14px;
+        margin-top: 14px;
+        display: block;
+      }
+    }
+  }
+
   .field-group-header {
     font-family: "Roboto Condensed", sans-serif;
     font-size: 16px;
@@ -231,7 +255,7 @@
       .field {
         display: inline-block;
         vertical-align: top;
-        border: 1px solid #d9d9d9;
+        border: 1px solid #6a6a6a;
         width: unset;
       }
 
@@ -252,8 +276,8 @@
 
           button,
           .ant-input {
-            padding: 9.5px;
-            border: none;
+            padding: 8.5px;
+            border: none !important;
             font-weight: bold;
           }
 
@@ -320,23 +344,11 @@
     font-weight: bold;
     font-size: 14px;
 
+    &:focus,
+    &:visited,
     &:hover {
       background-color: #222;
       color: #fff;
-    }
-  }
-}
-
-.field-label {
-  .help {
-    button {
-      display: inline-block;
-    }
-
-    p {
-      font-size: 14px;
-      margin-top: 14px;
-      display: block;
     }
   }
 }
