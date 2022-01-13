@@ -292,6 +292,13 @@
 
   .field-map {
     margin-top: -65px;
+
+    .map-display {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #6a6a6a;
+      border-radius: 10px;
+    }
   }
 }
 
