@@ -94,7 +94,7 @@ const Maps = ({ form, id, center, position, onChange, changePos }) => {
       </Row>
       <Row>
         <Col span={24}>
-          <MapContainer zoom={13} scrollWheelZoom={false} className="leaflet">
+          <MapContainer zoom={2} scrollWheelZoom={false} className="leaflet">
             <MapRef
               center={
                 position?.lat && position?.lng
