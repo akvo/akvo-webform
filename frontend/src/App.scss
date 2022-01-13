@@ -191,7 +191,7 @@
   .repeat-title {
     padding: 10px 45px;
     background-color: #f0f0f0;
-    margin: 0px -25px 25px;
+    margin: 40px -25px 20px;
   }
 
   &.ant-card-bordered {
@@ -231,6 +231,10 @@
         margin-top: 14px;
         display: block;
       }
+    }
+
+    i.double-entry-text {
+      color: #d74439;
     }
   }
 
@@ -307,7 +311,7 @@
 
   .field {
     font-family: "Assistant", sans-serif;
-    padding: 0px 20px 10px;
+    padding: 0px 20px;
   }
 
   .field-geo {
@@ -318,10 +322,21 @@
     margin-top: -65px;
 
     .map-display {
-      margin-top: 10px;
+      margin-top: 30px;
+      margin-bottom: 20px;
       padding: 10px;
       border: 1px solid #6a6a6a;
       border-radius: 10px;
+    }
+  }
+
+  .field-double-entry {
+    margin: 0px 20px 20px;
+
+    .error-double-entry {
+      font-family: "Assistant", sans-serif;
+      color: #ff4d4f;
+      padding-top: 10px;
     }
   }
 }

@@ -15,7 +15,7 @@ const TypeGeo = ({ id, form, text, keyform, mandatory, rules, help }) => {
   };
 
   const onChange = (cname, e) => {
-    changePos({ ...position, [cname]: parseFloat(e) });
+    changePos({ ...position, [cname]: e !== null ? parseFloat(e) : null });
   };
 
   return (
@@ -40,7 +40,6 @@ const TypeGeo = ({ id, form, text, keyform, mandatory, rules, help }) => {
         form={form}
         setValue={setValue}
         id={id}
-        center={{ lat: 0, lng: 0 }}
         position={position}
         onChange={onChange}
         changePos={changePos}
