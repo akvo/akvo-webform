@@ -1,5 +1,11 @@
 import React from "react";
-import { TypeInput, TypeOption, TypeDate, TypeGeo } from "./../fields";
+import {
+  TypeInput,
+  TypeOption,
+  TypeDate,
+  TypeGeo,
+  TypeFile,
+} from "./../fields";
 
 const QuestionField = ({ rules, index, field, form }) => {
   switch (field.type) {
@@ -9,6 +15,8 @@ const QuestionField = ({ rules, index, field, form }) => {
       return <TypeOption keyform={index} rules={rules} {...field} />;
     case "date":
       return <TypeDate keyform={index} rules={rules} {...field} />;
+    case "photo":
+      return <TypeFile keyform={index} rules={rules} {...field} />;
     default:
       return <TypeInput keyform={index} rules={rules} {...field} />;
   }
