@@ -103,7 +103,7 @@ class DependencyQuestion(BaseModel):
 
 
 @optional('altText', 'cascadeResource', 'help', 'levels', 'validationRule',
-          'options', 'dependency')
+          'requireDoubleEntry', 'options', 'dependency')
 class Question(BaseModel):
     localeNameFlag: bool
     altText: Optional[List[AltText]] = []
@@ -118,6 +118,7 @@ class Question(BaseModel):
     dependency: List[DependencyQuestion]
     options: Options
     validationRule: Optional[ValidationRule]
+    requireDoubleEntry: Optional[bool] = []
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
