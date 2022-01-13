@@ -314,6 +314,38 @@
     padding: 0px 20px;
   }
 
+  .field-cascade {
+    .ant-select {
+      display: none;
+    }
+
+    .cascade {
+      padding: 0px 20px;
+
+      .field-label {
+        font-family: "Assistant", sans-serif;
+
+        p {
+          margin-bottom: 0px;
+        }
+      }
+
+      .ant-select {
+        margin-top: 20px;
+        width: 100%;
+        display: inline-block;
+      }
+    }
+
+    .error-cascade {
+      padding: 10px 20px 0px;
+      font-family: "Assistant", sans-serif;
+      color: #ff4d4f;
+    }
+
+    padding-bottom: 20px;
+  }
+
   .field-geo {
     display: none !important;
   }

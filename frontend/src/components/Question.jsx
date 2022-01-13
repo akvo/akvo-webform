@@ -17,7 +17,7 @@ const mapRules = ({ validationRule, type }) => {
   return [{}];
 };
 
-const Question = ({ fields, form, current, repeat }) => {
+const Question = ({ fields, form, current, repeat, state }) => {
   fields = fields.map((field) => {
     if (repeat) {
       return { ...field, id: field.id + repeat / 10 };
@@ -55,6 +55,7 @@ const Question = ({ fields, form, current, repeat }) => {
                 form={form}
                 index={key}
                 field={field}
+                state={state}
               />
             );
           }}
@@ -69,6 +70,7 @@ const Question = ({ fields, form, current, repeat }) => {
         key={key}
         index={key}
         field={field}
+        state={state}
       />
     );
   });

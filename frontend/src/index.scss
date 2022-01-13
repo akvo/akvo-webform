@@ -30,12 +30,15 @@ body {
 
 #root {
   .ant-input,
+  .ant-select-selector,
   .ant-input-number {
     border: 1px solid #6a6a6a;
     border-radius: 5px;
   }
 
   .ant-form-item-has-error {
+    .ant-input,
+    .ant-input-number,
     .ant-input-number {
       border: 1px solid #ff4d4f;
     }

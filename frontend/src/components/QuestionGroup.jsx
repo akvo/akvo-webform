@@ -33,6 +33,7 @@ const QuestionGroup = ({
             fields={group.question}
             form={form}
             current={current}
+            state={state}
           />
         </div>
       ))}
