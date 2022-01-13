@@ -63,7 +63,7 @@ body {
     &.ant-upload-drag {
       min-height: 250px;
       margin: auto;
-      border: 2px dashed #6a6a6a;
+      border: 2px dashed #c7c7c7;
       border-radius: 5px;
     }
 
@@ -75,6 +75,11 @@ body {
 
         p {
           font-family: "Assistant", sans-serif;
+
+          &.ant-upload-drag-icon {
+            font-size: 36px;
+            color: #6a6a6a;
+          }
 
           &.ant-upload-text {
             color: #6a6a6a;

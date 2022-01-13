@@ -2,6 +2,7 @@ import React from "react";
 import { Upload, Form, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import Label from "../components/Label";
+import { BsCardImage } from "react-icons/bs";
 
 const { Dragger } = Upload;
 
@@ -44,7 +45,7 @@ const TypeFile = ({ id, text, keyform, mandatory, rules, help }) => {
     >
       <Dragger {...props}>
         <p className="ant-upload-drag-icon">
-          <InboxOutlined />
+          <BsCardImage />
         </p>
         <p className="ant-upload-text">Drop Image Here to Upload</p>
         <p className="ant-upload-hint">Max file size: 1mb</p>
