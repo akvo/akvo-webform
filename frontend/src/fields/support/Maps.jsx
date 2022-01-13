@@ -66,22 +66,9 @@ const MapRef = ({ center }) => {
   return null;
 };
 
-const Maps = ({ form, id, setValue, center }) => {
-  const [position, setPosition] = useState({ lat: null, lng: null });
-
-  const changePos = (newPos) => {
-    setPosition(newPos);
-    if (newPos?.lat && newPos?.lng) {
-      form.setFieldsValue({ [id]: newPos });
-    }
-  };
-
-  const onChange = (cname, e) => {
-    changePos({ ...position, [cname]: parseFloat(e) });
-  };
-
+const Maps = ({ form, id, center, position, onChange, changePos }) => {
   return (
-    <div className="arf-field arf-field-map">
+    <div className="field field-map">
       <Row justify="space-between" style={{ marginBottom: "10px" }}>
         <Col span={12} style={{ paddingRight: "10px" }}>
           <InputNumber
@@ -107,11 +94,7 @@ const Maps = ({ form, id, setValue, center }) => {
       </Row>
       <Row>
         <Col span={24}>
-          <MapContainer
-            zoom={13}
-            scrollWheelZoom={false}
-            className="arf-leaflet"
-          >
+          <MapContainer zoom={13} scrollWheelZoom={false} className="leaflet">
             <MapRef
               center={
                 position?.lat && position?.lng
