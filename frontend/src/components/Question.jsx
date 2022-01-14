@@ -8,7 +8,7 @@ const Question = ({ fields, form, group, repeat }) => {
   const { answer } = dataProviders.Values();
   fields = fields.map((field) => {
     if (repeat) {
-      return { ...field, id: field.id + repeat / 10 };
+      return { ...field, id: `${field.id}-${repeat}` };
     }
     return field;
   });

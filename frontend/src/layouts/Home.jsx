@@ -36,7 +36,7 @@ const Home = () => {
   const onValuesChange = (qg, value, values) => {
     const errors = form.getFieldsError();
     const filled = Object.keys(values)
-      .map((k) => ({ id: parseFloat(k), value: values[k] }))
+      .map((k) => ({ id: k, value: values[k] }))
       .filter((x) => x.value);
     const incomplete = errors.map((e) => e.name[0]);
     const completeQg = qg
@@ -55,9 +55,7 @@ const Home = () => {
       type: "UPDATE ANSWER",
       payload: values,
     });
-    const isDpName = dataPointName.find(
-      (x) => x.id === parseFloat(Object.keys(value)[0])
-    );
+    const isDpName = dataPointName.find((x) => x.id === Object.keys(value)[0]);
     if (isDpName) {
       dispatch({ type: "UPDATE DATAPOINTNAME", payload: value });
     }

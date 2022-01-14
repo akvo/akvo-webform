@@ -72,7 +72,7 @@ export const modifyDependency = ({ question }, { dependency }, repeat) => {
   const questions = question.map((q) => q.id);
   return dependency.map((d) => {
     if (questions.includes(d.question) && repeat) {
-      return { ...d, question: d.question + repeat / 10 };
+      return { ...d, question: `${d.question}-${repeat}` };
     }
     return d;
   });
@@ -80,9 +80,11 @@ export const modifyDependency = ({ question }, { dependency }, repeat) => {
 
 export const transformRequest = (values) => {
   return Object.keys(values).map((key) => {
-    const id = parseInt(key);
-    const repeat = (parseFloat(key) - id) * 10;
-    return { id: id, repeat: parseInt(repeat), value: values[key] };
+    return {
+      id: key.replace("Q", "").split("-")[0],
+      repeat: parseInt(key.split("-")[1] || 0),
+      value: values[key],
+    };
   });
 };
 

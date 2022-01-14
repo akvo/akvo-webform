@@ -33,7 +33,7 @@ const removeAnswer = (answer, data) => {
 
 const updateDataPointName = (state, data) => {
   const answer = Object.keys(data).map((o) => ({
-    id: parseFloat(o),
+    id: o,
     value: data[o],
   }))[0];
 

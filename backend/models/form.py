@@ -79,7 +79,11 @@ class Options(BaseModel):
 
 class DependencyQuestion(BaseModel):
     answerValue: List[str]
-    question: int
+    question: str
+
+    @validator("question", pre=True, always=True)
+    def set_question_value(cls, question):
+        return f"Q{question}"
 
     @validator("answerValue", pre=True, always=True)
     def set_answer_value(cls, answerValue):
@@ -95,7 +99,7 @@ class Question(BaseModel):
     altText: Optional[List[AltText]] = []
     help: Optional[Help]
     cascadeResource: str
-    id: int
+    id: str
     levels: Optional[Levels]
     mandatory: bool
     order: int
@@ -105,6 +109,10 @@ class Question(BaseModel):
     options: Options
     validationRule: Optional[ValidationRule]
     requireDoubleEntry: Optional[bool] = None
+
+    @validator("id", pre=True, always=True)
+    def set_id_value(cls, id):
+        return f"Q{id}"
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
