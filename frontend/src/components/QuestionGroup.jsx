@@ -10,13 +10,11 @@ const QuestionGroup = ({
   activeGroup,
   current,
   group,
-  state,
-  dispatch,
 }) => {
   const repeats = range(group.repeat);
   return (
     <Card
-      title={<FieldGroupHeader state={state} dispatch={dispatch} {...group} />}
+      title={<FieldGroupHeader {...group} />}
       className={`field-group ${activeGroup !== group.index ? "hidden" : ""} ${
         group.index === questionGroup?.length ? "last" : ""
       }`}
@@ -33,7 +31,6 @@ const QuestionGroup = ({
             fields={group.question}
             form={form}
             current={current}
-            state={state}
           />
         </div>
       ))}

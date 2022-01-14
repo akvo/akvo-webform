@@ -3,6 +3,7 @@ import { Space, Form, Select } from "antd";
 import Label from "../components/Label";
 import api from "../lib/api";
 import { findLast, take } from "lodash";
+import dataProviders from "../store";
 
 const { Option } = Select;
 
@@ -15,9 +16,9 @@ const TypeCascade = ({
   help,
   levels,
   form,
-  state,
   cascadeResource,
 }) => {
+  const state = dataProviders.Values();
   const { level } = levels;
   const { forms } = state;
   const alias = forms?.alias?.split(".")[0];

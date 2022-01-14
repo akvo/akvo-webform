@@ -12,13 +12,14 @@ import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
 import generateForm from "../lib/form";
-import reducer, { defaultValue } from "../lib/store";
+import dataProviders from "../store";
 import { QuestionGroup, FormHeader } from "../components";
 
 const Home = () => {
   const [error, setError] = useState(false);
   const { formId } = useParams();
-  const [state, dispatch] = useReducer(reducer, defaultValue);
+  const dispatch = dataProviders.Actions();
+  const state = dataProviders.Values();
   const { forms, dataPointName } = state;
   const [form] = Form.useForm();
   const [current, setCurrent] = useState({});
@@ -54,7 +55,7 @@ const Home = () => {
       (x) => x.id === parseInt(Object.keys(value)[0])
     );
     if (isDpName) {
-      dispatch({ type: "UPDATE DATAPOINTNAME", data: value });
+      dispatch({ type: "UPDATE DATAPOINTNAME", payload: value });
     }
     console.log({
       current: value,
@@ -69,7 +70,7 @@ const Home = () => {
       .then((res) => {
         const formData = generateForm(res.data);
         saveFormToDB({ formId: formId, ...formData });
-        dispatch({ type: "INIT FORM", forms: formData });
+        dispatch({ type: "INIT FORM", payload: formData });
       })
       .catch((e) => {
         const { status, statusText } = e.response;
@@ -150,8 +151,6 @@ const Home = () => {
                 form={form}
                 current={current}
                 activeGroup={activeGroup}
-                state={state}
-                dispatch={dispatch}
                 group={group}
               />
             );

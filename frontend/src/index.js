@@ -4,14 +4,12 @@ import "./index.scss";
 import "antd/dist/antd.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { defaultValue } from "./lib/store";
-
-const Context = createContext(defaultValue);
+import { ActionProvider } from "./store";
 
 ReactDOM.render(
-  <Context.Provider value={defaultValue}>
+  <ActionProvider>
     <App />
-  </Context.Provider>,
+  </ActionProvider>,
   document.getElementById("root")
 );
 

@@ -8,19 +8,13 @@ import {
   TypeFile,
 } from "./../fields";
 
-const QuestionField = ({ rules, index, field, form, state }) => {
+const QuestionField = ({ rules, index, field, form }) => {
   switch (field.type) {
     case "geo":
       return <TypeGeo keyform={index} form={form} rules={rules} {...field} />;
     case "cascade":
       return (
-        <TypeCascade
-          keyform={index}
-          form={form}
-          state={state}
-          rules={rules}
-          {...field}
-        />
+        <TypeCascade keyform={index} form={form} rules={rules} {...field} />
       );
     case "option":
       return <TypeOption keyform={index} rules={rules} {...field} />;

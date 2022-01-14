@@ -2,8 +2,11 @@ import React from "react";
 import { Row, Col, Input, Button } from "antd";
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { MdRepeat } from "react-icons/md";
+import dataProviders from "../store";
 
-const FieldGroupHeader = ({ index, heading, repeatable, state, dispatch }) => {
+const FieldGroupHeader = ({ index, heading, repeatable }) => {
+  const state = dataProviders.Values();
+  const dispatch = dataProviders.Actions();
   const { forms } = state;
   const current = forms?.questionGroup.find((x) => x.index === index);
   const { repeat } = current;
@@ -16,7 +19,7 @@ const FieldGroupHeader = ({ index, heading, repeatable, state, dispatch }) => {
     });
     dispatch({
       type: "UPDATE FORM",
-      forms: { ...state.forms, questionGroup: updated },
+      payload: { ...forms, questionGroup: updated },
     });
   };
   if (!repeatable) {
