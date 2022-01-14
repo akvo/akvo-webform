@@ -17,7 +17,7 @@ const mapRules = ({ validationRule, type }) => {
   return [{}];
 };
 
-const Question = ({ fields, form, current, repeat }) => {
+const Question = ({ fields, form, group, current, repeat }) => {
   fields = fields.map((field) => {
     if (repeat) {
       return { ...field, id: field.id + repeat / 10 };
@@ -40,10 +40,17 @@ const Question = ({ fields, form, current, repeat }) => {
       rules = [...rules, ...mapRules(field)];
     }
     if (field?.dependency) {
+      const questionInGroup = group.question.map((q) => q.id);
+      const modifiedDependency = field.dependency.map((d) => {
+        if (questionInGroup.includes(d.question) && repeat) {
+          return { ...d, question: d.question + repeat / 10 };
+        }
+        return d;
+      });
       return (
         <Form.Item noStyle key={key} shouldUpdate={current}>
           {(f) => {
-            const unmatches = field.dependency
+            const unmatches = modifiedDependency
               .map((x) => {
                 return validateDependency(x, f.getFieldValue(x.question));
               })

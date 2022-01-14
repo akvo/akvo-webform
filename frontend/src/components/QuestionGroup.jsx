@@ -27,6 +27,7 @@ const QuestionGroup = ({
             </div>
           )}
           <Question
+            group={group}
             repeat={r}
             fields={group.question}
             form={form}

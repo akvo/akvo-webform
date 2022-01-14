@@ -58,11 +58,13 @@ const Home = () => {
     if (isDpName) {
       dispatch({ type: "UPDATE DATAPOINTNAME", payload: value });
     }
+    /*
     console.log({
       current: value,
       values: values,
       progress: (filled.length / errors.length) * 100,
     });
+    */
   };
 
   useEffect(() => {

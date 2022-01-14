@@ -17,15 +17,23 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
     onSuccess("ok");
   };
 
+  const onRemove = () => {
+    setBlob(null);
+  };
+
   const props = {
     name: id,
     multiple: false,
     maxCount: 1,
     customRequest: onCollect,
-    onRemove: () => {
-      form.setFieldsValue({ [id]: undefined });
-      setBlob(null);
-    },
+    onRemove: onRemove,
+  };
+
+  const formFile = (e) => {
+    if (Array.isArray(e)) {
+      return e.length ? e : null;
+    }
+    return e && e.fileList?.length ? e.fileList : null;
   };
 
   return (
@@ -44,6 +52,7 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
       rules={rules}
       required={false}
       valuePropName="file"
+      getValueFromEvent={formFile}
     >
       <Dragger {...props}>
         <div
