@@ -32,12 +32,12 @@ def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
             z.extractall(ziploc)
 
 
-def download_form(ziploc: str, instance: str, survey_id: int):
-    instance = xml_survey(instance)
+def download_form(ziploc: str, alias: str, survey_id: int):
+    instance = xml_survey(alias)
     dev = Dev()
     xml_path = f"{ziploc}/{survey_id}.xml"
     if dev.get_cached(xml_path):
-        return readxml(xml_path=xml_path)
+        return readxml(xml_path=xml_path, alias=alias)
     try:
         zip_url = httpx.get(f'{instance}/{survey_id}.zip')
         zip_url.raise_for_status()
@@ -49,7 +49,7 @@ def download_form(ziploc: str, instance: str, survey_id: int):
         os.mkdir(ziploc)
     z = ZipFile(BytesIO(zip_url.content))
     z.extractall(ziploc)
-    response = readxml(xml_path=xml_path)
+    response = readxml(xml_path=xml_path, alias=alias)
     cascade_list = []
     for qg in response['questionGroup']:
         for q in qg['question']:
@@ -67,11 +67,11 @@ def download_form(ziploc: str, instance: str, survey_id: int):
                 response_model_exclude_none=True,
                 tags=["Akvo Flow Webform"])
 def form(req: Request, id: str):
-    instance, survey_id = Cipher(id).decode()
-    if instance is None:
+    alias, survey_id = Cipher(id).decode()
+    if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
-    ziploc = f'./static/xml/{instance}'
-    return download_form(ziploc, instance, survey_id)
+    ziploc = f'./static/xml/{alias}'
+    return download_form(ziploc, alias, survey_id)
 
 
 @form_route.get('/xls-form/{id:path}',
@@ -79,11 +79,11 @@ def form(req: Request, id: str):
                 response_class=FileResponse,
                 tags=["Assets"])
 def xls_form(req: Request, id: str):
-    instance, survey_id = Cipher(id).decode()
-    if instance is None:
+    alias, survey_id = Cipher(id).decode()
+    if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
-    ziploc = f'./static/xml/{instance}'
-    res = download_form(ziploc, instance, survey_id)
+    ziploc = f'./static/xml/{alias}'
+    res = download_form(ziploc, alias, survey_id)
     file_path = f'{ziploc}/{survey_id}.xlsx'
     odk(res, file_path)
     ftype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

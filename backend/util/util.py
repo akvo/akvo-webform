@@ -8,7 +8,7 @@ chars = "5qojp2gzwy8vns-9id4aretl6mkx7h10bcu3f"
 an = len(chars)
 
 
-def readxml(xml_path: str):
+def readxml(xml_path: str, alias: str):
     with open(xml_path) as survey:
         encoding = etree.parse(survey)
         encoding = encoding.docinfo.encoding
@@ -25,6 +25,7 @@ def readxml(xml_path: str):
             '"false"', 'false').replace('"answer-value"', '"answerValue"')
         survey = json.loads(survey)
         response = survey['survey']
+        response.update({"alias": alias})
     return response
 
 

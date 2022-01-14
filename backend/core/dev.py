@@ -17,9 +17,9 @@ class Dev:
         return file
 
 
-@dev_route.get('/generate/{instance:path}/{fid:path}',
+@dev_route.get('/generate/{alias:path}/{fid:path}',
                summary="Get form url",
                response_model=str,
                tags=["Dev"])
-def generate(req: Request, instance: str, fid: int):
-    return Cipher(f"{instance}-{fid}").encode()
+def generate(req: Request, alias: str, fid: int):
+    return Cipher(f"{alias}-{fid}").encode()

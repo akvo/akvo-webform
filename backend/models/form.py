@@ -125,7 +125,7 @@ class QuestionGroup(BaseModel):
         return altText or []
 
 
-@optional('alias', 'altText')
+@optional('altText')
 class FormBase(BaseModel):
     alias: str
     altText: Optional[List[AltText]] = []
