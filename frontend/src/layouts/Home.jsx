@@ -28,15 +28,16 @@ const Home = () => {
   const [repeat, setRepeat] = useState(1);
 
   const onComplete = (values) => {
+    console.log("finish");
     console.log(values);
   };
 
-  const onCompleteFailed = (values, errorFields) => {
+  const onCompleteFailed = ({ values, errorFields }) => {
     console.log(values, errorFields);
   };
 
-  const onValuesChange = (fr, qg, value, values) => {
-    const errors = fr.getFieldsError();
+  const onValuesChange = (qg, value, values) => {
+    const errors = form.getFieldsError();
     const filled = Object.keys(values)
       .map((k) => ({ id: parseInt(k), value: values[k] }))
       .filter((x) => x.value);
@@ -138,7 +139,7 @@ const Home = () => {
           scrollToFirstError="true"
           onValuesChange={(value, values) =>
             setTimeout(() => {
-              onValuesChange(form, forms.questionGroup, value, values);
+              onValuesChange(forms.questionGroup, value, values);
             }, 100)
           }
           onFinish={onComplete}

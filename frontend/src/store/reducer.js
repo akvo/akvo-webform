@@ -59,7 +59,7 @@ const reducer = (state, action) => {
     case "UPDATE FORM":
       return {
         ...state,
-        forms: action.forms,
+        forms: action.payload,
       };
     case "ADD ANSWER":
       return { ...state, answers: addAnswer(state.answer, action.payload) };
