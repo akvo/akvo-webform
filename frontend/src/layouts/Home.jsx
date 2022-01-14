@@ -20,26 +20,23 @@ const Home = () => {
   const { formId } = useParams();
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
-  const { forms, dataPointName } = state;
+  const { forms, dataPointName, group } = state;
+  const { questionGroup } = forms;
+  const { active, complete } = group;
   const [form] = Form.useForm();
-  const [current, setCurrent] = useState({});
-  const [activeGroup, setActiveGroup] = useState(0);
-  const [completeGroup, setCompleteGroup] = useState([]);
-  const [repeat, setRepeat] = useState(1);
 
   const onComplete = (values) => {
     console.log("Finish", transformRequest(values));
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
-    console.log(transformRequest(values));
-    // console.log(values, errorFields);
+    console.log(transformRequest(values), errorFields);
   };
 
   const onValuesChange = (qg, value, values) => {
     const errors = form.getFieldsError();
     const filled = Object.keys(values)
-      .map((k) => ({ id: parseInt(k), value: values[k] }))
+      .map((k) => ({ id: parseFloat(k), value: values[k] }))
       .filter((x) => x.value);
     const incomplete = errors.map((e) => e.name[0]);
     const completeQg = qg
@@ -50,10 +47,16 @@ const Home = () => {
         return { i: ix, complete: filledMandatory.length === mandatory.length };
       })
       .filter((x) => x.complete);
-    setCompleteGroup(completeQg.map((qg) => qg.i));
-    setCurrent(values);
+    dispatch({
+      type: "UPDATE GROUP",
+      payload: { complete: completeQg.map((qg) => qg.i) },
+    });
+    dispatch({
+      type: "UPDATE ANSWER",
+      payload: values,
+    });
     const isDpName = dataPointName.find(
-      (x) => x.id === parseInt(Object.keys(value)[0])
+      (x) => x.id === parseFloat(Object.keys(value)[0])
     );
     if (isDpName) {
       dispatch({ type: "UPDATE DATAPOINTNAME", payload: value });
@@ -96,7 +99,7 @@ const Home = () => {
     console.log("Loading");
   }
 
-  const lastGroup = activeGroup + 1 === forms?.questionGroup.length;
+  const lastGroup = active + 1 === questionGroup.length;
 
   return (
     <Row className="container">
@@ -104,25 +107,25 @@ const Home = () => {
         forms={forms}
         submit={() => form.submit()}
         dataPointName={dataPointName}
-        repeat={repeat}
-        setRepeat={setRepeat}
       />
       <Col span={6} className="sidebar sticky">
         <List
           bordered={false}
           header={<div className="sidebar-header">form overview</div>}
-          dataSource={forms?.questionGroup}
+          dataSource={questionGroup}
           renderItem={(item, key) => (
             <List.Item
               key={key}
-              onClick={() => setActiveGroup(key)}
-              className={`sidebar-list ${activeGroup === key ? "active" : ""} ${
-                completeGroup.includes(key) ? "complete" : ""
+              onClick={() =>
+                dispatch({ type: "UPDATE GROUP", payload: { active: key } })
+              }
+              className={`sidebar-list ${active === key ? "active" : ""} ${
+                complete.includes(key) ? "complete" : ""
               }`}
             >
-              {completeGroup.includes(key) ? (
+              {complete.includes(key) ? (
                 <MdCheckCircle className="icon" />
-              ) : activeGroup === key ? (
+              ) : active === key ? (
                 <MdRadioButtonChecked className="icon" />
               ) : (
                 <MdRadioButtonUnchecked className="icon" />
@@ -141,19 +144,18 @@ const Home = () => {
           scrollToFirstError="true"
           onValuesChange={(value, values) =>
             setTimeout(() => {
-              onValuesChange(forms.questionGroup, value, values);
+              onValuesChange(questionGroup, value, values);
             }, 100)
           }
           onFinish={onComplete}
           onFinishFailed={onCompleteFailed}
         >
-          {forms?.questionGroup.map((group, key) => {
+          {questionGroup.map((group, key) => {
             return (
               <QuestionGroup
                 key={key}
                 form={form}
-                current={current}
-                activeGroup={activeGroup}
+                active={active}
                 group={group}
               />
             );
@@ -166,7 +168,10 @@ const Home = () => {
               type="default"
               onClick={() => {
                 if (!lastGroup) {
-                  setActiveGroup(activeGroup + 1);
+                  dispatch({
+                    type: "UPDATE GROUP",
+                    payload: { active: active + 1 },
+                  });
                 }
               }}
             >

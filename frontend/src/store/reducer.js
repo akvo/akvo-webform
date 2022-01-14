@@ -33,7 +33,7 @@ const removeAnswer = (answer, data) => {
 
 const updateDataPointName = (state, data) => {
   const answer = Object.keys(data).map((o) => ({
-    id: parseInt(o),
+    id: parseFloat(o),
     value: data[o],
   }))[0];
 
@@ -70,6 +70,17 @@ const reducer = (state, action) => {
         ...state,
         dataPointName: updateDataPointName(state.dataPointName, action.payload),
       };
+    case "UPDATE GROUP":
+      return {
+        ...state,
+        group: { ...state.group, ...action.payload },
+      };
+    case "UPDATE ANSWER":
+      return {
+        ...state,
+        answer: action.payload,
+      };
+
     default:
       throw new Error();
   }

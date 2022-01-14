@@ -4,18 +4,12 @@ import Question from "./Question";
 import FieldGroupHeader from "./FieldGroupHeader";
 import range from "lodash/range";
 
-const QuestionGroup = ({
-  form,
-  questionGroup,
-  activeGroup,
-  current,
-  group,
-}) => {
+const QuestionGroup = ({ form, questionGroup, active, group }) => {
   const repeats = range(group.repeat);
   return (
     <Card
       title={<FieldGroupHeader {...group} />}
-      className={`field-group ${activeGroup !== group.index ? "hidden" : ""} ${
+      className={`field-group ${active !== group.index ? "hidden" : ""} ${
         group.index === questionGroup?.length ? "last" : ""
       }`}
     >
@@ -31,7 +25,6 @@ const QuestionGroup = ({
             repeat={r}
             fields={group.question}
             form={form}
-            current={current}
           />
         </div>
       ))}

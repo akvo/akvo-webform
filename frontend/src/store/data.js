@@ -45,11 +45,12 @@ const initialValue = {
     { id: 1, value: false },
     { id: 2, value: false },
   ],
-  answers: [],
+  answer: {},
   active: {
     questionGroup: null,
     repeatQuestionGroup: 1,
   },
+  group: { active: 0, complete: [] },
 };
 
 export default initialValue;

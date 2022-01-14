@@ -8,8 +8,8 @@ const FieldGroupHeader = ({ index, heading, repeatable }) => {
   const state = dataProviders.Values();
   const dispatch = dataProviders.Actions();
   const { forms } = state;
-  const current = forms?.questionGroup.find((x) => x.index === index);
-  const { repeat } = current;
+  const current = forms.questionGroup.find((x) => x.index === index);
+
   const updateRepeat = (value) => {
     const updated = forms.questionGroup.map((x) => {
       if (x.index === index) {
@@ -22,9 +22,13 @@ const FieldGroupHeader = ({ index, heading, repeatable }) => {
       payload: { ...forms, questionGroup: updated },
     });
   };
+
   if (!repeatable) {
     return <div className="field-group-header">{heading}</div>;
   }
+
+  const { repeat } = current;
+
   return (
     <div className="field-group-header">
       <div className="field-group-heading">{heading}</div>

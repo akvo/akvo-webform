@@ -22,8 +22,8 @@ const TypeCascade = ({
   const { level } = levels;
   const { forms } = state;
   const alias = forms?.alias?.split(".")[0];
-  const current = form.getFieldValue(id);
-  const tail = findLast(current);
+  const stored = form.getFieldValue(id);
+  const tail = findLast(stored);
   const [cascadeValues, setCascadeValues] = useState([]);
 
   const handleChange = (index, val) => {
@@ -68,7 +68,7 @@ const TypeCascade = ({
     }
   }, [cascadeValues, tail]);
 
-  const invalid = mandatory && current?.length !== level.length;
+  const invalid = mandatory && stored?.length !== level.length;
 
   return (
     <div className="field-cascade">
