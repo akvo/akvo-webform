@@ -40,7 +40,11 @@ const FieldGroupHeader = ({ index, heading, repeatable, state, dispatch }) => {
               disabled={repeat < 2}
               className={repeat < 2 ? "disabled" : ""}
             />
-            <Input style={{ width: "40px", textAlign: "center" }} />
+            <Input
+              style={{ width: "40px", textAlign: "center" }}
+              value={repeat}
+              disabled
+            />
             <Button
               icon={<PlusOutlined />}
               onClick={() => updateRepeat(repeat + 1)}

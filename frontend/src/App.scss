@@ -279,10 +279,12 @@
           padding: 0px;
 
           button,
-          .ant-input {
+          .ant-input[disabled] {
             padding: 8.5px;
             border: none !important;
             font-weight: bold;
+            background-color: #fff;
+            color: #6f6f6f;
           }
 
           button {
