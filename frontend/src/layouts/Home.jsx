@@ -11,7 +11,7 @@ import intersection from "lodash/intersection";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
-import generateForm from "../lib/form";
+import generateForm, { transformRequest } from "../lib/form";
 import dataProviders from "../store";
 import { QuestionGroup, FormHeader } from "../components";
 
@@ -28,12 +28,12 @@ const Home = () => {
   const [repeat, setRepeat] = useState(1);
 
   const onComplete = (values) => {
-    console.log("finish");
-    console.log(values);
+    console.log("Finish", transformRequest(values));
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
-    console.log(values, errorFields);
+    console.log(transformRequest(values));
+    // console.log(values, errorFields);
   };
 
   const onValuesChange = (qg, value, values) => {

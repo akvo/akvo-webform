@@ -56,4 +56,12 @@ const generateForm = (form) => {
   };
 };
 
+export const transformRequest = (values) => {
+  return Object.keys(values).map((key) => {
+    const id = parseInt(key);
+    const repeat = (parseFloat(key) - id) * 10;
+    return { id: id, repeat: parseInt(repeat), value: values[key] };
+  });
+};
+
 export default generateForm;
