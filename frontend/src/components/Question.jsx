@@ -63,4 +63,4 @@ const Question = ({ fields, form, group, repeat }) => {
   });
 };
 
-export default Question;
+export default React.memo(Question);

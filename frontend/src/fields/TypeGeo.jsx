@@ -37,7 +37,6 @@ const TypeGeo = ({ id, form, text, keyform, mandatory, rules, help }) => {
         <Input value={value} disabled hidden />
       </Form.Item>
       <Maps
-        form={form}
         setValue={setValue}
         id={id}
         position={position}

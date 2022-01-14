@@ -66,7 +66,7 @@ const MapRef = ({ center }) => {
   return null;
 };
 
-const Maps = ({ form, id, center, position, onChange, changePos }) => {
+const Maps = ({ id, center, position, onChange, changePos }) => {
   return (
     <div className="field field-map">
       <Row justify="space-between" style={{ marginBottom: "10px" }}>
@@ -107,7 +107,6 @@ const Maps = ({ form, id, center, position, onChange, changePos }) => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <DraggableMarker
-              form={form}
               id={id}
               changePos={changePos}
               position={position}

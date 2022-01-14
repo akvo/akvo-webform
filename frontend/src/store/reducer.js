@@ -22,16 +22,10 @@ const initDataPointName = ({ questionGroup }) => {
 
 /* UPDATE */
 
-const addAnswer = (answer, data) => {
-  answer = answer.filter((x) => x.id !== data.id);
-  return [...answer, data];
-};
-
-const removeAnswer = (answer, data) => {
-  return answer.filter((x) => x.id !== data.id);
-};
-
 const updateDataPointName = (state, data) => {
+  if (!data) {
+    return state;
+  }
   const answer = Object.keys(data).map((o) => ({
     id: o,
     value: data[o],
@@ -61,15 +55,6 @@ const reducer = (state, action) => {
         ...state,
         forms: action.payload,
       };
-    case "ADD ANSWER":
-      return { ...state, answers: addAnswer(state.answer, action.payload) };
-    case "REMOVE ANSWER":
-      return { ...state, answers: removeAnswer(state.answer, action.payload) };
-    case "UPDATE DATAPOINTNAME":
-      return {
-        ...state,
-        dataPointName: updateDataPointName(state.dataPointName, action.payload),
-      };
     case "UPDATE GROUP":
       return {
         ...state,
@@ -78,7 +63,13 @@ const reducer = (state, action) => {
     case "UPDATE ANSWER":
       return {
         ...state,
-        answer: action.payload,
+        answer: action.payload.answer,
+        group: { ...state.group, ...action.payload.group },
+        dataPointName: updateDataPointName(
+          state.dataPointName,
+          action.payload?.dataPointName
+        ),
+        progress: action.payload.progress,
       };
 
     default:

@@ -51,6 +51,7 @@ const initialValue = {
     repeatQuestionGroup: 1,
   },
   group: { active: 0, complete: [] },
+  progress: 0,
 };
 
 export default initialValue;

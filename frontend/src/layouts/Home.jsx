@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Button, Form, List } from "antd";
-import {
-  MdRadioButtonUnchecked,
-  MdRadioButtonChecked,
-  MdCheckCircle,
-  MdRepeat,
-} from "react-icons/md";
+import { Row, Col, Button, Form } from "antd";
 import intersection from "lodash/intersection";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
 import generateForm, { transformRequest } from "../lib/form";
 import dataProviders from "../store";
-import { QuestionGroup, FormHeader } from "../components";
+import { QuestionGroup, FormHeader, Sidebar } from "../components";
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -47,25 +41,16 @@ const Home = () => {
         return { i: ix, complete: filledMandatory.length === mandatory.length };
       })
       .filter((x) => x.complete);
-    dispatch({
-      type: "UPDATE GROUP",
-      payload: { complete: completeQg.map((qg) => qg.i) },
-    });
+    const isDpName = dataPointName.find((x) => x.id === Object.keys(value)[0]);
     dispatch({
       type: "UPDATE ANSWER",
-      payload: values,
+      payload: {
+        answer: values,
+        group: { complete: completeQg.map((qg) => qg.i) },
+        dataPointName: isDpName && value,
+        progress: (filled.length / errors.length) * 100,
+      },
     });
-    const isDpName = dataPointName.find((x) => x.id === Object.keys(value)[0]);
-    if (isDpName) {
-      dispatch({ type: "UPDATE DATAPOINTNAME", payload: value });
-    }
-    /*
-    console.log({
-      current: value,
-      values: values,
-      progress: (filled.length / errors.length) * 100,
-    });
-    */
   };
 
   useEffect(() => {
@@ -82,6 +67,14 @@ const Home = () => {
         setError(e.response);
       });
   }, [formId]);
+
+  const sidebarProps = useMemo(() => {
+    return {
+      active: active,
+      complete: complete,
+      questionGroup: questionGroup,
+    };
+  }, [active, complete, questionGroup]);
 
   if (error) {
     return (
@@ -101,38 +94,9 @@ const Home = () => {
 
   return (
     <Row className="container">
-      <FormHeader
-        forms={forms}
-        submit={() => form.submit()}
-        dataPointName={dataPointName}
-      />
+      <FormHeader submit={() => form.submit()} />
       <Col span={6} className="sidebar sticky">
-        <List
-          bordered={false}
-          header={<div className="sidebar-header">form overview</div>}
-          dataSource={questionGroup}
-          renderItem={(item, key) => (
-            <List.Item
-              key={key}
-              onClick={() =>
-                dispatch({ type: "UPDATE GROUP", payload: { active: key } })
-              }
-              className={`sidebar-list ${active === key ? "active" : ""} ${
-                complete.includes(key) ? "complete" : ""
-              }`}
-            >
-              {complete.includes(key) ? (
-                <MdCheckCircle className="icon" />
-              ) : active === key ? (
-                <MdRadioButtonChecked className="icon" />
-              ) : (
-                <MdRadioButtonUnchecked className="icon" />
-              )}
-              {item?.heading}
-              {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
-            </List.Item>
-          )}
-        />
+        <Sidebar {...sidebarProps} />
       </Col>
       <Col span={18} className="main">
         <Form

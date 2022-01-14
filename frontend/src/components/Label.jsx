@@ -34,4 +34,4 @@ const Label = ({ keyform, text, mandatory, help, requireDoubleEntry }) => {
   );
 };
 
-export default Label;
+export default React.memo(Label);
