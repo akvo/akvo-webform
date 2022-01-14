@@ -2,21 +2,7 @@ from enum import Enum
 from typing import List, Optional
 from typing_extensions import TypedDict
 from pydantic import BaseModel, validator
-import inspect
-
-
-def optional(*fields):
-    def dec(_cls):
-        for field in fields:
-            _cls.__fields__[field].required = False
-        return _cls
-
-    if fields and inspect.isclass(fields[0]) and issubclass(
-            fields[0], BaseModel):
-        cls = fields[0]
-        fields = cls.__fields__
-        return dec(cls)
-    return dec
+from util.model import optional
 
 
 class QuestionType(Enum):
