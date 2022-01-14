@@ -21,7 +21,7 @@ const QuestionField = ({ rules, index, field, form }) => {
     case "date":
       return <TypeDate keyform={index} rules={rules} {...field} />;
     case "photo":
-      return <TypeFile keyform={index} rules={rules} {...field} />;
+      return <TypeFile keyform={index} form={form} rules={rules} {...field} />;
     default:
       return <TypeInput keyform={index} form={form} rules={rules} {...field} />;
   }

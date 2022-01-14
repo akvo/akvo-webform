@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Card, Button, Form, List } from "antd";
+import { Row, Col, Button, Form, List } from "antd";
 import {
   MdRadioButtonUnchecked,
   MdRadioButtonChecked,
