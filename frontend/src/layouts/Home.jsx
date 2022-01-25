@@ -89,7 +89,7 @@ const Home = () => {
       questionGroup: questionGroup,
       isSubmitted: isSubmitted,
     };
-  }, [active, complete, questionGroup]);
+  }, [active, complete, questionGroup, isSubmitted]);
 
   if (error) {
     return (

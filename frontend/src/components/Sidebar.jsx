@@ -41,7 +41,7 @@ const ListItem = ({ index, item, active, complete, isSubmitted }) => {
         complete.includes(checkComplete) ? "complete" : ""
       }`}
     >
-      <Space direction="vertical" size={4}>
+      <Space direction="vertical">
         <div>
           {complete.includes(checkComplete) ? (
             <MdCheckCircle className="icon" />
@@ -51,6 +51,7 @@ const ListItem = ({ index, item, active, complete, isSubmitted }) => {
             <MdRadioButtonUnchecked className="icon" />
           )}
           {item?.heading}
+          {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
         </div>
         {!complete.includes(checkComplete) && isSubmitted.length ? (
           <div className="sidebar-incomplete-text">
@@ -60,7 +61,6 @@ const ListItem = ({ index, item, active, complete, isSubmitted }) => {
           ""
         )}
       </Space>
-      {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
     </List.Item>
   );
 };
