@@ -57,9 +57,7 @@ const Home = () => {
       payload: {
         answer: values,
         group: {
-          complete: [
-            ...new Set([...complete, ...completeQg.map((qg) => qg.i)]),
-          ],
+          complete: [...new Set([...completeQg.map((qg) => qg.i)])],
         },
         dataPointName: isDpName && value,
         progress: (filled.length / errors.length) * 100,
