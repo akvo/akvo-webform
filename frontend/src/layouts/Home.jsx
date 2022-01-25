@@ -16,7 +16,7 @@ const Home = () => {
   const state = dataProviders.Values();
   const { forms, dataPointName, group } = state;
   const { questionGroup } = forms;
-  const { active, complete } = group;
+  const { active, complete, repeatGroupComplete } = group;
   const [form] = Form.useForm();
   const [isSubmitted, setIsSubmitted] = useState([]);
 
@@ -37,16 +37,24 @@ const Home = () => {
     const incomplete = errors.map((e) => e.name[0]);
     const completeQg = qg
       .map((x, ix) => {
-        const suffix = x?.repeatable
-          ? x?.repeat > 1
-            ? `-${x.repeat - 1}`
-            : ""
-          : "";
-        const ids = x.question.map((q) => `${q.id}${suffix}`);
+        // handle repeat group question
+        let ids = x.question.map((q) => q.id);
+        let ixs = [ix];
+        if (x?.repeatable) {
+          let iter = x?.repeat;
+          const suffix = iter > 1 ? `-${iter - 1}` : "";
+          do {
+            const rids = x.question.map((q) => `${q.id}${suffix}`);
+            ids = [...ids, ...rids];
+            ixs = [...ixs, `${ix}-${iter}`];
+            iter--;
+          } while (iter > 0);
+        }
+        // end of handle repeat group question
         const mandatory = intersection(incomplete, ids);
         const filledMandatory = filled.filter((f) => mandatory.includes(f.id));
         return {
-          i: x?.repeatable ? `${ix}-${x?.repeat}` : ix,
+          i: ixs,
           complete: filledMandatory.length === mandatory.length,
         };
       })
@@ -57,7 +65,10 @@ const Home = () => {
       payload: {
         answer: values,
         group: {
-          complete: [...new Set([...completeQg.map((qg) => qg.i)])],
+          complete: [].concat.apply(
+            [],
+            completeQg.map((qg) => qg.i)
+          ),
         },
         dataPointName: isDpName && value,
         progress: (filled.length / errors.length) * 100,
