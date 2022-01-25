@@ -9,46 +9,59 @@ import {
 import dataProviders from "../store";
 
 const Sidebar = ({ active, complete, questionGroup, isSubmitted }) => {
-  const dispatch = dataProviders.Actions();
-
   return (
     <List
       bordered={false}
       header={<div className="sidebar-header">form overview</div>}
       dataSource={questionGroup}
       renderItem={(item, key) => (
-        <List.Item
-          key={key}
-          onClick={() =>
-            dispatch({ type: "UPDATE GROUP", payload: { active: key } })
-          }
-          className={`sidebar-list ${active === key ? "active" : ""} ${
-            complete.includes(key) ? "complete" : ""
-          }`}
-        >
-          <Space direction="vertical" size={4}>
-            <div>
-              {complete.includes(key) ? (
-                <MdCheckCircle className="icon" />
-              ) : active === key ? (
-                <MdRadioButtonChecked className="icon" />
-              ) : (
-                <MdRadioButtonUnchecked className="icon" />
-              )}
-              {item?.heading}
-            </div>
-            {!complete.includes(key) && isSubmitted.length ? (
-              <div className="sidebar-incomplete-text">
-                Please fill in all required questions
-              </div>
-            ) : (
-              ""
-            )}
-          </Space>
-          {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
-        </List.Item>
+        <ListItem
+          index={key}
+          item={item}
+          active={active}
+          complete={complete}
+          isSubmitted={isSubmitted}
+        />
       )}
     />
+  );
+};
+
+const ListItem = ({ index, item, active, complete, isSubmitted }) => {
+  const dispatch = dataProviders.Actions();
+  const checkComplete = item?.repeatable ? `${index}-${item?.repeat}` : index;
+
+  return (
+    <List.Item
+      key={index}
+      onClick={() =>
+        dispatch({ type: "UPDATE GROUP", payload: { active: index } })
+      }
+      className={`sidebar-list ${active === index ? "active" : ""} ${
+        complete.includes(checkComplete) ? "complete" : ""
+      }`}
+    >
+      <Space direction="vertical" size={4}>
+        <div>
+          {complete.includes(checkComplete) ? (
+            <MdCheckCircle className="icon" />
+          ) : active === index ? (
+            <MdRadioButtonChecked className="icon" />
+          ) : (
+            <MdRadioButtonUnchecked className="icon" />
+          )}
+          {item?.heading}
+        </div>
+        {!complete.includes(checkComplete) && isSubmitted.length ? (
+          <div className="sidebar-incomplete-text">
+            Please fill in all required questions
+          </div>
+        ) : (
+          ""
+        )}
+      </Space>
+      {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
+    </List.Item>
   );
 };
 

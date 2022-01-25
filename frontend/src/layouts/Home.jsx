@@ -37,10 +37,18 @@ const Home = () => {
     const incomplete = errors.map((e) => e.name[0]);
     const completeQg = qg
       .map((x, ix) => {
-        const ids = x.question.map((q) => q.id);
+        const suffix = x?.repeatable
+          ? x?.repeat > 1
+            ? `-${x.repeat - 1}`
+            : ""
+          : "";
+        const ids = x.question.map((q) => `${q.id}${suffix}`);
         const mandatory = intersection(incomplete, ids);
         const filledMandatory = filled.filter((f) => mandatory.includes(f.id));
-        return { i: ix, complete: filledMandatory.length === mandatory.length };
+        return {
+          i: x?.repeatable ? `${ix}-${x?.repeat}` : ix,
+          complete: filledMandatory.length === mandatory.length,
+        };
       })
       .filter((x) => x.complete);
     const isDpName = dataPointName.find((x) => x.id === Object.keys(value)[0]);
@@ -48,7 +56,11 @@ const Home = () => {
       type: "UPDATE ANSWER",
       payload: {
         answer: values,
-        group: { complete: completeQg.map((qg) => qg.i) },
+        group: {
+          complete: [
+            ...new Set([...complete, ...completeQg.map((qg) => qg.i)]),
+          ],
+        },
         dataPointName: isDpName && value,
         progress: (filled.length / errors.length) * 100,
       },
