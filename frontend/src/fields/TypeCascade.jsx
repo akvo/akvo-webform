@@ -50,7 +50,7 @@ const TypeCascade = ({
           console.log(error);
         });
     }
-    if (tail && cascadeValues.length < level.length) {
+    if (cascadeValues.length && tail && cascadeValues.length < level.length) {
       api
         .get(`cascade/${alias}/${cascadeResource}/${tail}`)
         .then((res) => {
@@ -98,6 +98,9 @@ const TypeCascade = ({
             className="cascade-list"
             onChange={(e) => handleChange(xi, e)}
             placeholder={`Select ${level[xi].text}`}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {x?.options?.map((o, oi) => (
               <Option key={oi} value={o.id}>

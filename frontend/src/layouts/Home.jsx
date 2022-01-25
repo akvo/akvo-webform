@@ -16,7 +16,7 @@ const Home = () => {
   const state = dataProviders.Values();
   const { forms, dataPointName, group } = state;
   const { questionGroup } = forms;
-  const { active, complete, repeatGroupComplete } = group;
+  const { active, complete } = group;
   const [form] = Form.useForm();
   const [isSubmitted, setIsSubmitted] = useState([]);
 
