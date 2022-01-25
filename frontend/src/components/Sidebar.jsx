@@ -1,5 +1,5 @@
 import React from "react";
-import { List } from "antd";
+import { List, Space } from "antd";
 import {
   MdRadioButtonUnchecked,
   MdRadioButtonChecked,
@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 import dataProviders from "../store";
 
-const Sidebar = ({ active, complete, questionGroup }) => {
+const Sidebar = ({ active, complete, questionGroup, isSubmitted }) => {
   const dispatch = dataProviders.Actions();
 
   return (
@@ -26,14 +26,25 @@ const Sidebar = ({ active, complete, questionGroup }) => {
             complete.includes(key) ? "complete" : ""
           }`}
         >
-          {complete.includes(key) ? (
-            <MdCheckCircle className="icon" />
-          ) : active === key ? (
-            <MdRadioButtonChecked className="icon" />
-          ) : (
-            <MdRadioButtonUnchecked className="icon" />
-          )}
-          {item?.heading}
+          <Space direction="vertical" size={4}>
+            <div>
+              {complete.includes(key) ? (
+                <MdCheckCircle className="icon" />
+              ) : active === key ? (
+                <MdRadioButtonChecked className="icon" />
+              ) : (
+                <MdRadioButtonUnchecked className="icon" />
+              )}
+              {item?.heading}
+            </div>
+            {!complete.includes(key) && isSubmitted.length ? (
+              <div className="sidebar-incomplete-text">
+                Please fill in all required questions
+              </div>
+            ) : (
+              ""
+            )}
+          </Space>
           {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
         </List.Item>
       )}

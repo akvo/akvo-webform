@@ -18,13 +18,15 @@ const Home = () => {
   const { questionGroup } = forms;
   const { active, complete } = group;
   const [form] = Form.useForm();
+  const [isSubmitted, setIsSubmitted] = useState([]);
 
   const onComplete = (values) => {
     console.log("Finish", transformRequest(values));
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
-    console.log(transformRequest(values), errorFields);
+    setIsSubmitted(errorFields);
+    console.log("Failed", transformRequest(values), errorFields);
   };
 
   const onValuesChange = (qg, value, values) => {
@@ -73,6 +75,7 @@ const Home = () => {
       active: active,
       complete: complete,
       questionGroup: questionGroup,
+      isSubmitted: isSubmitted,
     };
   }, [active, complete, questionGroup]);
 
