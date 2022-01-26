@@ -21,12 +21,12 @@ const Home = () => {
   const [isSubmitted, setIsSubmitted] = useState([]);
 
   const onComplete = (values) => {
-    console.log("Finish", transformRequest(values));
+    console.log("Finish", transformRequest(questionGroup, values));
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
     setIsSubmitted(errorFields);
-    console.log("Failed", transformRequest(values), errorFields);
+    console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 
   const onValuesChange = (qg, value, values) => {
@@ -65,10 +65,7 @@ const Home = () => {
       payload: {
         answer: values,
         group: {
-          complete: [].concat.apply(
-            [],
-            completeQg.map((qg) => qg.i)
-          ),
+          complete: completeQg.flatMap((qg) => qg.i),
         },
         dataPointName: isDpName && value,
         progress: (filled.length / errors.length) * 100,

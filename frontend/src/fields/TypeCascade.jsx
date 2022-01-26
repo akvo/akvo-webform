@@ -23,13 +23,15 @@ const TypeCascade = ({
   const { forms } = state;
   const alias = forms?.alias?.split(".")[0];
   const stored = form.getFieldValue(id);
-  const tail = findLast(stored);
+  let tail = findLast(stored);
+  tail = tail?.id || tail?.name || tail;
   const [cascadeValues, setCascadeValues] = useState([]);
 
   const handleChange = (index, val) => {
     let updatedValues = cascadeValues.map((cv, cvi) => {
+      const findCv = cv?.options?.find((x) => x?.id === val || x?.name === val);
       if (cvi === index) {
-        return { ...cv, value: val };
+        return { ...cv, value: findCv || val };
       }
       return cv;
     });

@@ -78,11 +78,14 @@ export const modifyDependency = ({ question }, { dependency }, repeat) => {
   });
 };
 
-export const transformRequest = (values) => {
+export const transformRequest = (questionGroup, values) => {
+  const questions = questionGroup.flatMap((qg) => qg.question);
   return Object.keys(values).map((key) => {
+    const findQuestion = questions.find((q) => q.id === key);
     return {
       id: key.replace("Q", "").split("-")[0],
       repeat: parseInt(key.split("-")[1] || 0),
+      type: findQuestion?.type,
       value: values[key],
     };
   });
