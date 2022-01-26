@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, InputNumber, Col } from "antd";
+import { Form, Input, InputNumber } from "antd";
 import Label from "../components/Label";
 
 const DoubleEntry = ({ id, number, error, setDoubleEntryValue }) => {
@@ -33,54 +33,89 @@ const TypeInput = ({
   requireDoubleEntry,
   form,
 }) => {
+  const [value, setValue] = useState(null);
   const [doubleEntryError, setDoubleEntryError] = useState(false);
   const [doubleEntryValue, setDoubleEntryValue] = useState(null);
-  const answer = form.getFieldValue(id);
 
-  const checkDoubleEntry = () => {
-    if (requireDoubleEntry) {
-      setDoubleEntryError((null || answer) !== doubleEntryValue);
+  const setFirstDoubleEntryValue = (val) => {
+    setValue(val);
+    if (!val) {
+      form.setFieldsValue({ [id]: null });
     }
   };
 
   useEffect(() => {
-    checkDoubleEntry(doubleEntryValue);
-  }, [doubleEntryValue, answer]);
+    if (requireDoubleEntry) {
+      setDoubleEntryError((null || value) !== doubleEntryValue);
+    }
+    if (requireDoubleEntry && !doubleEntryError && doubleEntryValue) {
+      form.setFieldsValue({ [id]: value });
+    }
+  }, [doubleEntryValue, doubleEntryError, value]);
 
   return (
     <div>
-      <Form.Item
-        className="field"
-        key={keyform}
-        name={id}
-        label={
-          <Label
-            keyform={keyform}
-            text={text}
-            help={help}
-            mandatory={mandatory}
-            requireDoubleEntry={requireDoubleEntry}
-          />
-        }
-        rules={rules}
-        required={false}
-      >
-        {validationRule?.validationType === "numeric" ? (
-          <InputNumber onChange={() => checkDoubleEntry()} />
-        ) : (
-          <Input onChange={() => checkDoubleEntry()} />
-        )}
-      </Form.Item>
-      <div className="field-double-entry">
-        {requireDoubleEntry && (
-          <DoubleEntry
-            id={id}
-            number={validationRule?.validationType === "numeric"}
-            error={doubleEntryError}
-            setDoubleEntryValue={setDoubleEntryValue}
-          />
-        )}
-      </div>
+      {requireDoubleEntry ? (
+        <>
+          <Form.Item
+            className="field"
+            name={id}
+            label={
+              <Label
+                keyform={keyform}
+                text={text}
+                help={help}
+                mandatory={mandatory}
+                requireDoubleEntry={requireDoubleEntry}
+              />
+            }
+            rules={rules}
+            required={false}
+          >
+            <Input value={value} disabled hidden />
+          </Form.Item>
+          <div className="field-double-entry" style={{ marginTop: "-62px" }}>
+            {validationRule?.validationType === "numeric" ? (
+              <InputNumber onChange={(val) => setFirstDoubleEntryValue(val)} />
+            ) : (
+              <Input
+                onChange={(val) => setFirstDoubleEntryValue(val?.target?.value)}
+              />
+            )}
+          </div>
+          <div className="field-double-entry" style={{ marginTop: "35px" }}>
+            <DoubleEntry
+              id={id}
+              number={validationRule?.validationType === "numeric"}
+              error={doubleEntryError}
+              setDoubleEntryValue={setDoubleEntryValue}
+            />
+          </div>
+        </>
+      ) : (
+        <Form.Item
+          className="field"
+          key={keyform}
+          name={id}
+          label={
+            <Label
+              keyform={keyform}
+              text={text}
+              help={help}
+              mandatory={mandatory}
+              requireDoubleEntry={requireDoubleEntry}
+            />
+          }
+          rules={rules}
+          required={false}
+        >
+          {validationRule?.validationType === "numeric" ? (
+            <InputNumber />
+          ) : (
+            <Input />
+          )}
+        </Form.Item>
+      )}
     </div>
   );
 };
