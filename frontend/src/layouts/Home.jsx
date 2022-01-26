@@ -5,7 +5,7 @@ import intersection from "lodash/intersection";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
-import generateForm, { transformRequest } from "../lib/form";
+import generateForm, { transformRequest, checkFilledForm } from "../lib/form";
 import dataProviders from "../store";
 import { QuestionGroup, FormHeader, Sidebar } from "../components";
 
@@ -30,36 +30,14 @@ const Home = () => {
   };
 
   const onValuesChange = (qg, value, values) => {
-    const errors = form.getFieldsError();
-    const filled = Object.keys(values)
-      .map((k) => ({ id: k, value: values[k] }))
-      .filter((x) => x.value);
-    const incomplete = errors.map((e) => e.name[0]);
-    const completeQg = qg
-      .map((x, ix) => {
-        // handle repeat group question
-        let ids = x.question.map((q) => q.id);
-        let ixs = [ix];
-        if (x?.repeatable) {
-          let iter = x?.repeat;
-          const suffix = iter > 1 ? `-${iter - 1}` : "";
-          do {
-            const rids = x.question.map((q) => `${q.id}${suffix}`);
-            ids = [...ids, ...rids];
-            ixs = [...ixs, `${ix}-${iter}`];
-            iter--;
-          } while (iter > 0);
-        }
-        // end of handle repeat group question
-        const mandatory = intersection(incomplete, ids);
-        const filledMandatory = filled.filter((f) => mandatory.includes(f.id));
-        return {
-          i: ixs,
-          complete: filledMandatory.length === mandatory.length,
-        };
-      })
-      .filter((x) => x.complete);
-    const isDpName = dataPointName.find((x) => x.id === Object.keys(value)[0]);
+    const errorFields = form.getFieldsError();
+    const { filled, completeQg, isDpName } = checkFilledForm(
+      errorFields,
+      dataPointName,
+      qg,
+      value,
+      values
+    );
     dispatch({
       type: "UPDATE ANSWER",
       payload: {
@@ -68,7 +46,7 @@ const Home = () => {
           complete: completeQg.flatMap((qg) => qg.i),
         },
         dataPointName: isDpName && value,
-        progress: (filled.length / errors.length) * 100,
+        progress: (filled.length / errorFields.length) * 100,
       },
     });
   };
