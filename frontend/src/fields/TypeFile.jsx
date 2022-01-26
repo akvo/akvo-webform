@@ -33,7 +33,7 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
     if (Array.isArray(e)) {
       return e.length ? e : null;
     }
-    return e && e.fileList?.length ? e.fileList : null;
+    return e && e.fileList?.length ? (blob ? blob : e.fileList) : null;
   };
 
   return (
