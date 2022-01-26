@@ -10,12 +10,20 @@ const TypeGeo = ({ id, form, text, keyform, mandatory, rules, help }) => {
   const changePos = (newPos) => {
     setPosition(newPos);
     if (newPos?.lat && newPos?.lng) {
+      setValue(newPos);
       form.setFieldsValue({ [id]: newPos });
+    } else {
+      setValue(null);
+      form.setFieldsValue({ [id]: null });
     }
   };
 
   const onChange = (cname, e) => {
-    changePos({ ...position, [cname]: e !== null ? parseFloat(e) : null });
+    if (!e) {
+      changePos({ lat: null, lng: null });
+    } else {
+      changePos({ ...position, [cname]: e !== null ? parseFloat(e) : null });
+    }
   };
 
   return (
