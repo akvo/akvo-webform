@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, InputNumber } from "antd";
 import Label from "../components/Label";
+import { checkFilledForm } from "../lib/form";
+import dataProviders from "../store";
 
 const DoubleEntry = ({ id, number, error, setDoubleEntryValue }) => {
   return (
@@ -36,6 +38,31 @@ const TypeInput = ({
   const [value, setValue] = useState(null);
   const [doubleEntryError, setDoubleEntryError] = useState(false);
   const [doubleEntryValue, setDoubleEntryValue] = useState(null);
+  const dispatch = dataProviders.Actions();
+  const state = dataProviders.Values();
+  const { forms, dataPointName } = state;
+  const { questionGroup } = forms;
+
+  const updateCompleteState = (value) => {
+    const answer = { [id]: value };
+    form.setFieldsValue(answer);
+    const errorFields = form.getFieldsError();
+    const formValues = form.getFieldsValue();
+    const { completeQg } = checkFilledForm(
+      errorFields,
+      dataPointName,
+      questionGroup,
+      answer,
+      formValues
+    );
+    console.log(errorFields, formValues, completeQg);
+    dispatch({
+      type: "UPDATE GROUP",
+      payload: {
+        complete: completeQg.flatMap((qg) => qg.i),
+      },
+    });
+  };
 
   const setFirstDoubleEntryValue = (val) => {
     setValue(val);
@@ -49,7 +76,9 @@ const TypeInput = ({
       setDoubleEntryError((null || value) !== doubleEntryValue);
     }
     if (requireDoubleEntry && !doubleEntryError && doubleEntryValue) {
-      form.setFieldsValue({ [id]: value });
+      updateCompleteState(value);
+    } else {
+      updateCompleteState(null);
     }
   }, [doubleEntryValue, doubleEntryError, value]);
 
