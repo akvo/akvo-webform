@@ -55,7 +55,6 @@ const TypeInput = ({
       answer,
       formValues
     );
-    console.log(errorFields, formValues, completeQg);
     dispatch({
       type: "UPDATE GROUP",
       payload: {
