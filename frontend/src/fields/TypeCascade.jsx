@@ -4,6 +4,7 @@ import Label from "../components/Label";
 import api from "../lib/api";
 import { findLast, take } from "lodash";
 import dataProviders from "../store";
+import { checkFilledForm } from "../lib/form";
 
 const { Option } = Select;
 
@@ -20,12 +21,34 @@ const TypeCascade = ({
 }) => {
   const state = dataProviders.Values();
   const { level } = levels;
-  const { forms } = state;
+  const { forms, dataPointName } = state;
+  const dispatch = dataProviders.Actions();
+  const { questionGroup } = forms;
+  const [stored, setStored] = useState([]);
   const alias = forms?.alias?.split(".")[0];
-  const stored = form.getFieldValue(id);
   let tail = findLast(stored);
   tail = tail?.id || tail?.name || tail;
   const [cascadeValues, setCascadeValues] = useState([]);
+
+  const updateCompleteState = (value) => {
+    const answer = { [id]: value };
+    form.setFieldsValue(answer);
+    const errorFields = form.getFieldsError();
+    const formValues = form.getFieldsValue();
+    const { completeQg } = checkFilledForm(
+      errorFields,
+      dataPointName,
+      questionGroup,
+      answer,
+      formValues
+    );
+    dispatch({
+      type: "UPDATE GROUP",
+      payload: {
+        complete: completeQg.flatMap((qg) => qg.i),
+      },
+    });
+  };
 
   const handleChange = (index, val) => {
     let updatedValues = cascadeValues.map((cv, cvi) => {
@@ -37,8 +60,13 @@ const TypeCascade = ({
     });
     updatedValues = take(updatedValues, index + 1);
     const formVal = updatedValues.map((u) => u.value);
-    form.setFieldsValue({ [id]: formVal });
+    setStored(formVal);
     setCascadeValues(updatedValues);
+    if (formVal.length === level.length) {
+      updateCompleteState(formVal);
+    } else {
+      updateCompleteState(null);
+    }
   };
 
   useEffect(() => {
