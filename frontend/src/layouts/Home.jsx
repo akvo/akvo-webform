@@ -54,6 +54,16 @@ const Home = () => {
       responses: responses,
     };
     console.log("Finish", data);
+    api
+      .post(`/submit-form?`, data, { "content-type": "application/json" })
+      .then((res) => {
+        console.log(res?.data);
+      })
+      .catch((e) => {
+        const { status, statusText } = e.response;
+        console.error(status, statusText);
+        // setError(e.response);
+      });
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {

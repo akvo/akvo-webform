@@ -83,9 +83,9 @@ export const transformRequest = (questionGroup, values) => {
   return Object.keys(values).map((key) => {
     const findQuestion = questions.find((q) => q.id === key);
     return {
-      id: key.replace("Q", "").split("-")[0],
-      repeat: parseInt(key.split("-")[1] || 0),
-      type: findQuestion?.type,
+      questionId: key.replace("Q", "").split("-")[0],
+      iteration: parseInt(key.split("-")[1] || 0),
+      answerType: findQuestion?.type,
       value: values[key],
     };
   });
