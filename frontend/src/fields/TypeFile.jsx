@@ -12,6 +12,7 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       setBlob(reader.result);
+      form.setFieldsValue({ [id]: reader.result });
     });
     reader.readAsDataURL(file);
     onSuccess("ok");
@@ -30,10 +31,11 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
   };
 
   const formFile = (e) => {
+    setBlob(null);
     if (Array.isArray(e)) {
       return e.length ? e : null;
     }
-    return e && e.fileList?.length ? (blob ? blob : e.fileList) : null;
+    return e && e.fileList?.length ? e.fileList : null;
   };
 
   return (
