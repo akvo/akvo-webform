@@ -5,15 +5,11 @@ from pydantic import BaseModel, validator, Json
 from typing import List, TypeVar
 from typing_extensions import TypedDict
 from .form import QuestionType
+from .cascade import CascadeBase
 import json
 
 
-class CascadeValue(TypedDict):
-    id: str
-    name: str
-
-
-class CascadeResponse(TypedDict):
+class CascadeTransform(TypedDict):
     code: str
     name: str
 
@@ -24,8 +20,8 @@ class Geolocation(TypedDict):
 
 
 ValueVar = TypeVar('ValueVal', str, List[str],
-                   List[CascadeValue], Geolocation,
-                   Json[List[CascadeResponse]])
+                   List[CascadeBase], Geolocation,
+                   Json[List[CascadeTransform]])
 
 
 class AnswerResponse(BaseModel):
@@ -56,6 +52,26 @@ class AnswerResponse(BaseModel):
                 res = json.dumps(temp)
             except:
                 res = res
+        # OPTION TYPE
+        if atype == QuestionType.option:
+            if type(value) is list:
+                temp = []
+                for rc in value:
+                    try:
+                        temp.append({
+                            "text": rc["text"],
+                            "code": rc["value"]
+                        })
+                    except:
+                        temp.append({"text": rc})
+                res = json.dumps(temp)
+            else :
+                try:
+                    # check if already json
+                    json.loads(value)
+                    res = res
+                except:
+                    res = json.dumps({"text": value})
         return res
 
 
