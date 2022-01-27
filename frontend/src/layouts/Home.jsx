@@ -1,13 +1,33 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Button, Form } from "antd";
-import intersection from "lodash/intersection";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
 import generateForm, { transformRequest, checkFilledForm } from "../lib/form";
 import dataProviders from "../store";
 import { QuestionGroup, FormHeader, Sidebar } from "../components";
+import uuid from "uuid/v4";
+
+const generateUUID = () => {
+  let id = uuid();
+  id = id.split("-");
+  id = id
+    .map((x) => {
+      return x.substring(0, 4);
+    })
+    .slice(0, 3);
+  return id.join("-");
+};
+
+const generateDataPointId = () => {
+  const dataPointId = [
+    Math.random().toString(36).slice(2).substring(1, 5),
+    Math.random().toString(36).slice(2).substring(1, 5),
+    Math.random().toString(36).slice(2).substring(1, 5),
+  ];
+  return dataPointId.join("-");
+};
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -21,7 +41,19 @@ const Home = () => {
   const [isSubmitted, setIsSubmitted] = useState([]);
 
   const onComplete = (values) => {
-    console.log("Finish", transformRequest(questionGroup, values));
+    const responses = transformRequest(questionGroup, values);
+    const data = {
+      dataPointId: generateDataPointId(),
+      deviceId: "Akvo Flow Web",
+      formId: forms?.surveyId,
+      formVersion: forms?.version,
+      instance: forms?.app,
+      submissionDate: Date.now(),
+      username: "username", // change later
+      uuid: generateUUID(),
+      responses: responses,
+    };
+    console.log("Finish", data);
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
