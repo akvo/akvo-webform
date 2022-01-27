@@ -2,20 +2,35 @@
 # Keep the code clean and CLEAR
 
 from pydantic import BaseModel, validator
-from typing import List
+from typing import List, TypeVar
+from typing_extensions import TypedDict
 from .form import QuestionType
 
 
-class AnswerResponse(BaseModel):
+class Cascade(TypedDict):
+    id: int
+    name: str
+
+
+class Geolocation(TypedDict):
+    lat: float
+    lng: float
+
+
+ValueVar = TypeVar('ValueVal', str, dict, List[Cascade],
+                   Geolocation, List[str])
+
+
+class AnswerResponse(TypedDict):
     answerType: QuestionType
     iteration: int
     questionId: str
-    value: str
+    value: ValueVar
 
     @validator("value", pre=True, always=True)
     def set_value(cls, value, values):
         atype = values['answerType']
-        temp = []
+        # temp = []
         if atype == QuestionType.option:
             # code to restructure value
             value = value
@@ -25,10 +40,11 @@ class AnswerResponse(BaseModel):
 class AnswerBase(BaseModel):
     dataPointId: str
     deviceId: str
-    duration: int
-    formId: str
-    formVersion: float
+    # duration: float
+    formId: int
+    formVersion: int
     responses: List[AnswerResponse]
     submissionDate: int
     username: str
     uuid: str
+    instance: str
