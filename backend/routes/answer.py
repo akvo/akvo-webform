@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Request, HTTPException
-from models.answer import AnswerBase, AnswerResponse
-from typing import List
+from fastapi import APIRouter
+from models.answer import AnswerBase
 
 answer_route = APIRouter()
 
