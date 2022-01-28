@@ -95,6 +95,14 @@ class AnswerResponse(BaseModel):
         if atype == QuestionType.date:
             date_obj = datetime.strptime(value, "%Y-%m-%d")
             res = int(datetime.timestamp(date_obj) * 1000)
+        # GEO TYPE
+        if atype == QuestionType.geo:
+            try:
+                lat = res["lat"]
+                lng = res["lng"]
+                res = f"{lat}|{lng}|0"
+            except:
+                res = res
         return res
 
 
