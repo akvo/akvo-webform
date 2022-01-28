@@ -8,6 +8,7 @@ from .form import QuestionType
 from .cascade import CascadeBase
 from datetime import datetime
 import json
+import uuid
 
 images = []
 
@@ -46,6 +47,8 @@ class AnswerResponse(BaseModel):
             value = "VALUE"
         if value == QuestionType.photo.value:
             value = "IMAGE"
+        if value == QuestionType.geo.value:
+            value = "META-GEO"
         return value.upper()
 
     @validator("value", pre=True, always=True)
@@ -104,7 +107,7 @@ class AnswerResponse(BaseModel):
             date_obj = datetime.strptime(value, "%Y-%m-%d")
             res = int(datetime.timestamp(date_obj) * 1000)
         # GEO TYPE
-        if atype == QuestionType.geo.value:
+        if atype == QuestionType.geo.value or atype == "meta-geo":
             try:
                 lat = res["lat"]
                 lng = res["lng"]
@@ -119,12 +122,41 @@ class AnswerBase(BaseModel):
     deviceId: str
     dataPointName: Optional[str] = None
     formId: int
-    formVersion: int
+    formVersion: float
     responses: List[AnswerResponse]
-    submissionDate: int
+    submissionStart: Optional[str] = None
+    submissionStop: Optional[str] = None
+    submissionDate: Optional[str] = None
+    duration: Optional[float] = None
     username: str
-    uuid: str
+    uuid: Optional[str] = None
     instance: str
+
+    @validator("uuid", pre=True, always=True)
+    def set_uuid(cls, value):
+        return str(uuid.uuid4())
+
+    @validator("submissionDate", pre=True, always=True)
+    def set_submission_date(cls, value, values):
+        return values["submissionStop"]
+
+    @validator("duration", pre=True, always=True)
+    def set_duration(cls, value, values):
+        duration = value
+        if not duration:
+            start_date = datetime.fromtimestamp(
+                int(values["submissionStart"]) / 1000)
+            end_date = datetime.fromtimestamp(
+                int(values["submissionStop"]) / 1000)
+            duration = end_date - start_date
+            duration = round(duration.total_seconds())
+        elif values["submissionDate"]:
+            # delete submissionStart and submissionStop from dict
+            del values["submissionStart"]
+            del values["submissionStop"]
+        else:
+            pass
+        return duration
 
     @validator("responses", pre=True, always=True)
     def append_meta_name(cls, value, values):
