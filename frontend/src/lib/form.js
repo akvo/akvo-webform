@@ -81,7 +81,8 @@ export const modifyDependency = ({ question }, { dependency }, repeat) => {
 export const transformRequest = (questionGroup, values) => {
   const questions = questionGroup.flatMap((qg) => qg.question);
   return Object.keys(values).map((key) => {
-    const findQuestion = questions.find((q) => q.id === key);
+    const keyTemp = key.split("-")[0]; // to get only question id for repeat answer
+    const findQuestion = questions.find((q) => q.id === keyTemp);
     return {
       questionId: key.replace("Q", "").split("-")[0],
       iteration: parseInt(key.split("-")[1] || 0),
