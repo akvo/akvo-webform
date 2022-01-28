@@ -35,17 +35,25 @@ ValueVar = TypeVar('ValueVal', str, List[str],
 
 
 class AnswerResponse(BaseModel):
-    answerType: QuestionType
+    answerType: str
     iteration: int
     questionId: str
     value: ValueVar
 
+    @validator("answerType", pre=True, always=True)
+    def update_answer_type(cls, value):
+        if value == QuestionType.free.value:
+            value = "VALUE"
+        if value == QuestionType.photo.value:
+            value = "IMAGE"
+        return value.upper()
+
     @validator("value", pre=True, always=True)
     def set_value(cls, value, values):
         res = value
-        atype = values["answerType"]
+        atype = values["answerType"].lower()
         # CASCADE TYPE
-        if atype == QuestionType.cascade:
+        if atype == QuestionType.cascade.value:
             temp = []
             try:
                 for rc in value:
@@ -63,7 +71,7 @@ class AnswerResponse(BaseModel):
             except:
                 res = res
         # OPTION TYPE
-        if atype == QuestionType.option:
+        if atype == QuestionType.option.value:
             if type(value) is list:
                 temp = []
                 for rc in value:
@@ -83,7 +91,7 @@ class AnswerResponse(BaseModel):
                 except:
                     res = json.dumps({"text": value})
         # PHOTO TYPE
-        if atype == QuestionType.photo:
+        if atype == QuestionType.photo.value or atype == "image":
             try:
                 # check if already json
                 json.loads(value)
@@ -92,11 +100,11 @@ class AnswerResponse(BaseModel):
                 res = json.dumps({"filename": value["id"]})
                 images.append(value)
         # DATE TYPE
-        if atype == QuestionType.date:
+        if atype == QuestionType.date.value:
             date_obj = datetime.strptime(value, "%Y-%m-%d")
             res = int(datetime.timestamp(date_obj) * 1000)
         # GEO TYPE
-        if atype == QuestionType.geo:
+        if atype == QuestionType.geo.value:
             try:
                 lat = res["lat"]
                 lng = res["lng"]
@@ -122,7 +130,7 @@ class AnswerBase(BaseModel):
     def append_meta_name(cls, value, values):
         try:
             meta_response = {
-                "answerType": QuestionType.meta_name,
+                "answerType": "META_NAME",
                 "iteration": 0,
                 "questionId": "-1",
                 "value": values["dataPointName"]

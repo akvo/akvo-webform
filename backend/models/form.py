@@ -13,7 +13,6 @@ class QuestionType(Enum):
     date = "date"
     photo = "photo"
     geo = "geo"
-    meta_name = "meta_name"
 
 
 class ValidationType(Enum):

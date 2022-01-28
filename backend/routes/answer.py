@@ -9,4 +9,5 @@ answer_route = APIRouter()
                    summary="Submit form payload to Akvo Flow",
                    tags=["Akvo Flow Webform"])
 def submit_form(data: AnswerBase):
+    answers = data.responses
     return data
