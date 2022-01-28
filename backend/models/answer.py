@@ -10,8 +10,6 @@ from datetime import datetime
 import json
 import uuid
 
-images = []
-
 
 class CascadeTransform(TypedDict):
     code: str
@@ -93,15 +91,6 @@ class AnswerResponse(BaseModel):
                     res = res
                 except:
                     res = json.dumps({"text": value})
-        # PHOTO TYPE
-        if atype == QuestionType.photo.value or atype == "image":
-            try:
-                # check if already json
-                json.loads(value)
-                res = res
-            except:
-                res = json.dumps({"filename": value["id"]})
-                images.append(value)
         # DATE TYPE
         if atype == QuestionType.date.value:
             date_obj = datetime.strptime(value, "%Y-%m-%d")
