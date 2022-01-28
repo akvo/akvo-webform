@@ -6,6 +6,7 @@ from typing import List, TypeVar
 from typing_extensions import TypedDict
 from .form import QuestionType
 from .cascade import CascadeBase
+from datetime import datetime
 import json
 
 images = []
@@ -90,6 +91,10 @@ class AnswerResponse(BaseModel):
             except:
                 res = json.dumps({"filename": value["id"]})
                 images.append(value)
+        # DATE TYPE
+        if atype == QuestionType.date:
+            date_obj = datetime.strptime(value, "%Y-%m-%d")
+            res = int(datetime.timestamp(date_obj) * 1000)
         return res
 
 
