@@ -48,14 +48,15 @@ const Home = () => {
     const responses = transformRequest(questionGroup, values);
     const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
     const data = {
-      dataPointId: generateDataPointId(),
-      deviceId: "Akvo Flow Web",
+      dataPointId: forms?.dataPointId,
+      deviceId: forms?.deviceId,
       formId: forms?.surveyId,
       formVersion: forms?.version,
       instance: forms?.app,
-      submissionDate: Date.now(),
+      submissionStart: forms?.submissionStart,
+      submissionStop: Date.now(),
       username: "username", // change later
-      uuid: generateUUID(),
+      uuid: forms?.uuid,
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
@@ -103,7 +104,15 @@ const Home = () => {
     api
       .get(`form/${formId}`)
       .then((res) => {
-        const formData = generateForm(res.data);
+        let formData = generateForm(res.data);
+        // add form metadata
+        formData = {
+          ...formData,
+          dataPointId: generateDataPointId(),
+          deviceId: "Akvo Flow Web",
+          submissionStart: Date.now(),
+          uuid: generateUUID(),
+        };
         saveFormToDB({ formId: formId, ...formData });
         dispatch({ type: "INIT FORM", payload: formData });
       })
