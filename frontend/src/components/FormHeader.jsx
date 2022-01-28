@@ -3,6 +3,7 @@ import { Row, Col, Button, Dropdown, Menu, message } from "antd";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { BiBarcodeReader } from "react-icons/bi";
 import dataProviders from "../store";
+import { generateDataPointNameDisplay } from "../lib/form";
 
 const onClick = ({ key }) => {
   message.info(`Click on item ${key}`);
@@ -18,10 +19,7 @@ const menu = (
 
 const FormHeader = ({ submit }) => {
   const { dataPointName, forms } = dataProviders.Values();
-  const dataPointNameDisplay = dataPointName
-    .filter((x) => x.value)
-    .map((x) => x.value)
-    .join(" - ");
+  const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
     <Col span={24} className="form-header sticky">
       <Row

@@ -4,7 +4,11 @@ import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
-import generateForm, { transformRequest, checkFilledForm } from "../lib/form";
+import generateForm, {
+  transformRequest,
+  checkFilledForm,
+  generateDataPointNameDisplay,
+} from "../lib/form";
 import dataProviders from "../store";
 import { QuestionGroup, FormHeader, Sidebar } from "../components";
 import uuid from "uuid/v4";
@@ -42,6 +46,7 @@ const Home = () => {
 
   const onComplete = (values) => {
     const responses = transformRequest(questionGroup, values);
+    const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
     const data = {
       dataPointId: generateDataPointId(),
       deviceId: "Akvo Flow Web",
@@ -51,6 +56,7 @@ const Home = () => {
       submissionDate: Date.now(),
       username: "username", // change later
       uuid: generateUUID(),
+      dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
     console.log("Finish", data);

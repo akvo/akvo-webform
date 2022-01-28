@@ -130,4 +130,10 @@ export const checkFilledForm = (
   return { filled, completeQg, isDpName };
 };
 
+export const generateDataPointNameDisplay = (dataPointName) =>
+  dataPointName
+    .filter((x) => x.value)
+    .map((x) => x.value)
+    .join(" - ");
+
 export default generateForm;
