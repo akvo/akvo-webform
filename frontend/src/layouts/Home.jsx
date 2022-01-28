@@ -56,7 +56,6 @@ const Home = () => {
       submissionStart: forms?.submissionStart,
       submissionStop: Date.now(),
       username: "username", // change later
-      uuid: forms?.uuid,
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
@@ -111,7 +110,6 @@ const Home = () => {
           dataPointId: generateDataPointId(),
           deviceId: "Akvo Flow Web",
           submissionStart: Date.now(),
-          uuid: generateUUID(),
         };
         saveFormToDB({ formId: formId, ...formData });
         dispatch({ type: "INIT FORM", payload: formData });
