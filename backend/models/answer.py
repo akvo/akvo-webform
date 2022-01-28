@@ -2,7 +2,7 @@
 # Keep the code clean and CLEAR
 
 from pydantic import BaseModel, validator
-from typing import List, TypeVar
+from typing import List, TypeVar, Optional
 from typing_extensions import TypedDict
 from .form import QuestionType
 from .cascade import CascadeBase
@@ -101,7 +101,7 @@ class AnswerResponse(BaseModel):
 class AnswerBase(BaseModel):
     dataPointId: str
     deviceId: str
-    # duration: float
+    dataPointName: Optional[str] = None
     formId: int
     formVersion: int
     responses: List[AnswerResponse]
@@ -109,3 +109,21 @@ class AnswerBase(BaseModel):
     username: str
     uuid: str
     instance: str
+
+    @validator("responses", pre=True, always=True)
+    def append_meta_name(cls, value, values):
+        try:
+            meta_response = {
+                "answerType": QuestionType.meta_name,
+                "iteration": 0,
+                "questionId": "-1",
+                "value": values["dataPointName"]
+            }
+            if meta_response not in value:
+                value.append(meta_response)
+            else:
+                # delete dataPointName from dict
+                del values["dataPointName"]
+        except:
+            pass
+        return value
