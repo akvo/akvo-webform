@@ -1,12 +1,14 @@
 # Please don't use **kwargs
 # Keep the code clean and CLEAR
 
-from pydantic import BaseModel, validator, Json
+from pydantic import BaseModel, validator
 from typing import List, TypeVar
 from typing_extensions import TypedDict
 from .form import QuestionType
 from .cascade import CascadeBase
 import json
+
+images = []
 
 
 class CascadeTransform(TypedDict):
@@ -19,9 +21,16 @@ class Geolocation(TypedDict):
     lng: float
 
 
+class Image(TypedDict):
+    blob: str
+    filename: str
+    id: str
+    qid: str
+
+
 ValueVar = TypeVar('ValueVal', str, List[str],
                    List[CascadeBase], Geolocation,
-                   Json[List[CascadeTransform]])
+                   Image)
 
 
 class AnswerResponse(BaseModel):
@@ -33,7 +42,7 @@ class AnswerResponse(BaseModel):
     @validator("value", pre=True, always=True)
     def set_value(cls, value, values):
         res = value
-        atype = values['answerType']
+        atype = values["answerType"]
         # CASCADE TYPE
         if atype == QuestionType.cascade:
             temp = []
@@ -72,6 +81,15 @@ class AnswerResponse(BaseModel):
                     res = res
                 except:
                     res = json.dumps({"text": value})
+        # PHOTO TYPE
+        if atype == QuestionType.photo:
+            try:
+                # check if already json
+                json.loads(value)
+                res = res
+            except:
+                res = json.dumps({"filename": value["id"]})
+                images.append(value)
         return res
 
 
