@@ -110,12 +110,12 @@ class AnswerBase(BaseModel):
     dataPointId: str
     deviceId: str
     dataPointName: Optional[str] = None
-    formId: int
+    formId: str
     formVersion: float
     responses: List[AnswerResponse]
-    submissionStart: Optional[str] = None
-    submissionStop: Optional[str] = None
-    submissionDate: Optional[str] = None
+    submissionStart: Optional[int] = None
+    submissionStop: Optional[int] = None
+    submissionDate: Optional[int] = None
     duration: Optional[float] = None
     username: str
     uuid: Optional[str] = None
