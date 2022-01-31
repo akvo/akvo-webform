@@ -11,11 +11,6 @@ import json
 import uuid
 
 
-class CascadeTransform(TypedDict):
-    code: str
-    name: str
-
-
 class Geolocation(TypedDict):
     lat: float
     lng: float
@@ -28,9 +23,8 @@ class Image(TypedDict):
     qid: str
 
 
-ValueVar = TypeVar('ValueVal', str, List[str],
-                   List[CascadeBase], Geolocation,
-                   Image)
+ValueVar = TypeVar('ValueVal', str, List[str], Geolocation,
+                   Image, List[CascadeBase])
 
 
 class AnswerResponse(BaseModel):
@@ -45,8 +39,6 @@ class AnswerResponse(BaseModel):
             value = "VALUE"
         if value == QuestionType.photo.value:
             value = "IMAGE"
-        if value == QuestionType.geo.value:
-            value = "META-GEO"
         return value.upper()
 
     @validator("value", pre=True, always=True)
@@ -60,37 +52,38 @@ class AnswerResponse(BaseModel):
                 for rc in value:
                     try:
                         temp.append({
-                            "code": rc["id"],
+                            "code": str(rc["id"]),
                             "text": rc["name"]
                         })
-                    except:
+                    except KeyError:
                         temp.append({
                             "code": "",
                             "text": rc["name"]
                         })
                 res = json.dumps(temp)
-            except:
+            except TypeError:
                 res = res
         # OPTION TYPE
         if atype == QuestionType.option.value:
             if type(value) is list:
                 temp = []
-                for rc in value:
-                    try:
-                        temp.append({
-                            "text": rc["text"],
-                            "code": rc["value"]
-                        })
-                    except:
-                        temp.append({"text": rc})
-                res = json.dumps(temp)
-            else :
                 try:
-                    # check if already json
-                    json.loads(value)
+                    for rc in value:
+                        try:
+                            temp.append({
+                                "text": rc["text"],
+                                "code": str(rc["value"])
+                            })
+                        except KeyError:
+                            temp.append({"text": rc})
+                    res = json.dumps(temp)
+                except TypeError:
                     res = res
-                except:
+            else:
+                try:
                     res = json.dumps({"text": value})
+                except TypeError:
+                    res = res
         # DATE TYPE
         if atype == QuestionType.date.value:
             date_obj = datetime.strptime(value, "%Y-%m-%d")
@@ -101,7 +94,7 @@ class AnswerResponse(BaseModel):
                 lat = res["lat"]
                 lng = res["lng"]
                 res = f"{lat}|{lng}|0"
-            except:
+            except TypeError:
                 res = res
         return res
 
@@ -139,28 +132,24 @@ class AnswerBase(BaseModel):
                 int(values["submissionStop"]) / 1000)
             duration = end_date - start_date
             duration = round(duration.total_seconds())
-        elif values["submissionDate"]:
+        else:
             # delete submissionStart and submissionStop from dict
             del values["submissionStart"]
             del values["submissionStop"]
-        else:
             pass
         return duration
 
     @validator("responses", pre=True, always=True)
     def append_meta_name(cls, value, values):
-        try:
-            meta_response = {
-                "answerType": "META_NAME",
-                "iteration": 0,
-                "questionId": "-1",
-                "value": values["dataPointName"]
-            }
-            if meta_response not in value:
-                value.append(meta_response)
-            else:
-                # delete dataPointName from dict
-                del values["dataPointName"]
-        except:
-            pass
+        meta_response = {
+            "answerType": "META_NAME",
+            "iteration": 0,
+            "questionId": "-1",
+            "value": values["dataPointName"]
+        }
+        if meta_response not in value:
+            value.append(meta_response)
+        else:
+            # delete dataPointName from dict
+            del values["dataPointName"]
         return value

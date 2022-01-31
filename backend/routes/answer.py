@@ -31,19 +31,12 @@ def submit_form(data: AnswerBase):
         # PHOTO TYPE
         if atype == QuestionType.photo.value or atype == "image":
             try:
-                # check if already json
-                json.loads(value)
-                rc.value = value
-            except:
                 images.append(value)
                 rc.value = json.dumps({"filename": value["id"]})
+            except TypeError:
+                rc.value = value
         responseTemp.append(rc)
     data.responses = responseTemp
-
-    if data.submissionStart:
-        del data.submissionStart
-    if data.submissionStop:
-        del data.submissionStop
 
     _uuid = data.uuid
     instance_id = data.instance
