@@ -4,7 +4,7 @@
 from pydantic import BaseModel, validator
 from typing import List, TypeVar, Optional
 from typing_extensions import TypedDict
-from .form import QuestionType
+from .form import QuestionType, Option
 from .cascade import CascadeBase
 from datetime import datetime
 import json
@@ -24,7 +24,7 @@ class Image(TypedDict):
 
 
 ValueVar = TypeVar('ValueVal', str, List[str], Geolocation,
-                   Image, List[CascadeBase])
+                   Image, List[CascadeBase], List[Option])
 
 
 class AnswerResponse(BaseModel):
@@ -50,12 +50,17 @@ class AnswerResponse(BaseModel):
             temp = []
             try:
                 for rc in value:
-                    try:
+                    if "name" in rc and "id" in rc:
                         temp.append({
-                            "code": str(rc["id"]),
+                            "code": rc["id"],
                             "text": rc["name"]
                         })
-                    except KeyError:
+                    elif "text" in rc and "code" in rc:
+                        temp.append({
+                            "code": rc["code"],
+                            "text": rc["text"]
+                        })
+                    else:
                         temp.append({
                             "code": "",
                             "text": rc["name"]
@@ -67,23 +72,21 @@ class AnswerResponse(BaseModel):
         if atype == QuestionType.option.value:
             if type(value) is list:
                 temp = []
-                try:
-                    for rc in value:
-                        try:
-                            temp.append({
-                                "text": rc["text"],
-                                "code": str(rc["value"])
-                            })
-                        except KeyError:
-                            temp.append({"text": rc})
-                    res = json.dumps(temp)
-                except TypeError:
-                    res = res
+                for rc in value:
+                    if "text" in rc and "value" in rc:
+                        temp.append({
+                            "text": rc["text"],
+                            "code": str(rc["value"])
+                        })
+                    else:
+                        temp.append({"text": rc})
+                res = json.dumps(temp)
             else:
                 try:
-                    res = json.dumps({"text": value})
-                except TypeError:
+                    json.loads(value)
                     res = res
+                except ValueError:
+                    res = json.dumps({"text": value})
         # DATE TYPE
         if atype == QuestionType.date.value:
             date_obj = datetime.strptime(value, "%Y-%m-%d")
@@ -113,6 +116,10 @@ class AnswerBase(BaseModel):
     username: str
     uuid: Optional[str] = None
     instance: str
+
+    @validator("formVersion", pre=True, always=True)
+    def set_form_version_to_float(cls, value):
+        return float(value)
 
     @validator("uuid", pre=True, always=True)
     def set_uuid(cls, value):
