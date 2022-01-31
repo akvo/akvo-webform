@@ -80,7 +80,7 @@ export const modifyDependency = ({ question }, { dependency }, repeat) => {
 
 export const transformRequest = (questionGroup, values) => {
   const questions = questionGroup.flatMap((qg) => qg.question);
-  return Object.keys(values).map((key) => {
+  const res = Object.keys(values).map((key) => {
     const keyTemp = key.split("-")[0]; // to get only question id for repeat answer
     const findQuestion = questions.find((q) => q.id === keyTemp);
     return {
@@ -90,6 +90,24 @@ export const transformRequest = (questionGroup, values) => {
       value: values[key],
     };
   });
+  // find geo question, check for localeNameFlag
+  // localeNameFlag === true, add meta_geo responses
+  const qGeo = questions?.find((q) => q.type === "geo");
+  const geoAnswer = values[qGeo?.id];
+  if (qGeo?.localeNameFlag) {
+    const { lat, lng } = geoAnswer;
+    const metaGeoValue = `${lat}|${lng}|0`;
+    return [
+      ...res,
+      {
+        questionId: "-2",
+        iteration: 0,
+        answerType: "meta_geo",
+        value: metaGeoValue,
+      },
+    ];
+  }
+  return res;
 };
 
 export const checkFilledForm = (
