@@ -38,6 +38,11 @@ def submit_form(data: AnswerBase):
         responseTemp.append(rc)
     data.responses = responseTemp
 
+    if data.submissionStart:
+        del data.submissionStart
+    if data.submissionStop:
+        del data.submissionStop
+
     _uuid = data.uuid
     instance_id = data.instance
     # zip process
@@ -95,6 +100,15 @@ def submit_form(data: AnswerBase):
         }
         result = r.post(BASE_URL, data=params)
         print(2, result, params)
+        time.sleep(0.5)
+        result = r.get(f"https://{dashboard}.akvoflow.org/processor",
+                       params={
+                           "action": 'submit',
+                           "formID": data.formId,
+                           "fileName": zip_name,
+                           "devId": data.deviceId
+                        })
+        print(3, result)
     else:
         # error here
         pass
