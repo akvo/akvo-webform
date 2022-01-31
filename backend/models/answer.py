@@ -70,8 +70,8 @@ class AnswerResponse(BaseModel):
                 res = res
         # OPTION TYPE
         if atype == QuestionType.option.value:
+            temp = []
             if type(value) is list:
-                temp = []
                 for rc in value:
                     if "text" in rc and "value" in rc:
                         temp.append({
@@ -86,19 +86,22 @@ class AnswerResponse(BaseModel):
                     json.loads(value)
                     res = res
                 except ValueError:
-                    res = json.dumps({"text": value})
+                    temp.append({"text": value})
+                    res = json.dumps(temp)
         # DATE TYPE
         if atype == QuestionType.date.value:
             date_obj = datetime.strptime(value, "%Y-%m-%d")
             res = int(datetime.timestamp(date_obj) * 1000)
         # GEO TYPE
-        if atype == QuestionType.geo.value or atype == "meta-geo":
+        if atype == QuestionType.geo.value:
             try:
                 lat = res["lat"]
                 lng = res["lng"]
                 res = f"{lat}|{lng}|0"
             except TypeError:
                 res = res
+        if atype == QuestionType.free.value or atype == "value":
+            res = str(value)
         return res
 
 
@@ -112,7 +115,7 @@ class AnswerBase(BaseModel):
     submissionStart: Optional[int] = None
     submissionStop: Optional[int] = None
     submissionDate: Optional[int] = None
-    duration: Optional[float] = None
+    duration: Optional[int] = None
     username: str
     uuid: Optional[str] = None
     instance: str
@@ -143,8 +146,7 @@ class AnswerBase(BaseModel):
             # delete submissionStart and submissionStop from dict
             del values["submissionStart"]
             del values["submissionStop"]
-            pass
-        return duration
+        return int(duration)
 
     @validator("responses", pre=True, always=True)
     def append_meta_name(cls, value, values):
