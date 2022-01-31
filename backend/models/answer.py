@@ -23,7 +23,7 @@ class Image(TypedDict):
     qid: str
 
 
-ValueVar = TypeVar('ValueVal', str, List[str], Geolocation,
+ValueVar = TypeVar('ValueVal', int, str, List[str], Geolocation,
                    Image, List[CascadeBase], List[Option])
 
 
@@ -90,8 +90,11 @@ class AnswerResponse(BaseModel):
                     res = json.dumps(temp)
         # DATE TYPE
         if atype == QuestionType.date.value:
-            date_obj = datetime.strptime(value, "%Y-%m-%d")
-            res = int(datetime.timestamp(date_obj) * 1000)
+            try:
+                date_obj = datetime.strptime(value, "%Y-%m-%d")
+                res = int(datetime.timestamp(date_obj) * 1000)
+            except TypeError:
+                res = res
         # GEO TYPE
         if atype == QuestionType.geo.value:
             try:
