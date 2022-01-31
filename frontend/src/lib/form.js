@@ -1,5 +1,6 @@
 import intersection from "lodash/intersection";
 import uuid from "uuid/v4";
+import moment from "moment";
 
 export const validateDependency = (dependency, value) => {
   if (typeof value === "string") {
@@ -84,11 +85,17 @@ export const transformRequest = (questionGroup, values) => {
   const res = Object.keys(values).map((key) => {
     const keyTemp = key.split("-")[0]; // to get only question id for repeat answer
     const findQuestion = questions.find((q) => q.id === keyTemp);
+    const answerType = findQuestion?.type;
+    let value = values[key];
+    // transform date value
+    if (answerType === "date") {
+      value = moment(value).format("YYYY-MM-DD");
+    }
     return {
       questionId: key.replace("Q", "").split("-")[0],
       iteration: parseInt(key.split("-")[1] || 0),
-      answerType: findQuestion?.type,
-      value: values[key],
+      answerType: answerType,
+      value: value,
     };
   });
   // find geo question, check for localeNameFlag
