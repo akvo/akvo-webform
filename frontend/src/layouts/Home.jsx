@@ -8,30 +8,10 @@ import generateForm, {
   transformRequest,
   checkFilledForm,
   generateDataPointNameDisplay,
+  generateDataPointId,
 } from "../lib/form";
 import dataProviders from "../store";
 import { QuestionGroup, FormHeader, Sidebar } from "../components";
-import uuid from "uuid/v4";
-
-const generateUUID = () => {
-  let id = uuid();
-  id = id.split("-");
-  id = id
-    .map((x) => {
-      return x.substring(0, 4);
-    })
-    .slice(0, 3);
-  return id.join("-");
-};
-
-const generateDataPointId = () => {
-  const dataPointId = [
-    Math.random().toString(36).slice(2).substring(1, 5),
-    Math.random().toString(36).slice(2).substring(1, 5),
-    Math.random().toString(36).slice(2).substring(1, 5),
-  ];
-  return dataPointId.join("-");
-};
 
 const Home = () => {
   const [error, setError] = useState(false);

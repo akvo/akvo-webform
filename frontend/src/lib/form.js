@@ -1,4 +1,5 @@
 import intersection from "lodash/intersection";
+import uuid from "uuid/v4";
 
 export const validateDependency = (dependency, value) => {
   if (typeof value === "string") {
@@ -154,5 +155,25 @@ export const generateDataPointNameDisplay = (dataPointName) =>
     .filter((x) => x.value)
     .map((x) => x.value)
     .join(" - ");
+
+export const generateDataPointId = () => {
+  const dataPointId = [
+    Math.random().toString(36).slice(2).substring(1, 5),
+    Math.random().toString(36).slice(2).substring(1, 5),
+    Math.random().toString(36).slice(2).substring(1, 5),
+  ];
+  return dataPointId.join("-");
+};
+
+export const generateUUID = () => {
+  let id = uuid();
+  id = id.split("-");
+  id = id
+    .map((x) => {
+      return x.substring(0, 4);
+    })
+    .slice(0, 3);
+  return id.join("-");
+};
 
 export default generateForm;
