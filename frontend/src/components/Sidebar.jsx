@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 import dataProviders from "../store";
 
-const Sidebar = ({ active, complete, questionGroup, isSubmitted }) => {
+const Sidebar = ({ active, complete, questionGroup, isSubmitFailed }) => {
   return (
     <List
       bordered={false}
@@ -20,14 +20,14 @@ const Sidebar = ({ active, complete, questionGroup, isSubmitted }) => {
           item={item}
           active={active}
           complete={complete}
-          isSubmitted={isSubmitted}
+          isSubmitFailed={isSubmitFailed}
         />
       )}
     />
   );
 };
 
-const ListItem = ({ index, item, active, complete, isSubmitted }) => {
+const ListItem = ({ index, item, active, complete, isSubmitFailed }) => {
   const dispatch = dataProviders.Actions();
   const checkComplete = item?.repeatable ? `${index}-${item?.repeat}` : index;
 
@@ -53,7 +53,7 @@ const ListItem = ({ index, item, active, complete, isSubmitted }) => {
           {item?.heading}
           {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
         </div>
-        {!complete.includes(checkComplete) && isSubmitted.length ? (
+        {!complete.includes(checkComplete) && isSubmitFailed.length ? (
           <div className="sidebar-incomplete-text">
             Please fill in all required questions
           </div>

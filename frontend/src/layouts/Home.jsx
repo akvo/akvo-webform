@@ -22,9 +22,11 @@ const Home = () => {
   const { questionGroup } = forms;
   const { active, complete } = group;
   const [form] = Form.useForm();
-  const [isSubmitted, setIsSubmitted] = useState([]);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [isSubmitFailed, setIsSubmitFailed] = useState([]);
 
   const onComplete = (values) => {
+    setIsSubmit(true);
     const responses = transformRequest(questionGroup, values);
     const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
     const data = {
@@ -44,16 +46,19 @@ const Home = () => {
       .post(`/submit-form?`, data, { "content-type": "application/json" })
       .then((res) => {
         console.log(res?.data);
+        setIsSubmit(false);
+        window.location.reload();
       })
       .catch((e) => {
         const { status, statusText } = e.response;
         console.error(status, statusText);
-        // setError(e.response);
+        setIsSubmit(false);
+        setError(e.response);
       });
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
-    setIsSubmitted(errorFields);
+    setIsSubmitFailed(errorFields);
     console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 
@@ -106,9 +111,9 @@ const Home = () => {
       active: active,
       complete: complete,
       questionGroup: questionGroup,
-      isSubmitted: isSubmitted,
+      isSubmitFailed: isSubmitFailed,
     };
-  }, [active, complete, questionGroup, isSubmitted]);
+  }, [active, complete, questionGroup, isSubmitFailed]);
 
   if (error) {
     return (
@@ -128,7 +133,7 @@ const Home = () => {
 
   return (
     <Row className="container">
-      <FormHeader submit={() => form.submit()} />
+      <FormHeader submit={() => form.submit()} isSubmit={isSubmit} />
       <Col span={6} className="sidebar sticky">
         <Sidebar {...sidebarProps} />
       </Col>

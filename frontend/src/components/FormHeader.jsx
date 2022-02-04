@@ -17,7 +17,7 @@ const menu = (
   </Menu>
 );
 
-const FormHeader = ({ submit }) => {
+const FormHeader = ({ submit, isSubmit }) => {
   const { dataPointName, forms } = dataProviders.Values();
   const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
@@ -52,6 +52,8 @@ const FormHeader = ({ submit }) => {
             className="submit"
             htmlType="submit"
             onClick={() => submit()}
+            loading={isSubmit}
+            disabled={isSubmit}
           >
             Submit
           </Button>
