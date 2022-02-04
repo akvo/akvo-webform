@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from models.answer import AnswerBase
 from models.form import QuestionType
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -16,6 +16,18 @@ FLOW_SERVICE_URL = os.environ['FLOW_SERVICE_URL']
 BASE_URL = "{}/upload".format(FLOW_SERVICE_URL)
 
 answer_route = APIRouter()
+
+
+def remove_tmp(zip_name, combined):
+    # remove data
+    if not os.path.exists('./tmp'):
+        os.mkdir('./tmp')
+    if os.path.isfile('data.json'):
+        os.remove('data.json')
+    if os.path.isfile(zip_name):
+        os.remove(zip_name)
+    if os.path.isfile(combined):
+        os.rename(combined, './tmp/ ' + combined)
 
 
 @answer_route.post('/submit-form',
@@ -83,7 +95,6 @@ def submit_form(data: AnswerBase):
 
     files = {'file': (combined, open(combined, 'rb'), 'application/zip')}
     result = r.post(BASE_URL, files=files, data=params)
-    print(1, result, params)
     time.sleep(0.5)
 
     if (result.status_code == 200):
@@ -99,7 +110,6 @@ def submit_form(data: AnswerBase):
             'complete': 'true'
         }
         result = r.post(BASE_URL, data=params)
-        print(2, result, params)
         time.sleep(0.5)
         params = {
             "action": 'submit',
@@ -109,19 +119,10 @@ def submit_form(data: AnswerBase):
         }
         result = r.get(f"https://{dashboard}.akvoflow.org/processor",
                        params=params)
-        print(3, result, params)
+        remove_tmp(zip_name, combined)
     else:
         # error here
-        pass
-
-    # remove data
-    if not os.path.exists('./tmp'):
-        os.mkdir('./tmp')
-    if os.path.isfile('data.json'):
-        os.remove('data.json')
-    if os.path.isfile(zip_name):
-        os.remove(zip_name)
-    if os.path.isfile(combined):
-        os.rename(combined, './tmp/ ' + combined)
+        remove_tmp(zip_name, combined)
+        raise HTTPException(status_code=result.status_code, detail=result.text)
 
     return data
