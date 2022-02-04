@@ -52,18 +52,18 @@ class AnswerResponse(BaseModel):
                 for rc in value:
                     if "name" in rc and "id" in rc:
                         temp.append({
-                            "code": rc["id"],
-                            "text": rc["name"]
+                            "code": str(rc["id"]),
+                            "name": rc["name"]
                         })
-                    elif "text" in rc and "code" in rc:
+                    elif "name" in rc and "code" in rc:
                         temp.append({
-                            "code": rc["code"],
-                            "text": rc["text"]
+                            "code": str(rc["code"]),
+                            "name": rc["name"]
                         })
                     else:
                         temp.append({
                             "code": "",
-                            "text": rc["name"]
+                            "name": rc["name"]
                         })
                 res = json.dumps(temp)
             except TypeError:
@@ -121,7 +121,7 @@ class AnswerBase(BaseModel):
     duration: Optional[int] = None
     username: str
     uuid: Optional[str] = None
-    instance: str
+    instance: Optional[str] = None
 
     @validator("formVersion", pre=True, always=True)
     def set_form_version_to_float(cls, value):
@@ -145,7 +145,7 @@ class AnswerBase(BaseModel):
                 int(values["submissionStop"]) / 1000)
             duration = end_date - start_date
             duration = round(duration.total_seconds())
-        else:
+        if duration:
             # delete submissionStart and submissionStop from dict
             del values["submissionStart"]
             del values["submissionStop"]
@@ -159,9 +159,9 @@ class AnswerBase(BaseModel):
             "questionId": "-1",
             "value": values["dataPointName"]
         }
-        if meta_response not in value:
+        if values["dataPointName"] and meta_response not in value:
             value.append(meta_response)
-        else:
+        if meta_response in value:
             # delete dataPointName from dict
             del values["dataPointName"]
         return value
