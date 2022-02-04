@@ -119,8 +119,8 @@ const Home = () => {
     return (
       <ErrorPage
         status={error.status}
-        title={"Error Loading Form"}
-        messages={[`Form Id ${formId} is not found`]}
+        title={error?.statusText || "Error Loading Form"}
+        messages={[error?.statusText || `Form Id ${formId} is not found`]}
       />
     );
   }
