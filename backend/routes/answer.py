@@ -100,15 +100,16 @@ def submit_form(data: AnswerBase):
         }
         result = r.post(BASE_URL, data=params)
         print(2, result, params)
-        # time.sleep(0.5)
-        # result = r.get(f"https://{dashboard}.akvoflow.org/processor",
-        #                params={
-        #                    "action": 'submit',
-        #                    "formID": data.formId,
-        #                    "fileName": combined,
-        #                    "devId": data.deviceId
-        #                 })
-        # print(3, result)
+        time.sleep(0.5)
+        params = {
+            "action": 'submit',
+            "formID": data.formId,
+            "fileName": zip_name,
+            "devId": data.deviceId
+        }
+        result = r.get(f"https://{dashboard}.akvoflow.org/processor",
+                       params=params)
+        print(3, result, params)
     else:
         # error here
         pass
