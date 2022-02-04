@@ -35,7 +35,7 @@ const Home = () => {
       instance: forms?.app,
       submissionStart: forms?.submissionStart,
       submissionStop: Date.now(),
-      username: "username", // change later
+      username: "akvo-webform", // change later
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
