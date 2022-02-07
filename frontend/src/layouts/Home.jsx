@@ -11,7 +11,12 @@ import generateForm, {
   generateDataPointId,
 } from "../lib/form";
 import dataProviders from "../store";
-import { QuestionGroup, FormHeader, Sidebar } from "../components";
+import {
+  QuestionGroup,
+  FormHeader,
+  Sidebar,
+  NotificationModal,
+} from "../components";
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -24,6 +29,7 @@ const Home = () => {
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSubmitFailed, setIsSubmitFailed] = useState([]);
+  const [notification, setNotification] = useState({ isVisible: false });
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -45,9 +51,13 @@ const Home = () => {
     api
       .post(`/submit-form?`, data, { "content-type": "application/json" })
       .then((res) => {
-        console.log(res?.data);
+        console.log(res.data);
         setIsSubmit(false);
-        window.location.reload();
+        setNotification({
+          isVisible: true,
+          type: "success",
+          onOk: () => window.location.reload(),
+        });
       })
       .catch((e) => {
         const { status, statusText } = e.response;
@@ -181,6 +191,7 @@ const Home = () => {
           </Col>
         )}
       </Col>
+      <NotificationModal {...notification} />
     </Row>
   );
 };
