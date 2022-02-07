@@ -37,6 +37,7 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
     maxCount: 1,
     customRequest: onCollect,
     onRemove: onRemove,
+    accept: ".jpg, .jpeg",
   };
 
   const formFile = (e) => {
