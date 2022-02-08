@@ -17,7 +17,7 @@ const menu = (
   </Menu>
 );
 
-const FormHeader = ({ submit, isSubmit }) => {
+const FormHeader = ({ submit, isSubmit, isMobile }) => {
   const { dataPointName, forms } = dataProviders.Values();
   const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
@@ -47,16 +47,18 @@ const FormHeader = ({ submit, isSubmit }) => {
           >
             En
           </Button>
-          <Button
-            size="large"
-            className="submit"
-            htmlType="submit"
-            onClick={() => submit()}
-            loading={isSubmit}
-            disabled={isSubmit}
-          >
-            Submit
-          </Button>
+          {!isMobile && (
+            <Button
+              size="large"
+              className="submit"
+              htmlType="submit"
+              onClick={() => submit()}
+              loading={isSubmit}
+              disabled={isSubmit}
+            >
+              Submit
+            </Button>
+          )}
           <Dropdown overlay={menu} placement="bottomCenter">
             <FiMoreHorizontal className="more" />
           </Dropdown>
