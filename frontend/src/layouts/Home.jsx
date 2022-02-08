@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Button, Form } from "antd";
+import { Row, Col, Button, Form, Drawer, Space } from "antd";
+import { FiMenu } from "react-icons/fi";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import { saveFormToDB } from "../lib/db";
@@ -30,6 +31,12 @@ const Home = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSubmitFailed, setIsSubmitFailed] = useState([]);
   const [notification, setNotification] = useState({ isVisible: false });
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+
+  // check screen size
+  const isMobile = window.matchMedia(
+    "only screen and (max-width: 760px)"
+  ).matches;
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -143,11 +150,17 @@ const Home = () => {
 
   return (
     <Row className="container">
-      <FormHeader submit={() => form.submit()} isSubmit={isSubmit} />
-      <Col span={6} className="sidebar sticky">
-        <Sidebar {...sidebarProps} />
-      </Col>
-      <Col span={18} className="main">
+      <FormHeader
+        submit={() => form.submit()}
+        isSubmit={isSubmit}
+        isMobile={isMobile}
+      />
+      {!isMobile && (
+        <Col span={6} className="sidebar sticky">
+          <Sidebar {...sidebarProps} />
+        </Col>
+      )}
+      <Col span={isMobile ? 24 : 18} className="main">
         <Form
           form={form}
           layout="vertical"
@@ -172,9 +185,10 @@ const Home = () => {
             );
           })}
         </Form>
-        {!lastGroup && (
+        {!isMobile && !lastGroup && (
           <Col span={24} className="next">
             <Button
+              className="button-next"
               size="large"
               type="default"
               onClick={() => {
@@ -191,6 +205,66 @@ const Home = () => {
           </Col>
         )}
       </Col>
+      {/* Mobile Footer */}
+      {isMobile && (
+        <Col span={24} className="mobile-footer-container">
+          <Row justify="space-between" align="middle">
+            <Col span={12} align="start">
+              <Space size={5}>
+                <Button
+                  type="link"
+                  icon={<FiMenu className="icon" />}
+                  onClick={() => setIsMobileMenuVisible(!isMobileMenuVisible)}
+                />
+                <div>
+                  {sidebarProps?.active + 1} /{" "}
+                  {sidebarProps?.questionGroup?.length}
+                </div>
+              </Space>
+            </Col>
+            <Col span={12} align="end">
+              <Button
+                className="button-next"
+                size="large"
+                type="default"
+                onClick={() => {
+                  setIsMobileMenuVisible(false);
+                  if (!lastGroup) {
+                    dispatch({
+                      type: "UPDATE GROUP",
+                      payload: { active: active + 1 },
+                    });
+                  } else {
+                    form.submit();
+                  }
+                }}
+                loading={lastGroup && isSubmit}
+                disabled={lastGroup && isSubmit}
+              >
+                {!lastGroup ? "Next" : "Submit"}
+              </Button>
+            </Col>
+          </Row>
+          {/* Drawer menu */}
+          <Drawer
+            title={null}
+            placement="bottom"
+            closable={false}
+            onClose={() => setIsMobileMenuVisible(false)}
+            visible={isMobileMenuVisible}
+            className="sidebar mobile"
+            height="100%"
+            zIndex="1001"
+          >
+            <Sidebar
+              {...sidebarProps}
+              isMobile={isMobile}
+              setIsMobileMenuVisible={setIsMobileMenuVisible}
+            />
+          </Drawer>
+        </Col>
+      )}
+      {/* Notification Modal */}
       <NotificationModal {...notification} />
     </Row>
   );
