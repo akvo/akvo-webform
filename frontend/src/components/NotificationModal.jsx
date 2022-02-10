@@ -6,14 +6,19 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 
-const NotificationModal = ({ isVisible, type, onOk, onCancel }) => {
+const NotificationModal = ({ isMobile, isVisible, type, onOk, onCancel }) => {
   const modalProps = () => {
     switch (type) {
       case "success":
         return {
+          status: "success",
           icon: <CheckCircleOutlined />,
           title: "Form submitted successfully.",
-          extra: <Button onClick={onOk}>New Submission</Button>,
+          extra: (
+            <Button size="large" className="button-next" onClick={onOk}>
+              New Submission
+            </Button>
+          ),
         };
       case "clear":
         return {
@@ -30,9 +35,14 @@ const NotificationModal = ({ isVisible, type, onOk, onCancel }) => {
         };
       default:
         return {
+          status: "error",
           icon: <ExclamationCircleOutlined />,
           title: "Error, something went wrong!",
-          extra: <Button onClick={onCancel}>Close</Button>,
+          extra: (
+            <Button size="large" className="button-next" onClick={onCancel}>
+              Close
+            </Button>
+          ),
         };
     }
   };
@@ -45,6 +55,8 @@ const NotificationModal = ({ isVisible, type, onOk, onCancel }) => {
       centered={true}
       zIndex={9999}
       closable={false}
+      wrapClassName={"notification-modal-wrap"}
+      width={isMobile ? "90%" : "520px"}
     >
       <Result {...modalProps()} />
     </Modal>

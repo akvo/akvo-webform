@@ -218,7 +218,7 @@ const Home = () => {
         />
       )}
       {/* Notification Modal */}
-      <NotificationModal {...notification} />
+      <NotificationModal {...notification} isMobile={isMobile} />
     </Row>
   );
 };
