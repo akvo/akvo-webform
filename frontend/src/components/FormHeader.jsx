@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Button, Dropdown, Menu, message } from "antd";
-import { FiMoreHorizontal } from "react-icons/fi";
+import { FiMoreHorizontal, FiMoreVertical } from "react-icons/fi";
 import { BiBarcodeReader } from "react-icons/bi";
 import dataProviders from "../store";
 import { generateDataPointNameDisplay } from "../lib/form";
@@ -17,11 +17,26 @@ const menu = (
   </Menu>
 );
 
-const FormHeader = ({ submit, isSubmit, isMobile }) => {
-  const { dataPointName, forms } = dataProviders.Values();
+const DatapointDisplayName = ({ dataPointName }) => {
   const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
-    <Col span={24} className="form-header sticky">
+    <div className="datapoint">
+      {dataPointNameDisplay.length ? <BiBarcodeReader className="icon" /> : ""}
+      {dataPointNameDisplay}
+    </div>
+  );
+};
+
+const FormHeader = ({ submit, isSubmit, isMobile }) => {
+  const { dataPointName, forms } = dataProviders.Values();
+  const isDisplayNameShown = dataPointName.filter((x) => x.value)?.length > 0;
+  return (
+    <Col
+      span={24}
+      className={`form-header sticky ${
+        isMobile && isDisplayNameShown ? "mobile-header-with-display-name" : ""
+      }`}
+    >
       <Row
         align="middle"
         className="form-header-container"
@@ -32,16 +47,9 @@ const FormHeader = ({ submit, isSubmit, isMobile }) => {
           <h1>{forms.name}</h1>
         </Col>
         <Col span={12} className="left">
-          <div className="datapoint">
-            {dataPointNameDisplay.length ? (
-              <BiBarcodeReader className="icon" />
-            ) : (
-              ""
-            )}
-            {dataPointNameDisplay}
-          </div>
+          {!isMobile && <DatapointDisplayName dataPointName={dataPointName} />}
           <Button
-            size="large"
+            size={isMobile ? "middle" : "large"}
             className="lang"
             onClick={() => onClick("Change Language")}
           >
@@ -60,9 +68,18 @@ const FormHeader = ({ submit, isSubmit, isMobile }) => {
             </Button>
           )}
           <Dropdown overlay={menu} placement="bottomCenter">
-            <FiMoreHorizontal className="more" />
+            {isMobile ? (
+              <FiMoreVertical className="more" />
+            ) : (
+              <FiMoreHorizontal className="more" />
+            )}
           </Dropdown>
         </Col>
+        {isMobile && isDisplayNameShown && (
+          <Col span={24}>
+            <DatapointDisplayName dataPointName={dataPointName} />
+          </Col>
+        )}
       </Row>
     </Col>
   );
