@@ -28,6 +28,10 @@ body {
   border-top: none !important;
 }
 
+.ant-btn-link {
+  color: #000 !important;
+}
+
 #root {
   .ant-input,
   .ant-select-selector,
@@ -114,9 +118,5 @@ body {
         }
       }
     }
-  }
-
-  .ant-btn-link {
-    color: #000;
   }
 }
