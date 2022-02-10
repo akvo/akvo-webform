@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Form, Input, InputNumber } from "antd";
 import Label from "../components/Label";
 import { checkFilledForm } from "../lib/form";
 import dataProviders from "../store";
 
-const DoubleEntry = ({ id, number, error, setDoubleEntryValue }) => {
+const DoubleEntry = ({
+  id,
+  number,
+  error,
+  setDoubleEntryValue,
+  doubleEntryValue,
+}) => {
   return (
     <>
       {number ? (
@@ -12,11 +18,13 @@ const DoubleEntry = ({ id, number, error, setDoubleEntryValue }) => {
           key={`de-${id}`}
           style={{ width: "100%" }}
           onChange={(e) => setDoubleEntryValue(e)}
+          value={doubleEntryValue}
         />
       ) : (
         <Input
           key={`de-${id}`}
           onChange={(e) => setDoubleEntryValue(e?.target?.value)}
+          value={doubleEntryValue}
         />
       )}
       {error && <div className="error-double-entry">Invalid Double Entry</div>}
@@ -117,6 +125,7 @@ const TypeInput = ({
               number={validationRule?.validationType === "numeric"}
               error={doubleEntryError}
               setDoubleEntryValue={setDoubleEntryValue}
+              doubleEntryValue={doubleEntryValue}
             />
           </div>
         </>

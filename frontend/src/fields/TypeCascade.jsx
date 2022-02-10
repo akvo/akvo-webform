@@ -131,6 +131,10 @@ const TypeCascade = ({
             filterOption={(input, option) =>
               option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
+            value={
+              form.getFieldValue(id)?.[xi]?.id ||
+              form.getFieldValue(id)?.[xi]?.name
+            }
           >
             {x?.options?.map((o, oi) => (
               <Option key={oi} value={o.id}>

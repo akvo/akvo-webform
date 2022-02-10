@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
-import { saveFormToDB } from "../lib/db";
+import { saveFormToDB, saveAnswerToDB, getAnswerFromDB } from "../lib/db";
 import generateForm, {
   transformRequest,
   checkFilledForm,
@@ -18,6 +18,7 @@ import {
   NotificationModal,
   MobileFooter,
 } from "../components";
+import moment from "moment";
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -122,6 +123,38 @@ const Home = () => {
         setError(e.response);
       });
   }, [formId]);
+
+  useEffect(() => {
+    if (forms?.surveyId) {
+      saveAnswerToDB({
+        formId: formId,
+        answer: JSON.stringify(form.getFieldsValue()),
+      });
+    }
+  }, [form.getFieldsValue()]);
+
+  useMemo(() => {
+    if (forms?.surveyId) {
+      const questions = questionGroup.flatMap((qg) => qg.question);
+      // fill form from dexie
+      getAnswerFromDB({ formId }).then((res) => {
+        const answer = JSON.parse(res.answer);
+        console.log(answer);
+        Object.keys(answer).forEach((key) => {
+          const findQuestion = questions.find((q) => q.id === key);
+          const value = answer?.[key];
+          // check if string a valid date
+          if (findQuestion?.type === "date") {
+            form.setFieldsValue({
+              [key]: moment(value),
+            });
+          } else {
+            form.setFieldsValue({ [key]: value });
+          }
+        });
+      });
+    }
+  }, [forms]);
 
   const sidebarProps = useMemo(() => {
     return {
