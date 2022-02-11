@@ -33,9 +33,9 @@ const TypeCascade = ({
     const tail =
       cascadeAnswer?.length !== level.length
         ? findLast(stored)
-        : cascadeAnswer?.[0];
+        : cascadeAnswer?.[cascadeValues.length - 1];
     return tail?.id || tail?.name || tail;
-  }, [cascadeAnswer, stored]);
+  }, [cascadeAnswer, stored, cascadeValues]);
 
   const updateCompleteState = (value) => {
     const answer = { [id]: value };
@@ -139,8 +139,9 @@ const TypeCascade = ({
               option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             value={
-              form.getFieldValue(id)?.[xi]?.id ||
-              form.getFieldValue(id)?.[xi]?.name
+              stored.length
+                ? stored?.[xi]?.id || stored?.[xi]?.name // get selected value
+                : cascadeAnswer?.[xi]?.id || cascadeAnswer?.[xi]?.name // get restored value
             }
           >
             {x?.options?.map((o, oi) => (
