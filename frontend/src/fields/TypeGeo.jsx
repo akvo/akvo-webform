@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Form, Input } from "antd";
 import { Label } from "../components";
 import Maps from "./support/Maps";
@@ -6,7 +6,11 @@ import dataProviders from "../store";
 import { checkFilledForm } from "../lib/form";
 
 const TypeGeo = ({ id, form, text, keyform, mandatory, rules, help }) => {
-  const [position, setPosition] = useState({ lat: null, lng: null });
+  const geoAnswer = form.getFieldValue(id);
+  const [position, setPosition] = useState({
+    lat: geoAnswer?.lat || null,
+    lng: geoAnswer?.lng || null,
+  });
   const [value, setValue] = useState(null);
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();

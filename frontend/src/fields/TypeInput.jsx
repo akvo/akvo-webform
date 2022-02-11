@@ -43,9 +43,10 @@ const TypeInput = ({
   requireDoubleEntry,
   form,
 }) => {
-  const [value, setValue] = useState(null);
+  const inputAnswer = form.getFieldValue(id);
+  const [value, setValue] = useState(inputAnswer || null);
   const [doubleEntryError, setDoubleEntryError] = useState(false);
-  const [doubleEntryValue, setDoubleEntryValue] = useState(null);
+  const [doubleEntryValue, setDoubleEntryValue] = useState(inputAnswer || null);
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
   const { forms, dataPointName } = state;
@@ -112,10 +113,14 @@ const TypeInput = ({
           </Form.Item>
           <div className="field-double-entry" style={{ marginTop: "-62px" }}>
             {validationRule?.validationType === "numeric" ? (
-              <InputNumber onChange={(val) => setFirstDoubleEntryValue(val)} />
+              <InputNumber
+                onChange={(val) => setFirstDoubleEntryValue(val)}
+                value={value}
+              />
             ) : (
               <Input
                 onChange={(val) => setFirstDoubleEntryValue(val?.target?.value)}
+                value={value}
               />
             )}
           </div>

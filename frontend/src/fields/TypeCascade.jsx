@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Space, Form, Select } from "antd";
 import Label from "../components/Label";
 import api from "../lib/api";
@@ -19,6 +19,7 @@ const TypeCascade = ({
   form,
   cascadeResource,
 }) => {
+  const cascadeAnswer = form.getFieldValue(id);
   const state = dataProviders.Values();
   const { level } = levels;
   const { forms, dataPointName } = state;
@@ -26,9 +27,15 @@ const TypeCascade = ({
   const { questionGroup } = forms;
   const [stored, setStored] = useState([]);
   const alias = forms?.alias?.split(".")[0];
-  let tail = findLast(stored);
-  tail = tail?.id || tail?.name || tail;
   const [cascadeValues, setCascadeValues] = useState([]);
+
+  const tail = useMemo(() => {
+    const tail =
+      cascadeAnswer?.length !== level.length
+        ? findLast(stored)
+        : cascadeAnswer?.[0];
+    return tail?.id || tail?.name || tail;
+  }, [cascadeAnswer, stored]);
 
   const updateCompleteState = (value) => {
     const answer = { [id]: value };

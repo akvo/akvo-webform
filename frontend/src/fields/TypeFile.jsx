@@ -7,7 +7,8 @@ import uuid from "uuid/v4";
 const { Dragger } = Upload;
 
 const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
-  const [fileLoaded, setFileLoaded] = useState(null);
+  const fileAnswer = form.getFieldValue(id);
+  const [fileLoaded, setFileLoaded] = useState(fileAnswer || null);
 
   const onCollect = ({ file, onSuccess }) => {
     const ext = file.name.substring(file.name.lastIndexOf("."));
