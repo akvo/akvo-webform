@@ -28,7 +28,7 @@ const Sidebar = ({
               icon={
                 <AiOutlineDown
                   className="icon"
-                  onClick={() => setIsMobileMenuVisible(false)}
+                  onClick={() => isMobile && setIsMobileMenuVisible(false)}
                 />
               }
             />
@@ -44,6 +44,7 @@ const Sidebar = ({
           active={active}
           complete={complete}
           isSubmitFailed={isSubmitFailed}
+          isMobile={isMobile}
           setIsMobileMenuVisible={setIsMobileMenuVisible}
         />
       )}
@@ -57,6 +58,7 @@ const ListItem = ({
   active,
   complete,
   isSubmitFailed,
+  isMobile,
   setIsMobileMenuVisible,
 }) => {
   const dispatch = dataProviders.Actions();
@@ -66,7 +68,7 @@ const ListItem = ({
     <List.Item
       key={index}
       onClick={() => {
-        setIsMobileMenuVisible(false);
+        isMobile && setIsMobileMenuVisible(false);
         dispatch({ type: "UPDATE GROUP", payload: { active: index } });
       }}
       className={`sidebar-list ${active === index ? "active" : ""} ${
