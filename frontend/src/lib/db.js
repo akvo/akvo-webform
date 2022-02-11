@@ -31,6 +31,8 @@ export const saveAnswerToDB = ({ formId, answer }) => {
   db.answers.add({ formId, answer });
 };
 
-export const getAnswerFromDB = ({ formId }) => db.table("answers").get(formId);
+export const getAnswerFromDB = ({ formId }) => db.answers.get(formId);
+
+export const deleteAnswerByIdFromDB = ({ formId }) => db.answers.delete(formId);
 
 export default db;
