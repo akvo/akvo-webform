@@ -4,7 +4,10 @@ import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
 import {
+  checkDB,
   saveFormToDB,
+  getFormFromDB,
+  deleteFormByIdFromDB,
   saveAnswerToDB,
   getAnswerFromDB,
   deleteAnswerByIdFromDB,
@@ -67,6 +70,7 @@ const Home = () => {
         console.log(res.data);
         form.resetFields();
         deleteAnswerByIdFromDB({ formId });
+        deleteFormByIdFromDB({ formId });
         setIsSubmit(false);
         setNotification({
           isVisible: true,
@@ -110,39 +114,54 @@ const Home = () => {
   };
 
   useEffect(() => {
-    api
-      .get(`form/${formId}`)
-      .then((res) => {
-        let formData = generateForm(res.data);
-        // add form metadata
-        formData = {
-          ...formData,
-          dataPointId: generateDataPointId(),
-          deviceId: "Akvo Flow Web",
-          submissionStart: Date.now(),
-        };
-        saveFormToDB({ formId: formId, ...formData });
-        dispatch({ type: "INIT FORM", payload: formData });
-      })
-      .catch((e) => {
-        const { status, statusText } = e.response;
-        console.error(`${formId}`, status, statusText);
-        setError(e.response);
-      });
-
     // fill form from dexie
     getAnswerFromDB({ formId }).then((res) => {
-      const data = JSON.parse(res.answer);
-      data.forEach(({ question_id, type, answer }) => {
-        // check if string a valid date
-        if (type === "date") {
-          form.setFieldsValue({
-            [question_id]: moment(answer),
-          });
+      if (res?.answer) {
+        const data = JSON.parse(res.answer);
+        data.forEach(({ question_id, type, answer }) => {
+          // check if string a valid date
+          if (type === "date" && answer) {
+            form.setFieldsValue({
+              [question_id]: moment(answer),
+            });
+          } else {
+            form.setFieldsValue({
+              [question_id]: answer,
+            });
+          }
+        });
+      }
+    });
+    checkDB().then((res) => {
+      // load formData from dexie
+      getFormFromDB({ formId }).then((res) => {
+        if (res) {
+          dispatch({ type: "INIT FORM", payload: res?.formData });
         } else {
-          form.setFieldsValue({
-            [question_id]: answer,
-          });
+          api
+            .get(`form/${formId}`)
+            .then((res) => {
+              let formData = generateForm(res.data);
+              // add form metadata
+              formData = {
+                ...formData,
+                dataPointId: generateDataPointId(),
+                deviceId: "Akvo Flow Web",
+                submissionStart: Date.now(),
+              };
+              saveFormToDB({
+                formId: formId,
+                app: formData?.app,
+                version: formData?.version,
+                formData: formData,
+              });
+              dispatch({ type: "INIT FORM", payload: formData });
+            })
+            .catch((e) => {
+              const { status, statusText } = e.response;
+              console.error(`${formId}`, status, statusText);
+              setError(e.response);
+            });
         }
       });
     });
@@ -167,6 +186,18 @@ const Home = () => {
       });
     }
   }, [form.getFieldsValue()]);
+
+  useEffect(() => {
+    if (forms?.surveyId) {
+      // save updated forms to index DB
+      saveFormToDB({
+        formId: formId,
+        app: forms?.app,
+        version: forms?.version,
+        formData: forms,
+      });
+    }
+  }, [forms]);
 
   const sidebarProps = useMemo(() => {
     return {
