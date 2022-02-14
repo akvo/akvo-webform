@@ -137,11 +137,6 @@ const Home = () => {
           return res;
         })
         .then((answerValues) => {
-          // load formData from dexie
-          // getFormFromDB({ formId }).then((res) => {
-          //   if (res) {
-          //     dispatch({ type: "INIT FORM", payload: res?.formData });
-          //   } else {
           api
             .get(`form/${formId}`)
             .then((res) => {
@@ -181,8 +176,6 @@ const Home = () => {
               console.error(`${formId}`, status, statusText);
               setError(e.response);
             });
-          //   }
-          // });
         });
     });
   }, [formId]);
@@ -216,18 +209,6 @@ const Home = () => {
       });
     }
   }, [form.getFieldsValue()]);
-
-  // useEffect(() => {
-  //   if (forms?.surveyId) {
-  //     // save updated forms to index DB
-  //     saveFormToDB({
-  //       formId: formId,
-  //       app: forms?.app,
-  //       version: forms?.version,
-  //       formData: forms,
-  //     });
-  //   }
-  // }, [forms]);
 
   const sidebarProps = useMemo(() => {
     return {
