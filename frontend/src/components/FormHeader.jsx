@@ -17,7 +17,17 @@ const menu = (
   </Menu>
 );
 
-const DatapointDisplayName = ({ dataPointName }) => {
+const DatapointDisplayName = ({ dataPointName, form }) => {
+  dataPointName = dataPointName.map((x) => {
+    let findValue = form.getFieldValue(x?.id);
+    if (Array.isArray(findValue)) {
+      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
+    }
+    return {
+      ...x,
+      value: x?.value || findValue || false,
+    };
+  });
   const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
     <div className="datapoint">
@@ -27,9 +37,10 @@ const DatapointDisplayName = ({ dataPointName }) => {
   );
 };
 
-const FormHeader = ({ submit, isSubmit, isMobile }) => {
+const FormHeader = ({ submit, isSubmit, isMobile, form }) => {
   const { dataPointName, forms } = dataProviders.Values();
   const isDisplayNameShown = dataPointName.filter((x) => x.value)?.length > 0;
+
   return (
     <Col
       span={24}
@@ -47,7 +58,9 @@ const FormHeader = ({ submit, isSubmit, isMobile }) => {
           <h1>{forms.name}</h1>
         </Col>
         <Col span={12} className="left">
-          {!isMobile && <DatapointDisplayName dataPointName={dataPointName} />}
+          {!isMobile && (
+            <DatapointDisplayName dataPointName={dataPointName} form={form} />
+          )}
           <Button
             size={isMobile ? "middle" : "large"}
             className="lang"
@@ -77,7 +90,7 @@ const FormHeader = ({ submit, isSubmit, isMobile }) => {
         </Col>
         {isMobile && isDisplayNameShown && (
           <Col span={24}>
-            <DatapointDisplayName dataPointName={dataPointName} />
+            <DatapointDisplayName dataPointName={dataPointName} form={form} />
           </Col>
         )}
       </Row>
