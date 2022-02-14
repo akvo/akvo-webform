@@ -132,47 +132,72 @@ const Home = () => {
                 });
               }
             });
+            return data;
           }
+          return res;
         })
-        .then((res) => {
+        .then((answerValues) => {
           // load formData from dexie
-          getFormFromDB({ formId }).then((res) => {
-            if (res) {
-              dispatch({ type: "INIT FORM", payload: res?.formData });
-            } else {
-              api
-                .get(`form/${formId}`)
-                .then((res) => {
-                  let formData = generateForm(res.data);
-                  // add form metadata
-                  formData = {
-                    ...formData,
-                    dataPointId: generateDataPointId(),
-                    deviceId: "Akvo Flow Web",
-                    submissionStart: Date.now(),
+          // getFormFromDB({ formId }).then((res) => {
+          //   if (res) {
+          //     dispatch({ type: "INIT FORM", payload: res?.formData });
+          //   } else {
+          api
+            .get(`form/${formId}`)
+            .then((res) => {
+              let formData = generateForm(res.data);
+              // transform formData question group
+              // to return repeatable question value if value defined
+              let questionGroups = formData?.questionGroup;
+              if (answerValues) {
+                questionGroups = formData?.questionGroup.map((qg, qgi) => {
+                  const findQg = answerValues?.find(
+                    (ans) => ans?.qg_index === qgi
+                  );
+                  return {
+                    ...qg,
+                    repeat: findQg?.qg_repeat || 1,
                   };
-                  saveFormToDB({
-                    formId: formId,
-                    app: formData?.app,
-                    version: formData?.version,
-                    formData: formData,
-                  });
-                  dispatch({ type: "INIT FORM", payload: formData });
-                })
-                .catch((e) => {
-                  const { status, statusText } = e.response;
-                  console.error(`${formId}`, status, statusText);
-                  setError(e.response);
                 });
-            }
-          });
+              }
+              // add form metadata
+              formData = {
+                ...formData,
+                questionGroup: questionGroups,
+                dataPointId: generateDataPointId(),
+                deviceId: "Akvo Flow Web",
+                submissionStart: Date.now(),
+              };
+              saveFormToDB({
+                formId: formId,
+                app: formData?.app,
+                version: formData?.version,
+                formData: formData,
+              });
+              dispatch({ type: "INIT FORM", payload: formData });
+            })
+            .catch((e) => {
+              const { status, statusText } = e.response;
+              console.error(`${formId}`, status, statusText);
+              setError(e.response);
+            });
+          //   }
+          // });
         });
     });
   }, [formId]);
 
   useEffect(() => {
     if (forms?.surveyId) {
-      const questions = questionGroup.flatMap((qg) => qg.question);
+      const questions = questionGroup.flatMap((qg) => {
+        const qsTmp = qg.question.map((q) => ({
+          ...q,
+          // add question group index & repeatable
+          qg_index: qg?.index,
+          qg_repeat: qg?.repeat,
+        }));
+        return qsTmp;
+      });
       const answer = form.getFieldsValue();
       const transformAnswers = Object.keys(answer).map((key) => {
         const findQuestion = questions.find((q) => q.id === key);
@@ -181,6 +206,8 @@ const Home = () => {
           question_id: key,
           answer: value,
           type: findQuestion?.type,
+          qg_index: findQuestion?.qg_index,
+          qg_repeat: findQuestion?.qg_repeat,
         };
       });
       saveAnswerToDB({
@@ -190,17 +217,17 @@ const Home = () => {
     }
   }, [form.getFieldsValue()]);
 
-  useEffect(() => {
-    if (forms?.surveyId) {
-      // save updated forms to index DB
-      saveFormToDB({
-        formId: formId,
-        app: forms?.app,
-        version: forms?.version,
-        formData: forms,
-      });
-    }
-  }, [forms]);
+  // useEffect(() => {
+  //   if (forms?.surveyId) {
+  //     // save updated forms to index DB
+  //     saveFormToDB({
+  //       formId: formId,
+  //       app: forms?.app,
+  //       version: forms?.version,
+  //       formData: forms,
+  //     });
+  //   }
+  // }, [forms]);
 
   const sidebarProps = useMemo(() => {
     return {
