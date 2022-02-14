@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, InputNumber } from "antd";
 import Label from "../components/Label";
 import { checkFilledForm } from "../lib/form";
@@ -86,7 +86,7 @@ const TypeInput = ({
     if (requireDoubleEntry && !doubleEntryError && doubleEntryValue) {
       updateCompleteState(value);
     } else {
-      updateCompleteState(null);
+      updateCompleteState(inputAnswer || null);
     }
   }, [doubleEntryValue, doubleEntryError, value]);
 
