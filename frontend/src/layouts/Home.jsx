@@ -114,56 +114,59 @@ const Home = () => {
   };
 
   useEffect(() => {
-    // fill form from dexie
-    getAnswerFromDB({ formId }).then((res) => {
-      if (res?.answer) {
-        const data = JSON.parse(res.answer);
-        data.forEach(({ question_id, type, answer }) => {
-          // check if string a valid date
-          if (type === "date" && answer) {
-            form.setFieldsValue({
-              [question_id]: moment(answer),
-            });
-          } else {
-            form.setFieldsValue({
-              [question_id]: answer,
+    checkDB().then((res) => {
+      // fill form from dexie
+      getAnswerFromDB({ formId })
+        .then((res) => {
+          if (res?.answer) {
+            const data = JSON.parse(res.answer);
+            data.forEach(({ question_id, type, answer }) => {
+              // check if string a valid date
+              if (type === "date" && answer) {
+                form.setFieldsValue({
+                  [question_id]: moment(answer),
+                });
+              } else {
+                form.setFieldsValue({
+                  [question_id]: answer,
+                });
+              }
             });
           }
+        })
+        .then((res) => {
+          // load formData from dexie
+          getFormFromDB({ formId }).then((res) => {
+            if (res) {
+              dispatch({ type: "INIT FORM", payload: res?.formData });
+            } else {
+              api
+                .get(`form/${formId}`)
+                .then((res) => {
+                  let formData = generateForm(res.data);
+                  // add form metadata
+                  formData = {
+                    ...formData,
+                    dataPointId: generateDataPointId(),
+                    deviceId: "Akvo Flow Web",
+                    submissionStart: Date.now(),
+                  };
+                  saveFormToDB({
+                    formId: formId,
+                    app: formData?.app,
+                    version: formData?.version,
+                    formData: formData,
+                  });
+                  dispatch({ type: "INIT FORM", payload: formData });
+                })
+                .catch((e) => {
+                  const { status, statusText } = e.response;
+                  console.error(`${formId}`, status, statusText);
+                  setError(e.response);
+                });
+            }
+          });
         });
-      }
-    });
-    checkDB().then((res) => {
-      // load formData from dexie
-      getFormFromDB({ formId }).then((res) => {
-        if (res) {
-          dispatch({ type: "INIT FORM", payload: res?.formData });
-        } else {
-          api
-            .get(`form/${formId}`)
-            .then((res) => {
-              let formData = generateForm(res.data);
-              // add form metadata
-              formData = {
-                ...formData,
-                dataPointId: generateDataPointId(),
-                deviceId: "Akvo Flow Web",
-                submissionStart: Date.now(),
-              };
-              saveFormToDB({
-                formId: formId,
-                app: formData?.app,
-                version: formData?.version,
-                formData: formData,
-              });
-              dispatch({ type: "INIT FORM", payload: formData });
-            })
-            .catch((e) => {
-              const { status, statusText } = e.response;
-              console.error(`${formId}`, status, statusText);
-              setError(e.response);
-            });
-        }
-      });
     });
   }, [formId]);
 
@@ -230,6 +233,7 @@ const Home = () => {
         submit={() => form.submit()}
         isSubmit={isSubmit}
         isMobile={isMobile}
+        form={form}
       />
       {!isMobile && (
         <Col span={6} className="sidebar sticky">
