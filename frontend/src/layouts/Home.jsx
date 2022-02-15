@@ -38,6 +38,7 @@ const Home = () => {
   const { active, complete } = group;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
+  const [isSave, setIsSave] = useState(false);
   const [isSubmitFailed, setIsSubmitFailed] = useState([]);
   const [notification, setNotification] = useState({ isVisible: false });
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
@@ -91,9 +92,47 @@ const Home = () => {
     console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 
+  const onSaveSuccess = (res) => {
+    localStorage.setItem("_cache", res?.data?.id);
+    setIsSave(false);
+    setNotification({
+      isVisible: true,
+      type: "save-success",
+      onCancel: () => setNotification({ isVisible: false }),
+    });
+  };
+
+  const onSaveFailed = (e) => {
+    const { status, statusText } = e.response;
+    console.error(status, statusText);
+    setIsSave(false);
+    setError(e.response);
+  };
+
   const onSave = () => {
+    setIsSave(true);
     getAnswerFromDB({ formId }).then((res) => {
-      console.log(res);
+      if (localStorage.getItem("_cache") !== null) {
+        api
+          .put(`/form_instance/${localStorage.getItem("_cache")}`, res, {
+            "content-type": "application/json",
+          })
+          .then((res) => {
+            onSaveSuccess(res);
+          })
+          .catch((e) => {
+            onSaveFailed(e);
+          });
+      } else {
+        api
+          .post(`/form_instance`, res, { "content-type": "application/json" })
+          .then((res) => {
+            onSaveSuccess(res);
+          })
+          .catch((e) => {
+            onSaveFailed(e);
+          });
+      }
     });
   };
 
@@ -251,6 +290,7 @@ const Home = () => {
         isMobile={isMobile}
         form={form}
         onSave={onSave}
+        isSave={isSave}
       />
       {!isMobile && (
         <Col span={6} className="sidebar sticky">
@@ -312,6 +352,8 @@ const Home = () => {
           sidebarProps={sidebarProps}
           lastGroup={lastGroup}
           form={form}
+          onSave={onSave}
+          isSave={isSave}
         />
       )}
       {/* Notification Modal */}

@@ -12,6 +12,8 @@ const MobileFooter = ({
   sidebarProps,
   lastGroup,
   form,
+  onSave,
+  isSave,
 }) => {
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
@@ -34,26 +36,37 @@ const MobileFooter = ({
           </Space>
         </Col>
         <Col span={12} align="end">
-          <Button
-            className="button-next"
-            size="large"
-            type="default"
-            onClick={() => {
-              setIsMobileMenuVisible(false);
-              if (!lastGroup) {
-                dispatch({
-                  type: "UPDATE GROUP",
-                  payload: { active: active + 1 },
-                });
-              } else {
-                form.submit();
-              }
-            }}
-            loading={lastGroup && isSubmit}
-            disabled={lastGroup && isSubmit}
-          >
-            {!lastGroup ? "Next" : "Submit"}
-          </Button>
+          <Space>
+            <Button
+              className="button-next"
+              size="large"
+              type="default"
+              onClick={() => {
+                setIsMobileMenuVisible(false);
+                if (!lastGroup) {
+                  dispatch({
+                    type: "UPDATE GROUP",
+                    payload: { active: active + 1 },
+                  });
+                } else {
+                  form.submit();
+                }
+              }}
+              loading={lastGroup && isSubmit}
+              disabled={lastGroup && isSubmit}
+            >
+              {!lastGroup ? "Next" : "Submit"}
+            </Button>
+            <Button
+              size="large"
+              className="button-next"
+              onClick={onSave}
+              loading={isSave}
+              disabled={isSave}
+            >
+              Save
+            </Button>
+          </Space>
         </Col>
       </Row>
       {/* Drawer menu */}

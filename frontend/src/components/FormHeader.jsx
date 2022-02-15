@@ -37,7 +37,7 @@ const DatapointDisplayName = ({ dataPointName, form }) => {
   );
 };
 
-const FormHeader = ({ submit, isSubmit, isMobile, form }) => {
+const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
   const { dataPointName, forms } = dataProviders.Values();
   const isDisplayNameShown = dataPointName.filter((x) => x.value)?.length > 0;
 
@@ -69,16 +69,27 @@ const FormHeader = ({ submit, isSubmit, isMobile, form }) => {
             En
           </Button>
           {!isMobile && (
-            <Button
-              size="large"
-              className="submit"
-              htmlType="submit"
-              onClick={() => submit()}
-              loading={isSubmit}
-              disabled={isSubmit}
-            >
-              Submit
-            </Button>
+            <>
+              <Button
+                size="large"
+                className="submit"
+                htmlType="submit"
+                onClick={() => submit()}
+                loading={isSubmit}
+                disabled={isSubmit}
+              >
+                Submit
+              </Button>
+              <Button
+                size="large"
+                className="submit"
+                onClick={onSave}
+                loading={isSave}
+                disabled={isSave}
+              >
+                Save
+              </Button>
+            </>
           )}
           <Dropdown overlay={menu} placement="bottomCenter">
             {isMobile ? (

@@ -20,6 +20,17 @@ const NotificationModal = ({ isMobile, isVisible, type, onOk, onCancel }) => {
             </Button>
           ),
         };
+      case "save-success":
+        return {
+          status: "success",
+          icon: <CheckCircleOutlined />,
+          title: "Form instance saved successfully.",
+          extra: (
+            <Button size="large" className="button-next" onClick={onCancel}>
+              Close
+            </Button>
+          ),
+        };
       case "clear":
         return {
           icon: <QuestionCircleOutlined />,
