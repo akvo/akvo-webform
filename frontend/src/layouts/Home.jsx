@@ -30,7 +30,7 @@ import moment from "moment";
 
 const Home = () => {
   const [error, setError] = useState(false);
-  const { formId } = useParams();
+  const { formId, cacheId } = useParams();
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
   const { forms, dataPointName, group } = state;
@@ -76,7 +76,10 @@ const Home = () => {
         setNotification({
           isVisible: true,
           type: "success",
-          onOk: () => window.location.reload(),
+          onOk: () => {
+            const redirect = window.location.href.replace(`/${cacheId}`, "");
+            window.location.replace(redirect);
+          },
         });
       })
       .catch((e) => {
@@ -160,8 +163,13 @@ const Home = () => {
 
   useEffect(() => {
     checkDB().then((res) => {
-      // fill form from dexie
-      getAnswerFromDB({ formId })
+      // fill form from dexie or from cacheId & fetch from db
+      const getData = cacheId
+        ? api
+            .get(`form_instance/${cacheId}`)
+            .then((res) => JSON.parse(res?.data?.state))
+        : getAnswerFromDB({ formId });
+      getData
         .then((res) => {
           if (res?.answer) {
             const data = JSON.parse(res.answer);

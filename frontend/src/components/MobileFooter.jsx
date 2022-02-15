@@ -23,7 +23,7 @@ const MobileFooter = ({
   return (
     <Col span={24} className="mobile-footer-container">
       <Row justify="space-between" align="middle">
-        <Col span={12} align="start">
+        <Col span={10} align="start">
           <Space size={5}>
             <Button
               type="link"
@@ -35,7 +35,7 @@ const MobileFooter = ({
             </div>
           </Space>
         </Col>
-        <Col span={12} align="end">
+        <Col span={14} align="end">
           <Space>
             <Button
               className="button-next"
@@ -53,7 +53,7 @@ const MobileFooter = ({
                 }
               }}
               loading={lastGroup && isSubmit}
-              disabled={lastGroup && isSubmit}
+              disabled={lastGroup && (isSubmit || isSave)}
             >
               {!lastGroup ? "Next" : "Submit"}
             </Button>
@@ -62,7 +62,7 @@ const MobileFooter = ({
               className="button-next"
               onClick={onSave}
               loading={isSave}
-              disabled={isSave}
+              disabled={isSave || isSubmit}
             >
               Save
             </Button>

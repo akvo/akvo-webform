@@ -76,7 +76,7 @@ const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
                 htmlType="submit"
                 onClick={() => submit()}
                 loading={isSubmit}
-                disabled={isSubmit}
+                disabled={isSubmit || isSave}
               >
                 Submit
               </Button>
@@ -85,7 +85,7 @@ const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
                 className="submit"
                 onClick={onSave}
                 loading={isSave}
-                disabled={isSave}
+                disabled={isSave || isSubmit}
               >
                 Save
               </Button>
