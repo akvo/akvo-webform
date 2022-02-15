@@ -18,7 +18,11 @@ def get_form_instance(session: Session) -> List[FormInstance]:
 
 
 def get_form_instance_by_id(session: Session, id: str) -> FormInstance:
-    return session.query(FormInstance).filter(FormInstance.id == id).first()
+    res = session.query(FormInstance).filter(FormInstance.id == id).first()
+    if res is None:
+        raise HTTPException(status_code=404,
+                            detail="Instance {} not found".format(id))
+    return res
 
 
 def update_form_instance(session, id: str,
