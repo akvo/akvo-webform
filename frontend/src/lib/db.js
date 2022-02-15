@@ -3,7 +3,7 @@ import Dexie from "dexie";
 const db = new Dexie("akvo");
 db.version(1).stores({
   forms: "formId, app, version",
-  answers: "formId",
+  answers: "formId, dataPointId, submissionStart",
 });
 
 export const checkDB = () =>
@@ -34,9 +34,14 @@ export const deleteFormByIdFromDB = ({ formId }) => {
   db.forms.clear();
 };
 
-export const saveAnswerToDB = ({ formId, answer }) => {
+export const saveAnswerToDB = ({
+  formId,
+  dataPointId,
+  submissionStart,
+  answer,
+}) => {
   db.answers.clear();
-  db.answers.add({ formId, answer });
+  db.answers.add({ formId, dataPointId, submissionStart, answer });
 };
 
 export const getAnswerFromDB = ({ formId }) => db.answers.get(formId);

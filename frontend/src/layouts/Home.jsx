@@ -91,6 +91,12 @@ const Home = () => {
     console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 
+  const onSave = () => {
+    getAnswerFromDB({ formId }).then((res) => {
+      console.log(res);
+    });
+  };
+
   const onValuesChange = (qg, value, values) => {
     const errorFields = form.getFieldsError();
     const { filled, completeQg, isDpName } = checkFilledForm(
@@ -132,7 +138,7 @@ const Home = () => {
                 });
               }
             });
-            return data;
+            return { ...res, answer: data };
           }
           return res;
         })
@@ -144,9 +150,9 @@ const Home = () => {
               // transform formData question group
               // to return repeatable question value if value defined
               let questionGroups = formData?.questionGroup;
-              if (answerValues) {
+              if (answerValues?.answer) {
                 questionGroups = formData?.questionGroup.map((qg, qgi) => {
-                  const findQg = answerValues?.find(
+                  const findQg = answerValues?.answer?.find(
                     (ans) => ans?.qg_index === qgi
                   );
                   return {
@@ -155,13 +161,13 @@ const Home = () => {
                   };
                 });
               }
-              // add form metadata
+              // add form metadata when form loaded
               formData = {
                 ...formData,
                 questionGroup: questionGroups,
-                dataPointId: generateDataPointId(),
+                dataPointId: answerValues?.dataPointId || generateDataPointId(),
                 deviceId: "Akvo Flow Web",
-                submissionStart: Date.now(),
+                submissionStart: answerValues?.submissionStart || Date.now(),
               };
               saveFormToDB({
                 formId: formId,
@@ -205,6 +211,8 @@ const Home = () => {
       });
       saveAnswerToDB({
         formId: formId,
+        dataPointId: forms?.dataPointId,
+        submissionStart: forms?.submissionStart,
         answer: JSON.stringify(transformAnswers),
       });
     }
@@ -242,6 +250,7 @@ const Home = () => {
         isSubmit={isSubmit}
         isMobile={isMobile}
         form={form}
+        onSave={onSave}
       />
       {!isMobile && (
         <Col span={6} className="sidebar sticky">
