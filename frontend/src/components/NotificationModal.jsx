@@ -1,12 +1,19 @@
 import React from "react";
-import { Modal, Space, Button, Result } from "antd";
+import { Modal, Space, Button, Result, message } from "antd";
 import {
   ExclamationCircleOutlined,
   QuestionCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
 
-const NotificationModal = ({ isMobile, isVisible, type, onOk, onCancel }) => {
+const NotificationModal = ({
+  isMobile,
+  isVisible,
+  type,
+  onOk,
+  onCancel,
+  savedLink,
+}) => {
   const modalProps = () => {
     switch (type) {
       case "success":
@@ -25,10 +32,22 @@ const NotificationModal = ({ isMobile, isVisible, type, onOk, onCancel }) => {
           status: "success",
           icon: <CheckCircleOutlined />,
           title: "Form instance saved successfully.",
+          subTitle: `Saved link: ${savedLink}`,
           extra: (
-            <Button size="large" className="button-next" onClick={onCancel}>
-              Close
-            </Button>
+            <Space direction="vertical">
+              <Button
+                size="large"
+                onClick={() => {
+                  navigator.clipboard.writeText(savedLink);
+                  message.info("Copied to clipboard!");
+                }}
+              >
+                Copy to clipboard
+              </Button>
+              <Button size="large" className="button-next" onClick={onCancel}>
+                Close
+              </Button>
+            </Space>
           ),
         };
       case "clear":

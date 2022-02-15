@@ -96,12 +96,18 @@ const Home = () => {
   };
 
   const onSaveSuccess = (res) => {
-    localStorage.setItem("_cache", res?.data?.id);
+    const _cache = res?.data?.id;
+    localStorage.setItem("_cache", _cache);
+    let savedLink = window.location.href;
+    savedLink = savedLink.includes(_cache)
+      ? savedLink
+      : `${savedLink}/${_cache}`;
     setIsSave(false);
     setNotification({
       isVisible: true,
       type: "save-success",
       onCancel: () => setNotification({ isVisible: false }),
+      savedLink: savedLink,
     });
   };
 
