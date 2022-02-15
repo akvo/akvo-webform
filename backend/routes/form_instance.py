@@ -49,7 +49,7 @@ def add(req: Request, payload: dict, session: Session = Depends(get_session)):
                          summary="update form_instance by id",
                          name="form_instance:update",
                          tags=["FormInstance"])
-def update(req: Request, id: str, state: Optional[str],
+def update(req: Request, id: str, state: Optional[dict],
            session: Session = Depends(get_session)):
     result = crud.update_form_instance(session=session, id=id,
                                        state=json.dumps(state))
