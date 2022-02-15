@@ -18,16 +18,6 @@ const menu = (
 );
 
 const DatapointDisplayName = ({ dataPointName, form }) => {
-  dataPointName = dataPointName.map((x) => {
-    let findValue = form.getFieldValue(x?.id);
-    if (Array.isArray(findValue)) {
-      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
-    }
-    return {
-      ...x,
-      value: x?.value || findValue || false,
-    };
-  });
   const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
     <div className="datapoint">
@@ -39,7 +29,18 @@ const DatapointDisplayName = ({ dataPointName, form }) => {
 
 const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
   const { dataPointName, forms } = dataProviders.Values();
-  const isDisplayNameShown = dataPointName.filter((x) => x.value)?.length > 0;
+  const newDataPointName = dataPointName.map((x) => {
+    let findValue = form.getFieldValue(x?.id);
+    if (Array.isArray(findValue)) {
+      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
+    }
+    return {
+      ...x,
+      value: x?.value || findValue || false,
+    };
+  });
+  const isDisplayNameShown =
+    newDataPointName.filter((x) => x.value)?.length > 0;
 
   return (
     <Col
@@ -59,7 +60,10 @@ const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
         </Col>
         <Col span={12} className="left">
           {!isMobile && (
-            <DatapointDisplayName dataPointName={dataPointName} form={form} />
+            <DatapointDisplayName
+              dataPointName={newDataPointName}
+              form={form}
+            />
           )}
           <Button
             size={isMobile ? "middle" : "large"}
@@ -101,7 +105,10 @@ const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
         </Col>
         {isMobile && isDisplayNameShown && (
           <Col span={24}>
-            <DatapointDisplayName dataPointName={dataPointName} form={form} />
+            <DatapointDisplayName
+              dataPointName={newDataPointName}
+              form={form}
+            />
           </Col>
         )}
       </Row>
