@@ -60,5 +60,5 @@ services:
     ports:
       - 3000:3000
       - 5000:5000
-volumes:
-  pg-data: {}
+# volumes:
+#   pg-data: {}
