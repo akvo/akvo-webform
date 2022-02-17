@@ -1,24 +1,24 @@
 ---
 version: "3.9"
 services:
-  db:
-    image: postgres:12-alpine
-    command: postgres -c 'shared_buffers=128MB' -c 'fsync=off' -c 'synchronous_commit=off'
-      -c 'full_page_writes=off' -c 'max_connections=100' -c 'bgwriter_lru_maxpages=0'
-      -c 'client_min_messages=warning'
-    environment:
-      - POSTGRES_PASSWORD=password
-    restart: always
-    volumes:
-      - ./db/docker-entrypoint-initdb.d/000-init.sql:/docker-entrypoint-initdb.d/000-init.sql
-      - pg-data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+  # db:
+  #   image: postgres:12-alpine
+  #   command: postgres -c 'shared_buffers=128MB' -c 'fsync=off' -c 'synchronous_commit=off'
+  #     -c 'full_page_writes=off' -c 'max_connections=100' -c 'bgwriter_lru_maxpages=0'
+  #     -c 'client_min_messages=warning'
+  #   environment:
+  #     - POSTGRES_PASSWORD=password
+  #   restart: always
+  #   volumes:
+  #     - ./db/docker-entrypoint-initdb.d/000-init.sql:/docker-entrypoint-initdb.d/000-init.sql
+  #     - pg-data:/var/lib/postgresql/data
+  #   ports:
+  #     - 5432:5432
   frontend:
     image: eu.gcr.io/akvo-lumen/akvo-webform/frontend:latest
     command: ["nginx", "-g", "daemon off;"]
     depends_on:
-      - db
+      # - db
       - backend
     volumes:
       - ./frontend:/app:delegated
@@ -38,10 +38,10 @@ services:
       - AUTH0_PWD
       - AUTH0_URL
       - AUTH0_CLIENT_FLOW
-      - SQLALCHEMY_DATABASE_URI=postgresql://akvotc:password@db:5432/webforms
+      # - SQLALCHEMY_DATABASE_URI=postgresql://akvotc:password@db:5432/webforms
     restart: always
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     network_mode: service:mainnetwork
   ci:
     image: alpine:3.14.0
@@ -52,7 +52,7 @@ services:
     depends_on:
       - backend
       - frontend
-      - db
+      # - db
     network_mode: service:mainnetwork
   mainnetwork:
     image: alpine:3.14.0

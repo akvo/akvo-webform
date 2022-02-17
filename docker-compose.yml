@@ -18,9 +18,9 @@ services:
       - AUTH0_PWD
       - AUTH0_URL
       - AUTH0_CLIENT_FLOW
-      - SQLALCHEMY_DATABASE_URI
-    depends_on:
-      - db
+      # - SQLALCHEMY_DATABASE_URI
+    # depends_on:
+    #   - db
     network_mode: service:mainnetwork
   frontend:
     network_mode: service:mainnetwork
@@ -34,14 +34,14 @@ services:
       - REACT_APP_CAPTCHA_KEY
     depends_on:
       - backend
-  db:
-    image: postgres:12-alpine
-    volumes:
-      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-      - pg-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=password
-    ports:
-      - 5432:5432
+  # db:
+  #   image: postgres:12-alpine
+  #   volumes:
+  #     - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  #     - pg-data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=password
+  #   ports:
+  #     - 5432:5432
 volumes:
   pg-data:
