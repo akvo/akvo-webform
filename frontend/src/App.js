@@ -8,7 +8,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path=":formId" element={<Home />} />
-        <Route path=":formId/:cacheId" element={<Home />} />
         <Route
           path=""
           element={
