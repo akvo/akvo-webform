@@ -2,5 +2,5 @@
 
 set -eu
 
-alembic upgrade head
+# alembic upgrade head
 python main.py
