@@ -27,7 +27,15 @@ const DatapointDisplayName = ({ dataPointName, form }) => {
   );
 };
 
-const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
+const FormHeader = ({
+  submit,
+  isSubmit,
+  isMobile,
+  form,
+  onSave,
+  isSave,
+  isSaveFeatureEnabled,
+}) => {
   const { dataPointName, forms } = dataProviders.Values();
   const newDataPointName = dataPointName.map((x) => {
     let findValue = form.getFieldValue(x?.id);
@@ -84,15 +92,17 @@ const FormHeader = ({ submit, isSubmit, isMobile, form, onSave, isSave }) => {
               >
                 Submit
               </Button>
-              <Button
-                size="large"
-                className="submit"
-                onClick={onSave}
-                loading={isSave}
-                disabled={isSave || isSubmit}
-              >
-                Save
-              </Button>
+              {isSaveFeatureEnabled && (
+                <Button
+                  size="large"
+                  className="submit"
+                  onClick={onSave}
+                  loading={isSave}
+                  disabled={isSave || isSubmit}
+                >
+                  Save
+                </Button>
+              )}
             </>
           )}
           <Dropdown overlay={menu} placement="bottomCenter">

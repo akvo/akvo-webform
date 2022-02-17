@@ -28,6 +28,8 @@ import {
 } from "../components";
 import moment from "moment";
 
+const isSaveFeatureEnabled = false;
+
 const Home = () => {
   const [error, setError] = useState(false);
   const { formId, cacheId } = useParams();
@@ -170,11 +172,12 @@ const Home = () => {
   useEffect(() => {
     checkDB().then((res) => {
       // fill form from dexie or from cacheId & fetch from db
-      const getData = cacheId
-        ? api
-            .get(`form_instance/${cacheId}`)
-            .then((res) => JSON.parse(res?.data?.state))
-        : getAnswerFromDB({ formId });
+      const getData =
+        cacheId && isSaveFeatureEnabled
+          ? api
+              .get(`form_instance/${cacheId}`)
+              .then((res) => JSON.parse(res?.data?.state))
+          : getAnswerFromDB({ formId });
       getData
         .then((res) => {
           if (res?.answer) {
@@ -305,6 +308,7 @@ const Home = () => {
         form={form}
         onSave={onSave}
         isSave={isSave}
+        isSaveFeatureEnabled={isSaveFeatureEnabled}
       />
       {!isMobile && (
         <Col span={6} className="sidebar sticky">
@@ -368,6 +372,7 @@ const Home = () => {
           form={form}
           onSave={onSave}
           isSave={isSave}
+          isSaveFeatureEnabled={isSaveFeatureEnabled}
         />
       )}
       {/* Notification Modal */}

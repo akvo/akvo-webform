@@ -14,6 +14,7 @@ const MobileFooter = ({
   form,
   onSave,
   isSave,
+  isSaveFeatureEnabled,
 }) => {
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
@@ -57,15 +58,17 @@ const MobileFooter = ({
             >
               {!lastGroup ? "Next" : "Submit"}
             </Button>
-            <Button
-              size="large"
-              className="button-next"
-              onClick={onSave}
-              loading={isSave}
-              disabled={isSave || isSubmit}
-            >
-              Save
-            </Button>
+            {isSaveFeatureEnabled && (
+              <Button
+                size="large"
+                className="button-next"
+                onClick={onSave}
+                loading={isSave}
+                disabled={isSave || isSubmit}
+              >
+                Save
+              </Button>
+            )}
           </Space>
         </Col>
       </Row>
