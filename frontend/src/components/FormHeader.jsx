@@ -1,8 +1,9 @@
 import React from "react";
 import { Row, Col, Button, Dropdown, Menu, message } from "antd";
-import { FiMoreHorizontal } from "react-icons/fi";
+import { FiMoreHorizontal, FiMoreVertical } from "react-icons/fi";
 import { BiBarcodeReader } from "react-icons/bi";
 import dataProviders from "../store";
+import { generateDataPointNameDisplay } from "../lib/form";
 
 const onClick = ({ key }) => {
   message.info(`Click on item ${key}`);
@@ -16,14 +17,46 @@ const menu = (
   </Menu>
 );
 
-const FormHeader = ({ submit }) => {
-  const { dataPointName, forms } = dataProviders.Values();
-  const dataPointNameDisplay = dataPointName
-    .filter((x) => x.value)
-    .map((x) => x.value)
-    .join(" - ");
+const DatapointDisplayName = ({ dataPointName, form }) => {
+  const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
-    <Col span={24} className="form-header sticky">
+    <div className="datapoint">
+      {dataPointNameDisplay.length ? <BiBarcodeReader className="icon" /> : ""}
+      {dataPointNameDisplay}
+    </div>
+  );
+};
+
+const FormHeader = ({
+  submit,
+  isSubmit,
+  isMobile,
+  form,
+  onSave,
+  isSave,
+  isSaveFeatureEnabled,
+}) => {
+  const { dataPointName, forms } = dataProviders.Values();
+  const newDataPointName = dataPointName.map((x) => {
+    let findValue = form.getFieldValue(x?.id);
+    if (Array.isArray(findValue)) {
+      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
+    }
+    return {
+      ...x,
+      value: x?.value || findValue || false,
+    };
+  });
+  const isDisplayNameShown =
+    newDataPointName.filter((x) => x.value)?.length > 0;
+
+  return (
+    <Col
+      span={24}
+      className={`form-header sticky ${
+        isMobile && isDisplayNameShown ? "mobile-header-with-display-name" : ""
+      }`}
+    >
       <Row
         align="middle"
         className="form-header-container"
@@ -34,33 +67,60 @@ const FormHeader = ({ submit }) => {
           <h1>{forms.name}</h1>
         </Col>
         <Col span={12} className="left">
-          <div className="datapoint">
-            {dataPointNameDisplay.length ? (
-              <BiBarcodeReader className="icon" />
-            ) : (
-              ""
-            )}
-            {dataPointNameDisplay}
-          </div>
+          {!isMobile && (
+            <DatapointDisplayName
+              dataPointName={newDataPointName}
+              form={form}
+            />
+          )}
           <Button
-            size="large"
+            size={isMobile ? "middle" : "large"}
             className="lang"
             onClick={() => onClick("Change Language")}
           >
             En
           </Button>
-          <Button
-            size="large"
-            className="submit"
-            htmlType="submit"
-            onClick={() => submit()}
-          >
-            Submit
-          </Button>
+          {!isMobile && (
+            <>
+              <Button
+                size="large"
+                className="submit"
+                htmlType="submit"
+                onClick={() => submit()}
+                loading={isSubmit}
+                disabled={isSubmit || isSave}
+              >
+                Submit
+              </Button>
+              {isSaveFeatureEnabled && (
+                <Button
+                  size="large"
+                  className="submit"
+                  onClick={onSave}
+                  loading={isSave}
+                  disabled={isSave || isSubmit}
+                >
+                  Save
+                </Button>
+              )}
+            </>
+          )}
           <Dropdown overlay={menu} placement="bottomCenter">
-            <FiMoreHorizontal className="more" />
+            {isMobile ? (
+              <FiMoreVertical className="more" />
+            ) : (
+              <FiMoreHorizontal className="more" />
+            )}
           </Dropdown>
         </Col>
+        {isMobile && isDisplayNameShown && (
+          <Col span={24}>
+            <DatapointDisplayName
+              dataPointName={newDataPointName}
+              form={form}
+            />
+          </Col>
+        )}
       </Row>
     </Col>
   );

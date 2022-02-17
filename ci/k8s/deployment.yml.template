@@ -75,10 +75,7 @@ spec:
                   name: akvo-webform
                   key: auth0-client-flow
             - name: SQLALCHEMY_DATABASE_URI
-              valueFrom:
-                secretKeyRef:
-                  name: akvo-webform
-                  key: sqlalchemy-database-uri
+              value: "no db"
           readinessProbe:
             httpGet:
               path: /health-check

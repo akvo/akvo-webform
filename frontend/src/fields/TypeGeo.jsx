@@ -1,21 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Form, Input } from "antd";
 import { Label } from "../components";
 import Maps from "./support/Maps";
+import dataProviders from "../store";
+import { checkFilledForm } from "../lib/form";
 
 const TypeGeo = ({ id, form, text, keyform, mandatory, rules, help }) => {
-  const [position, setPosition] = useState({ lat: null, lng: null });
+  const geoAnswer = form.getFieldValue(id);
+  const [position, setPosition] = useState({
+    lat: geoAnswer?.lat || null,
+    lng: geoAnswer?.lng || null,
+  });
   const [value, setValue] = useState(null);
+  const dispatch = dataProviders.Actions();
+  const state = dataProviders.Values();
+  const { forms, dataPointName } = state;
+  const { questionGroup } = forms;
+
+  const updateCompleteState = (value) => {
+    setValue(value);
+    const answer = { [id]: value };
+    form.setFieldsValue(answer);
+    const errorFields = form.getFieldsError();
+    const formValues = form.getFieldsValue();
+    const { completeQg } = checkFilledForm(
+      errorFields,
+      dataPointName,
+      questionGroup,
+      answer,
+      formValues
+    );
+    dispatch({
+      type: "UPDATE GROUP",
+      payload: {
+        complete: completeQg.flatMap((qg) => qg.i),
+      },
+    });
+  };
 
   const changePos = (newPos) => {
     setPosition(newPos);
     if (newPos?.lat && newPos?.lng) {
-      form.setFieldsValue({ [id]: newPos });
+      updateCompleteState(newPos);
+    } else {
+      updateCompleteState(null);
     }
   };
 
   const onChange = (cname, e) => {
-    changePos({ ...position, [cname]: e !== null ? parseFloat(e) : null });
+    if (!e) {
+      changePos({ lat: null, lng: null });
+    } else {
+      changePos({ ...position, [cname]: e !== null ? parseFloat(e) : null });
+    }
   };
 
   return (

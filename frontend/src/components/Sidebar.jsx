@@ -1,43 +1,101 @@
 import React from "react";
-import { List } from "antd";
+import { List, Space, Button } from "antd";
 import {
   MdRadioButtonUnchecked,
   MdRadioButtonChecked,
   MdCheckCircle,
   MdRepeat,
 } from "react-icons/md";
+import { AiOutlineDown } from "react-icons/ai";
 import dataProviders from "../store";
 
-const Sidebar = ({ active, complete, questionGroup }) => {
-  const dispatch = dataProviders.Actions();
-
+const Sidebar = ({
+  active,
+  complete,
+  questionGroup,
+  isSubmitFailed,
+  isMobile,
+  setIsMobileMenuVisible,
+}) => {
   return (
     <List
       bordered={false}
-      header={<div className="sidebar-header">form overview</div>}
+      header={
+        <div className="sidebar-header">
+          {isMobile && (
+            <Button
+              type="link"
+              icon={
+                <AiOutlineDown
+                  className="icon"
+                  onClick={() => isMobile && setIsMobileMenuVisible(false)}
+                />
+              }
+            />
+          )}{" "}
+          form overview
+        </div>
+      }
       dataSource={questionGroup}
       renderItem={(item, key) => (
-        <List.Item
-          key={key}
-          onClick={() =>
-            dispatch({ type: "UPDATE GROUP", payload: { active: key } })
-          }
-          className={`sidebar-list ${active === key ? "active" : ""} ${
-            complete.includes(key) ? "complete" : ""
-          }`}
-        >
-          {complete.includes(key) ? (
+        <ListItem
+          index={key}
+          item={item}
+          active={active}
+          complete={complete}
+          isSubmitFailed={isSubmitFailed}
+          isMobile={isMobile}
+          setIsMobileMenuVisible={setIsMobileMenuVisible}
+        />
+      )}
+    />
+  );
+};
+
+const ListItem = ({
+  index,
+  item,
+  active,
+  complete,
+  isSubmitFailed,
+  isMobile,
+  setIsMobileMenuVisible,
+}) => {
+  const dispatch = dataProviders.Actions();
+  const checkComplete = item?.repeatable ? `${index}-${item?.repeat}` : index;
+
+  return (
+    <List.Item
+      key={index}
+      onClick={() => {
+        isMobile && setIsMobileMenuVisible(false);
+        dispatch({ type: "UPDATE GROUP", payload: { active: index } });
+      }}
+      className={`sidebar-list ${active === index ? "active" : ""} ${
+        complete.includes(checkComplete) ? "complete" : ""
+      }`}
+    >
+      <Space direction="vertical">
+        <div>
+          {complete.includes(checkComplete) ? (
             <MdCheckCircle className="icon" />
-          ) : active === key ? (
+          ) : active === index ? (
             <MdRadioButtonChecked className="icon" />
           ) : (
             <MdRadioButtonUnchecked className="icon" />
           )}
           {item?.heading}
           {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
-        </List.Item>
-      )}
-    />
+        </div>
+        {!complete.includes(checkComplete) && isSubmitFailed.length ? (
+          <div className="sidebar-incomplete-text">
+            Please fill in all required questions
+          </div>
+        ) : (
+          ""
+        )}
+      </Space>
+    </List.Item>
   );
 };
 

@@ -29,7 +29,7 @@ const Label = ({ keyform, text, mandatory, help, requireDoubleEntry }) => {
           <i className="double-entry-text">Require Double Entry</i>
         )}
       </p>
-      {help && <Help {...help} />}
+      {help && help?.text && help?.text !== "" && <Help {...help} />}
     </div>
   );
 };

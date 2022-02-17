@@ -28,10 +28,15 @@ body {
   border-top: none !important;
 }
 
+.ant-btn-link {
+  color: #000 !important;
+}
+
 #root {
   .ant-input,
   .ant-select-selector,
-  .ant-input-number {
+  .ant-input-number,
+  .ant-picker {
     border: 1px solid #6a6a6a;
     border-radius: 5px;
   }

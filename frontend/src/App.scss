@@ -131,6 +131,12 @@
     height: fit-content;
   }
 
+  &.mobile {
+    .ant-drawer-body {
+      padding: 0;
+    }
+  }
+
   .sidebar-header {
     text-transform: uppercase;
     font-family: "Assistant", sans-serif;
@@ -165,6 +171,15 @@
         float: right;
         margin-top: 4px;
       }
+    }
+
+    .ant-space.ant-space-vertical {
+      width: 100%;
+    }
+
+    .sidebar-incomplete-text {
+      margin-left: 24px;
+      color: #cf9b63;
     }
   }
 }
@@ -382,22 +397,90 @@
 .next {
   border-left: 1px solid #f0f0f0;
   padding: 20px 50px;
+}
+button,
+.button-next {
+  border: none;
+  background-color: #222;
+  border-radius: 5px;
+  color: #fff;
+  padding-left: 25px;
+  padding-right: 25px;
+  font-weight: bold;
+  font-size: 14px;
 
-  button {
-    border: none;
+  &:focus,
+  &:visited,
+  &:hover {
     background-color: #222;
-    border-radius: 5px;
     color: #fff;
-    padding-left: 25px;
-    padding-right: 25px;
-    font-weight: bold;
-    font-size: 14px;
+  }
+}
 
-    &:focus,
-    &:visited,
-    &:hover {
-      background-color: #222;
-      color: #fff;
+.mobile-footer-container {
+  position: sticky;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 1002;
+  padding: 10px 16px;
+  border-top: 1px solid #d9d9d9;
+  background-color: #fff;
+}
+
+@media only screen and (max-width: 760px) {
+  .ant-card-head,
+  .ant-card-body {
+    padding: 12px 0;
+  }
+
+  .form-header {
+    height: 79px;
+    padding: 0 16px;
+    .form-header-container {
+      padding: 10px 0;
     }
+    &.mobile-header-with-display-name {
+      height: 129px;
+    }
+
+    .form-header-container {
+      .right {
+        h1 {
+          font-size: 16px;
+        }
+        h1.logo {
+          padding: 0 8px;
+          margin-right: 8px;
+          border-radius: 5px;
+        }
+      }
+
+      .left {
+        .more {
+          font-size: 20px;
+          vertical-align: middle;
+          margin-bottom: 0;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .datapoint {
+    color: #6a6a6a;
+    padding: 12px 0;
+    display: inline-block;
+    font-weight: bold;
+    line-height: 25px;
+
+    .icon {
+      font-size: 24px;
+      margin-bottom: -6px;
+    }
+  }
+
+  .field-group .repeat-title {
+    margin: 20px 0px;
   }
 }

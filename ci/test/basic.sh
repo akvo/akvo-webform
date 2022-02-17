@@ -3,13 +3,13 @@
 
 set -euo pipefail
 
-RETRIES=15
+# RETRIES=15
 
-until psql -h db:5432 -U akvotc -w password -d webforms -c "select 1" &>/dev/null 2>&1 || [ $RETRIES -eq 0 ];
-do
-  echo "Waiting for postgres server, $((RETRIES--)) remaining attempts..."
-  sleep 1
-done
+# until psql -h db:5432 -U akvotc -w password -d webforms -c "select 1" &>/dev/null 2>&1 || [ $RETRIES -eq 0 ];
+# do
+#   echo "Waiting for postgres server, $((RETRIES--)) remaining attempts..."
+#   sleep 1
+# done
 
 wait4ports -q -s 1 -t 60 tcp://localhost:80 tcp://localhost:5000
 

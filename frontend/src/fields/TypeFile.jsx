@@ -2,23 +2,34 @@ import React, { useState } from "react";
 import { Upload, Form } from "antd";
 import Label from "../components/Label";
 import { BsCardImage } from "react-icons/bs";
+import uuid from "uuid/v4";
 
 const { Dragger } = Upload;
 
 const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
-  const [blob, setBlob] = useState(null);
+  const fileAnswer = form.getFieldValue(id);
+  const [fileLoaded, setFileLoaded] = useState(fileAnswer || null);
 
   const onCollect = ({ file, onSuccess }) => {
+    const ext = file.name.substring(file.name.lastIndexOf("."));
+    const fileId = `${uuid()}${ext}`;
     const reader = new FileReader();
     reader.addEventListener("load", () => {
-      setBlob(reader.result);
+      const filePayload = {
+        id: fileId,
+        filename: file.name,
+        blob: reader.result,
+        qid: id,
+      };
+      setFileLoaded(filePayload);
+      form.setFieldsValue({ [id]: filePayload });
     });
     reader.readAsDataURL(file);
     onSuccess("ok");
   };
 
   const onRemove = () => {
-    setBlob(null);
+    setFileLoaded(null);
   };
 
   const props = {
@@ -27,9 +38,11 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
     maxCount: 1,
     customRequest: onCollect,
     onRemove: onRemove,
+    accept: ".jpg, .jpeg",
   };
 
   const formFile = (e) => {
+    setFileLoaded(null);
     if (Array.isArray(e)) {
       return e.length ? e : null;
     }
@@ -57,7 +70,11 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
       <Dragger {...props}>
         <div
           className="image-container"
-          style={blob ? { backgroundImage: `url("${blob}")` } : {}}
+          style={
+            fileLoaded && fileLoaded?.blob
+              ? { backgroundImage: `url("${fileLoaded.blob}")` }
+              : {}
+          }
         ></div>
         <div className="text-container">
           <p className="ant-upload-drag-icon">

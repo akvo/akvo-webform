@@ -7,7 +7,7 @@ import dataProviders from "../store";
 const FieldGroupHeader = ({ index, heading, repeatable }) => {
   const state = dataProviders.Values();
   const dispatch = dataProviders.Actions();
-  const { forms } = state;
+  const { forms, group } = state;
   const current = forms.questionGroup.find((x) => x.index === index);
 
   const updateRepeat = (value) => {
@@ -20,6 +20,12 @@ const FieldGroupHeader = ({ index, heading, repeatable }) => {
     dispatch({
       type: "UPDATE FORM",
       payload: { ...forms, questionGroup: updated },
+    });
+    dispatch({
+      type: "UPDATE GROUP",
+      payload: {
+        complete: group.complete.filter((c) => c !== `${index}-${value + 1}`),
+      },
     });
   };
 
