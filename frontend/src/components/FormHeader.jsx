@@ -62,11 +62,11 @@ const FormHeader = ({
         className="form-header-container"
         justify="space-around"
       >
-        <Col span={12} className="right">
+        <Col xs={12} sm={18} md={6} lg={12} className="right">
           <h1 className="logo">A.</h1>
           <h1>{forms.name}</h1>
         </Col>
-        <Col span={12} className="left">
+        <Col xs={12} sm={6} md={18} lg={12} className="left">
           {!isMobile && (
             <DatapointDisplayName
               dataPointName={newDataPointName}

@@ -37,7 +37,7 @@ const MobileFooter = ({
           </Space>
         </Col>
         <Col span={14} align="end">
-          <Space>
+          <Space style={{ float: "right" }}>
             <Button
               className="button-next"
               size="large"
