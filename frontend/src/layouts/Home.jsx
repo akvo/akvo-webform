@@ -421,7 +421,7 @@ const Home = () => {
       {/* Notification Modal */}
       <NotificationModal {...notification} isMobile={isMobile} />
       {/* Saved submissions drawer */}
-      {submissionList.length && (
+      {!isMobile && submissionList.length && (
         <SubmissionListDrawer submissionList={submissionList} />
       )}
     </Row>

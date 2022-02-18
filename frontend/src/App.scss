@@ -20,7 +20,7 @@
     position: sticky;
     position: -webkit-sticky;
     min-width: 100%;
-    z-index: 1001;
+    z-index: 1000;
     border-bottom: 1px solid #f0f0f0;
   }
 
@@ -437,7 +437,6 @@ button,
 .submissions-drawer-toggle {
   position: fixed;
   left: 4px;
-  z-index: 9999;
   border-left: none;
 
   &:hover {
@@ -449,7 +448,6 @@ button,
 .submissions-drawer-toggle-close {
   position: absolute;
   right: 4px;
-  z-index: 10004;
   border-right: none;
 
   &:hover {
@@ -463,10 +461,15 @@ button,
     padding: 16px 0;
 
     .ant-drawer-close {
-      &:hover {
+      &:hover,
+      &:focus {
         background: none;
       }
     }
+  }
+
+  .submission-list-select {
+    width: 100%;
   }
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Drawer, Button } from "antd";
+import { Drawer, Select } from "antd";
+import moment from "moment";
 
 const DrawerToggle = ({ setVisible, visible }) => {
   return (
@@ -9,10 +10,10 @@ const DrawerToggle = ({ setVisible, visible }) => {
     ></div>
   );
 };
+
 const SubmissionListDrawer = ({ submissionList }) => {
   const [visible, setVisible] = useState(false);
 
-  console.log(submissionList);
   return (
     <>
       <DrawerToggle setVisible={setVisible} visible={visible} />
@@ -21,10 +22,25 @@ const SubmissionListDrawer = ({ submissionList }) => {
         title="Submissions"
         placement="left"
         visible={visible}
-        zIndex={10003}
+        onClose={() => setVisible(!visible)}
       >
         <DrawerToggle setVisible={setVisible} visible={visible} />
-        <p>Here submission list will render</p>
+        <Select
+          showSearch
+          placeholder="Select Submission"
+          className="submission-list-select"
+          options={submissionList.map((q) => ({
+            label: `${q?.formName} - ${moment(q?.submissionStart).format(
+              "MMMM Do YYYY"
+            )}`,
+            value: q?.cacheId,
+          }))}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+          onChange={(e) => console.log(e)}
+        />
       </Drawer>
     </>
   );
