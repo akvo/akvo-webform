@@ -38,10 +38,10 @@ const RepeatTitle = ({ index, group, repeat }) => {
   return (
     <div className="repeat-title">
       <Row justify="space-between" align="middle">
-        <Col span={20} align="start">
+        <Col sm={12} md={20} align="start" style={{ float: "left" }}>
           {group?.heading}-{repeat + 1}
         </Col>
-        <Col span={4} align="end">
+        <Col sm={12} md={4} align="end" style={{ float: "right" }}>
           <DeleteSelectedRepeatButton
             index={index}
             group={group}
