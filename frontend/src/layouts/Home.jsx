@@ -6,7 +6,6 @@ import api from "../lib/api";
 import {
   checkDB,
   saveFormToDB,
-  getFormFromDB,
   deleteFormByIdFromDB,
   saveAnswerToDB,
   getAnswerFromDB,
@@ -29,6 +28,25 @@ import {
 import moment from "moment";
 
 const isSaveFeatureEnabled = false;
+const detectMobile = () => {
+  //** Use references from https://stackoverflow.com/a/11381730 */
+  const toMatch = [
+    /Android/i,
+    /webOS/i,
+    /iPhone/i,
+    /iPad/i,
+    /iPod/i,
+    /BlackBerry/i,
+    /Windows Phone/i,
+  ];
+  const mobileBrowser = toMatch.some((toMatchItem) => {
+    return navigator.userAgent.match(toMatchItem);
+  });
+  return (
+    window.matchMedia("only screen and (max-width: 800px)").matches ||
+    mobileBrowser
+  );
+};
 
 const Home = () => {
   const [error, setError] = useState(false);
@@ -44,11 +62,12 @@ const Home = () => {
   const [isSubmitFailed, setIsSubmitFailed] = useState([]);
   const [notification, setNotification] = useState({ isVisible: false });
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(detectMobile());
 
-  // check screen size
-  const isMobile = window.matchMedia(
-    "only screen and (max-width: 760px)"
-  ).matches;
+  // check screen size or mobile browser
+  window.addEventListener("resize", () => {
+    setIsMobile(detectMobile());
+  });
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -240,10 +259,11 @@ const Home = () => {
             });
         });
     });
-  }, [formId]);
+  }, [formId, cacheId, form, dispatch]);
 
   useEffect(() => {
-    if (forms?.surveyId) {
+    const { surveyId, dataPointId, submissionStart } = forms;
+    if (surveyId) {
       const questions = questionGroup.flatMap((qg) => {
         const qsTmp = qg.question.map((q) => ({
           ...q,
@@ -267,12 +287,12 @@ const Home = () => {
       });
       saveAnswerToDB({
         formId: formId,
-        dataPointId: forms?.dataPointId,
-        submissionStart: forms?.submissionStart,
+        dataPointId: dataPointId,
+        submissionStart: submissionStart,
         answer: JSON.stringify(transformAnswers),
       });
     }
-  }, [form.getFieldsValue()]);
+  }, [form, formId, forms, questionGroup]);
 
   const sidebarProps = useMemo(() => {
     return {
