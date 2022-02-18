@@ -1,9 +1,9 @@
 import Dexie from "dexie";
 
 const db = new Dexie("akvo");
-db.version(1).stores({
+db.version(2).stores({
   forms: "formId, app, version",
-  answers: "formId, dataPointId, submissionStart",
+  answers: "cacheId, formId, dataPointId",
 });
 
 export const checkDB = () =>
@@ -27,28 +27,34 @@ export const saveFormToDB = ({ formId, app, version, formData }) => {
   db.forms.add({ formId, app, version, formData });
 };
 
-export const getFormFromDB = ({ formId }) => db.forms.get(formId);
+export const getFormFromDB = (formId) => db.forms.get(formId);
 
-export const deleteFormByIdFromDB = ({ formId }) => {
+export const deleteFormByIdFromDB = (formId) => {
   db.forms.delete(formId);
   db.forms.clear();
 };
 
 export const saveAnswerToDB = ({
+  cacheId,
   formId,
+  formName,
   dataPointId,
   submissionStart,
   answer,
 }) => {
-  db.answers.clear();
-  db.answers.add({ formId, dataPointId, submissionStart, answer });
+  db.answers.delete(cacheId);
+  db.answers.add({
+    cacheId,
+    formId,
+    formName,
+    dataPointId,
+    submissionStart,
+    answer,
+  });
 };
 
-export const getAnswerFromDB = ({ formId }) => db.answers.get(formId);
+export const getAnswerFromDB = (cacheId) => db.answers.get(cacheId);
 
-export const deleteAnswerByIdFromDB = ({ formId }) => {
-  db.answers.delete(formId);
-  db.answers.clear();
-};
+export const deleteAnswerByIdFromDB = (cacheId) => db.answers.delete(cacheId);
 
 export default db;
