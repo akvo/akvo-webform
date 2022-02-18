@@ -425,6 +425,51 @@ button,
   }
 }
 
+.submissions-drawer-toggle,
+.submissions-drawer-toggle-close {
+  width: 6px;
+  height: 50px;
+  border: 2px solid #6a6a6a;
+  cursor: pointer;
+  top: 50%;
+}
+
+.submissions-drawer-toggle {
+  position: fixed;
+  left: 4px;
+  z-index: 9999;
+  border-left: none;
+
+  &:hover {
+    border: 3px solid #222;
+    border-left: none;
+  }
+}
+
+.submissions-drawer-toggle-close {
+  position: absolute;
+  right: 4px;
+  z-index: 10004;
+  border-right: none;
+
+  &:hover {
+    border: 3px solid #222;
+    border-right: none;
+  }
+}
+
+.submissions-drawer-container {
+  .ant-drawer-header {
+    padding: 16px 0;
+
+    .ant-drawer-close {
+      &:hover {
+        background: none;
+      }
+    }
+  }
+}
+
 .mobile-footer-container {
   position: sticky;
   left: 0;

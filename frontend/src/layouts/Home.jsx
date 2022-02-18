@@ -8,6 +8,7 @@ import {
   saveFormToDB,
   deleteFormByIdFromDB,
   saveAnswerToDB,
+  getAllAnswerFromDB,
   getAnswerFromDB,
   deleteAnswerByIdFromDB,
 } from "../lib/db";
@@ -24,6 +25,7 @@ import {
   Sidebar,
   NotificationModal,
   MobileFooter,
+  SubmissionListDrawer,
 } from "../components";
 import uuid from "uuid/v4";
 
@@ -62,6 +64,7 @@ const Home = () => {
   const [isSubmitFailed, setIsSubmitFailed] = useState([]);
   const [notification, setNotification] = useState({ isVisible: false });
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  const [submissionList, setSubmissionList] = useState([]);
   const [isMobile, setIsMobile] = useState(detectMobile());
 
   // check screen size or mobile browser
@@ -189,6 +192,11 @@ const Home = () => {
   };
 
   useEffect(() => {
+    // get all submission list from indexedDB
+    getAllAnswerFromDB().then((res) => {
+      setSubmissionList(res);
+    });
+
     checkDB().then((res) => {
       const answerValues = {};
       api
@@ -412,6 +420,10 @@ const Home = () => {
       )}
       {/* Notification Modal */}
       <NotificationModal {...notification} isMobile={isMobile} />
+      {/* Saved submissions drawer */}
+      {submissionList.length && (
+        <SubmissionListDrawer submissionList={submissionList} />
+      )}
     </Row>
   );
 };

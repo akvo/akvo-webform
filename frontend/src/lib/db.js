@@ -53,6 +53,8 @@ export const saveAnswerToDB = ({
   });
 };
 
+export const getAllAnswerFromDB = () => db.answers.toArray();
+
 export const getAnswerFromDB = (cacheId) => db.answers.get(cacheId);
 
 export const deleteAnswerByIdFromDB = (cacheId) => db.answers.delete(cacheId);
