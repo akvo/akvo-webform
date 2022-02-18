@@ -46,8 +46,13 @@ const generateForm = (form) => {
   return {
     ...form,
     questionGroup: form.questionGroup.map((qg) => {
+      let repeats = {};
+      if (qg?.repeatable) {
+        repeats = { repeats: [0] };
+      }
       return {
         ...qg,
+        ...repeats,
         question: qg.question.map((q) => {
           return transformed.find((t) => t.id === q.id);
         }),
@@ -181,6 +186,48 @@ export const generateUUID = () => {
     })
     .slice(0, 3);
   return id.join("-");
+};
+
+export const updateRepeat = (
+  value,
+  index,
+  state,
+  dispatch,
+  operation,
+  repeatIndex = null
+) => {
+  const { forms, group } = state;
+  const current = forms.questionGroup.find((x) => x.index === index);
+  const updated = forms.questionGroup.map((x) => {
+    const isRepeatsAvailable = x?.repeats && x?.repeats?.length;
+    const repeatNumber = isRepeatsAvailable
+      ? x.repeats[x.repeats.length - 1] + 1
+      : value - 1;
+    let repeats = isRepeatsAvailable ? x.repeats : [0];
+    if (x.index === index) {
+      if (operation === "add") {
+        repeats = [...repeats, repeatNumber];
+      }
+      if (operation === "delete") {
+        repeats.pop();
+      }
+      if (operation === "delete-selected" && repeatIndex !== null) {
+        repeats = repeats.filter((r) => r !== repeatIndex);
+      }
+      return { ...current, repeat: value, repeats: repeats };
+    }
+    return x;
+  });
+  dispatch({
+    type: "UPDATE FORM",
+    payload: { ...forms, questionGroup: updated },
+  });
+  dispatch({
+    type: "UPDATE GROUP",
+    payload: {
+      complete: group.complete.filter((c) => c !== `${index}-${value + 1}`),
+    },
+  });
 };
 
 export default generateForm;

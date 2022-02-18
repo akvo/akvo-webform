@@ -207,6 +207,14 @@
     padding: 10px 45px;
     background-color: #f0f0f0;
     margin: 40px -25px 20px;
+
+    .icon,
+    .icon:focus {
+      color: #6a6a6a;
+      &:hover {
+        color: #222;
+      }
+    }
   }
 
   &.ant-card-bordered {
