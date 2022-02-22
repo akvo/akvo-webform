@@ -29,7 +29,7 @@ import {
 } from "../components";
 import uuid from "uuid/v4";
 
-const isSaveFeatureEnabled = false;
+const saveFeature = true;
 const detectMobile = () => {
   //** Use references from https://stackoverflow.com/a/11381730 */
   const toMatch = [
@@ -71,6 +71,11 @@ const Home = () => {
   window.addEventListener("resize", () => {
     setIsMobile(detectMobile());
   });
+
+  const isSaveFeatureEnabled = useMemo(
+    () => saveFeature && !isMobile,
+    [isMobile]
+  );
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -121,7 +126,6 @@ const Home = () => {
 
   const onSaveSuccess = (res) => {
     const _cache = res?.data?.id;
-    localStorage.setItem("_cache", _cache);
     let savedLink = window.location.href;
     savedLink = savedLink.includes(_cache)
       ? savedLink
@@ -144,29 +148,6 @@ const Home = () => {
 
   const onSave = () => {
     setIsSave(true);
-    getAnswerFromDB(cacheId).then((res) => {
-      if (localStorage.getItem("_cache") !== null) {
-        api
-          .put(`/form_instance/${localStorage.getItem("_cache")}`, res, {
-            "content-type": "application/json",
-          })
-          .then((res) => {
-            onSaveSuccess(res);
-          })
-          .catch((e) => {
-            onSaveFailed(e);
-          });
-      } else {
-        api
-          .post(`/form_instance`, res, { "content-type": "application/json" })
-          .then((res) => {
-            onSaveSuccess(res);
-          })
-          .catch((e) => {
-            onSaveFailed(e);
-          });
-      }
-    });
   };
 
   const onValuesChange = (qg, value, values) => {
