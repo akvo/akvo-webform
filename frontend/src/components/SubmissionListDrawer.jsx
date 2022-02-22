@@ -61,13 +61,14 @@ const SubmissionListDrawer = ({
                   type: "delete-saved-submission",
                   onCancel: () => setNotification({ isVisible: false }),
                   onOk: () => {
-                    deleteAnswerByIdFromDB(cacheId);
-                    fetchSubmissionList();
-                    // reload page if user delete loaded submission
-                    if (cacheIdURL === cacheId) {
-                      window.location.replace(`${origin}/${formId}`);
-                    }
-                    setNotification({ isVisible: false });
+                    deleteAnswerByIdFromDB(cacheId).then(() => {
+                      fetchSubmissionList();
+                      // reload page if user delete loaded submission
+                      if (cacheIdURL === cacheId) {
+                        window.location.replace(`${origin}/${formId}`);
+                      }
+                      setNotification({ isVisible: false });
+                    });
                   },
                 });
               }}
