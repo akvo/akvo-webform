@@ -4,8 +4,10 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { FaStarOfLife } from "react-icons/fa";
 import dataProviders from "../store";
 
-const Help = ({ text }) => {
+const Help = ({ activeLang, text, altText }) => {
   const [show, setShow] = useState(false);
+  const findLang = altText?.find((x) => x?.language === activeLang);
+
   return (
     <div className="help">
       <Button
@@ -15,7 +17,9 @@ const Help = ({ text }) => {
       >
         more info
       </Button>
-      {show && <p dangerouslySetInnerHTML={{ __html: text }} />}
+      {show && (
+        <p dangerouslySetInnerHTML={{ __html: findLang?.text || text }} />
+      )}
     </div>
   );
 };
@@ -33,7 +37,7 @@ const Label = ({
 
   const langText = useMemo(() => {
     const findLang = altText?.find((x) => x?.language === activeLang);
-    return findLang ? <div>{findLang?.text}</div> : "";
+    return findLang?.text ? <div>{findLang?.text}</div> : "";
   }, [altText, activeLang]);
 
   return (
@@ -47,7 +51,9 @@ const Label = ({
           )}
         </div>
         {langText}
-        {help && help?.text && help?.text !== "" && <Help {...help} />}
+        {help && help?.text && help?.text !== "" && (
+          <Help activeLang={activeLang} {...help} />
+        )}
       </Space>
     </div>
   );
