@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Drawer, Space, Table, Button } from "antd";
 import { deleteAnswerByIdFromDB } from "../lib/db";
+import { useParams } from "react-router-dom";
 import moment from "moment";
 
 const DrawerToggle = ({ setVisible, visible }) => {
@@ -17,6 +18,7 @@ const SubmissionListDrawer = ({
   fetchSubmissionList,
   setNotification,
 }) => {
+  const cacheIdURL = useParams()?.cacheId;
   const [visible, setVisible] = useState(false);
 
   const columns = [
@@ -37,14 +39,16 @@ const SubmissionListDrawer = ({
       key: "action",
       render: (record) => {
         const { formId, cacheId } = record;
-        const link = `${window.location.origin}/${formId}/${cacheId}`;
+        const origin = window.location.origin;
         return (
           <Space>
             <Button
               size="small"
               type="primary"
               ghost
-              onClick={() => window.location.replace(link)}
+              onClick={() =>
+                window.location.replace(`${origin}/${formId}/${cacheId}`)
+              }
             >
               Load
             </Button>
@@ -59,6 +63,10 @@ const SubmissionListDrawer = ({
                   onOk: () => {
                     deleteAnswerByIdFromDB(cacheId);
                     fetchSubmissionList();
+                    // reload page if user delete loaded submission
+                    if (cacheIdURL === cacheId) {
+                      window.location.replace(`${origin}/${formId}`);
+                    }
                     setNotification({ isVisible: false });
                   },
                 });
