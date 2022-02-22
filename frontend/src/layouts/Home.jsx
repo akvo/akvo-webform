@@ -252,7 +252,6 @@ const Home = () => {
           api
             .get(`form/${formId}`)
             .then((res) => {
-              console.log(res.data);
               let formData = generateForm(res.data);
               // transform formData question group
               // to return repeatable question value if value defined
@@ -286,6 +285,7 @@ const Home = () => {
                 formData: formData,
               });
               dispatch({ type: "INIT FORM", payload: formData });
+              dispatch({ type: "INIT LANGUAGE", payload: formData });
             })
             .catch((e) => {
               const { status, statusText } = e.response;

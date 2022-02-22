@@ -37,7 +37,6 @@ const MenuDropdown = ({ form, setNotification }) => {
   const cacheIdURL = useParams()?.cacheId;
   const dispatch = dataProviders.Actions();
   const { forms } = dataProviders.Values();
-
   return (
     <Menu
       onClick={({ key }) =>
@@ -48,6 +47,22 @@ const MenuDropdown = ({ form, setNotification }) => {
       <Menu.Item key="print">Print form</Menu.Item>
       <Menu.Item key="print-prefilled">Print prefilled form</Menu.Item>
       <Menu.Item key="reset">Clear all responses</Menu.Item>
+    </Menu>
+  );
+};
+
+const LangDropdown = () => {
+  const { language } = dataProviders.Values();
+  const dispatch = dataProviders.Actions();
+  return (
+    <Menu
+      selectedKeys={[language?.active]}
+      onClick={({ key }) => dispatch({ type: "UPDATE LANGUAGE", payload: key })}
+      className="menu-dropdown"
+    >
+      {language?.list?.map((lang) => (
+        <Menu.Item key={lang?.language}>{lang?.name}</Menu.Item>
+      ))}
     </Menu>
   );
 };
@@ -72,7 +87,7 @@ const FormHeader = ({
   isSaveFeatureEnabled,
   setNotification,
 }) => {
-  const { dataPointName, forms } = dataProviders.Values();
+  const { dataPointName, forms, language } = dataProviders.Values();
   const newDataPointName = dataPointName.map((x) => {
     let findValue = form.getFieldValue(x?.id);
     if (Array.isArray(findValue)) {
@@ -106,13 +121,11 @@ const FormHeader = ({
           {!isMobile && (
             <DatapointDisplayName dataPointName={newDataPointName} />
           )}
-          <Button
-            size={isMobile ? "middle" : "large"}
-            className="lang"
-            onClick={() => onClick("Change Language")}
-          >
-            En
-          </Button>
+          <Dropdown overlay={<LangDropdown />} placement="bottomCenter">
+            <Button size={isMobile ? "middle" : "large"} className="lang">
+              {language?.active}
+            </Button>
+          </Dropdown>
           {!isMobile && (
             <>
               <Button

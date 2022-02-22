@@ -1,3 +1,5 @@
+import isoLangs from "../lib/isoLangs";
+
 /* INITIAL LOAD */
 
 const initForms = (payload) => {
@@ -16,6 +18,20 @@ const initDataPointName = ({ questionGroup }) => {
     .map((qg) => qg?.question.filter((q) => q.localeNameFlag))
     .flatMap((q) => q)
     .map((x) => ({ id: x.id, value: false }));
+};
+
+const initLang = ({ defaultLanguageCode, altText }) => {
+  const langList = altText?.map((lang) => {
+    const findIsoLang = isoLangs[lang?.language];
+    return {
+      language: lang?.language,
+      name: `${findIsoLang?.name} / ${findIsoLang?.nativeName}`,
+    };
+  });
+  return {
+    active: defaultLanguageCode,
+    list: langList,
+  };
 };
 
 /* END INIT */
@@ -70,6 +86,19 @@ const reducer = (state, action) => {
           action.payload?.dataPointName
         ),
         progress: action.payload.progress,
+      };
+    case "INIT LANGUAGE":
+      return {
+        ...state,
+        language: initLang(action.payload),
+      };
+    case "UPDATE LANGUAGE":
+      return {
+        ...state,
+        language: {
+          ...state.language,
+          active: action.payload,
+        },
       };
 
     default:
