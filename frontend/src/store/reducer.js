@@ -21,8 +21,13 @@ const initDataPointName = ({ questionGroup }) => {
 };
 
 const initLang = ({ defaultLanguageCode, altText }) => {
+  const isoDefaultLang = isoLangs?.[defaultLanguageCode];
+  const defaultLang = {
+    language: defaultLanguageCode,
+    name: `${isoDefaultLang?.name} / ${isoDefaultLang?.nativeName}`,
+  };
   const langList = altText?.map((lang) => {
-    const findIsoLang = isoLangs[lang?.language];
+    const findIsoLang = isoLangs?.[lang?.language];
     return {
       language: lang?.language,
       name: `${findIsoLang?.name} / ${findIsoLang?.nativeName}`,
@@ -30,7 +35,7 @@ const initLang = ({ defaultLanguageCode, altText }) => {
   });
   return {
     active: defaultLanguageCode,
-    list: langList,
+    list: [defaultLang, ...langList],
   };
 };
 
