@@ -86,12 +86,6 @@ const Home = () => {
   };
 
   const fethSubmissionByCache = (cacheId) => {
-    const getData =
-      cacheId && isSaveFeatureEnabled
-        ? api
-            .get(`form_instance/${cacheId}`)
-            .then((res) => JSON.parse(res?.data?.state))
-        : getAnswerFromDB(cacheId);
     getAnswerFromDB(cacheId)
       .then((res) => {
         if (res?.answer) {
