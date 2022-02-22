@@ -6,20 +6,33 @@ import dataProviders from "../store";
 
 const Help = ({ activeLang, text, altText }) => {
   const [show, setShow] = useState(false);
-  const findLang = altText?.find((x) => x?.language === activeLang);
+
+  const langText = useMemo(() => {
+    const findLang = altText?.find((x) => x?.language === activeLang);
+    return findLang?.text ? (
+      <div dangerouslySetInnerHTML={{ __html: findLang.text }} />
+    ) : (
+      ""
+    );
+  }, [altText, activeLang]);
 
   return (
     <div className="help">
-      <Button
-        onClick={() => setShow(show ? false : true)}
-        icon={<InfoCircleOutlined />}
-        size="small"
-      >
-        more info
-      </Button>
-      {show && (
-        <p dangerouslySetInnerHTML={{ __html: findLang?.text || text }} />
-      )}
+      <Space direction="vertical">
+        <Button
+          onClick={() => setShow(show ? false : true)}
+          icon={<InfoCircleOutlined />}
+          size="small"
+        >
+          more info
+        </Button>
+        {show && (
+          <Space direction="vertical">
+            <div dangerouslySetInnerHTML={{ __html: text }} />
+            {langText}
+          </Space>
+        )}
+      </Space>
     </div>
   );
 };
@@ -37,7 +50,7 @@ const Label = ({
 
   const langText = useMemo(() => {
     const findLang = altText?.find((x) => x?.language === activeLang);
-    return findLang?.text ? <div>{findLang?.text}</div> : "";
+    return findLang?.text ? <div>{findLang.text}</div> : "";
   }, [altText, activeLang]);
 
   return (
