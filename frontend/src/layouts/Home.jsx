@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
@@ -86,29 +86,33 @@ const Home = () => {
     });
   };
 
-  const fethSubmissionByCache = (cacheId) =>
-    cacheId
-      ? getAnswerFromDB(cacheId).then((res) => {
-          if (res?.answer) {
-            const data = JSON.parse(res.answer);
-            // fill form
-            data.forEach(({ question_id, type, answer }) => {
-              // check if string a valid date
-              if (type === "date" && answer) {
-                form.setFieldsValue({
-                  [question_id]: moment(answer),
-                });
-              } else {
-                form.setFieldsValue({
-                  [question_id]: answer,
-                });
-              }
-            });
-            return { ...res, answer: data };
-          }
-          return res;
-        })
-      : new Promise((resolve) => resolve({}));
+  const fethSubmissionByCache = useCallback(
+    (cacheId) => {
+      return cacheId
+        ? getAnswerFromDB(cacheId).then((res) => {
+            if (res?.answer) {
+              const data = JSON.parse(res.answer);
+              // fill form
+              data.forEach(({ question_id, type, answer }) => {
+                // check if string a valid date
+                if (type === "date" && answer) {
+                  form.setFieldsValue({
+                    [question_id]: moment(answer),
+                  });
+                } else {
+                  form.setFieldsValue({
+                    [question_id]: answer,
+                  });
+                }
+              });
+              return { ...res, answer: data };
+            }
+            return res;
+          })
+        : new Promise((resolve) => resolve({}));
+    },
+    [form]
+  );
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -130,7 +134,7 @@ const Home = () => {
       .post(`/submit-form?`, data, { "content-type": "application/json" })
       .then((res) => {
         form.resetFields();
-        deleteAnswerByIdFromDB(formId);
+        deleteAnswerByIdFromDB(forms?._cacheId);
         deleteFormByIdFromDB(formId);
         setIsSubmit(false);
         setNotification({
@@ -241,54 +245,56 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchSubmissionList();
-    checkDB().then(() => {
-      fethSubmissionByCache(cacheId).then((answerValues) => {
-        api
-          .get(`form/${formId}`)
-          .then((res) => {
-            let formData = generateForm(res.data);
-            // transform formData question group
-            // to return repeatable question value if value defined
-            let questionGroups = formData?.questionGroup;
-            if (answerValues?.answer) {
-              questionGroups = formData?.questionGroup.map((qg, qgi) => {
-                const findQg = answerValues?.answer?.find(
-                  (ans) => ans?.qg_index === qgi
-                );
-                const repeat = findQg?.qg_repeat || 1;
-                return {
-                  ...qg,
-                  repeat: repeat,
-                  repeats: range(repeat),
-                };
+    if (!forms?.surveyId) {
+      fetchSubmissionList();
+      checkDB().then(() => {
+        fethSubmissionByCache(cacheId).then((answerValues) => {
+          api
+            .get(`form/${formId}`)
+            .then((res) => {
+              let formData = generateForm(res.data);
+              // transform formData question group
+              // to return repeatable question value if value defined
+              let questionGroups = formData?.questionGroup;
+              if (answerValues?.answer) {
+                questionGroups = formData?.questionGroup.map((qg, qgi) => {
+                  const findQg = answerValues?.answer?.find(
+                    (ans) => ans?.qg_index === qgi
+                  );
+                  const repeat = findQg?.qg_repeat || 1;
+                  return {
+                    ...qg,
+                    repeat: repeat,
+                    repeats: range(repeat),
+                  };
+                });
+              }
+              // add form metadata when form loaded
+              formData = {
+                ...formData,
+                questionGroup: questionGroups,
+                dataPointId: answerValues?.dataPointId || generateDataPointId(),
+                deviceId: "Akvo Flow Web",
+                submissionStart: answerValues?.submissionStart || Date.now(),
+                _cacheId: cacheId || uuid(),
+              };
+              saveFormToDB({
+                formId: formId,
+                app: formData?.app,
+                version: formData?.version,
+                formData: formData,
               });
-            }
-            // add form metadata when form loaded
-            formData = {
-              ...formData,
-              questionGroup: questionGroups,
-              dataPointId: answerValues?.dataPointId || generateDataPointId(),
-              deviceId: "Akvo Flow Web",
-              submissionStart: answerValues?.submissionStart || Date.now(),
-              _cacheId: cacheId || uuid(),
-            };
-            saveFormToDB({
-              formId: formId,
-              app: formData?.app,
-              version: formData?.version,
-              formData: formData,
+              dispatch({ type: "INIT FORM", payload: formData });
+            })
+            .catch((e) => {
+              const { status, statusText } = e.response;
+              console.error(`${formId}`, status, statusText);
+              setError(e.response);
             });
-            dispatch({ type: "INIT FORM", payload: formData });
-          })
-          .catch((e) => {
-            const { status, statusText } = e.response;
-            console.error(`${formId}`, status, statusText);
-            setError(e.response);
-          });
+        });
       });
-    });
-  }, [formId, cacheId, form, dispatch]);
+    }
+  }, [forms, formId, cacheId, dispatch, fethSubmissionByCache]);
 
   const sidebarProps = useMemo(() => {
     return {
@@ -325,6 +331,7 @@ const Home = () => {
         onSave={onSave}
         isSave={isSave}
         isSaveFeatureEnabled={isSaveFeatureEnabled}
+        setNotification={setNotification}
       />
       {!isMobile && (
         <Col span={6} className="sidebar sticky">
