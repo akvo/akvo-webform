@@ -142,44 +142,39 @@ const Home = () => {
   const onSave = () => {
     const { _cacheId, surveyId, name, dataPointId, submissionStart } = forms;
     if (surveyId) {
+      setIsSave(true);
       const answer = form.getFieldsValue();
-      const isAnswered = Object.keys(answer).filter(
-        (key) => answer[key]
-      )?.length;
-      if (isAnswered) {
-        setIsSave(true);
-        const questions = questionGroup.flatMap((qg) => {
-          const qsTmp = qg.question.map((q) => ({
-            ...q,
-            // add question group index & repeatable
-            qg_index: qg?.index,
-            qg_repeat: qg?.repeat,
-          }));
-          return qsTmp;
-        });
-        const transformAnswers = Object.keys(answer).map((key) => {
-          const findQuestion = questions.find((q) => q.id === key);
-          const value = answer?.[key];
-          return {
-            question_id: key,
-            answer: value,
-            type: findQuestion?.type,
-            qg_index: findQuestion?.qg_index,
-            qg_repeat: findQuestion?.qg_repeat,
-          };
-        });
-        saveAnswerToDB({
-          cacheId: _cacheId,
-          formId: formId,
-          formName: name,
-          dataPointId: dataPointId,
-          submissionStart: submissionStart,
-          answer: JSON.stringify(transformAnswers),
-        });
-        setTimeout(() => {
-          onSaveSuccess(_cacheId);
-        }, 100);
-      }
+      const questions = questionGroup.flatMap((qg) => {
+        const qsTmp = qg.question.map((q) => ({
+          ...q,
+          // add question group index & repeatable
+          qg_index: qg?.index,
+          qg_repeat: qg?.repeat,
+        }));
+        return qsTmp;
+      });
+      const transformAnswers = Object.keys(answer).map((key) => {
+        const findQuestion = questions.find((q) => q.id === key);
+        const value = answer?.[key];
+        return {
+          question_id: key,
+          answer: value,
+          type: findQuestion?.type,
+          qg_index: findQuestion?.qg_index,
+          qg_repeat: findQuestion?.qg_repeat,
+        };
+      });
+      saveAnswerToDB({
+        cacheId: _cacheId,
+        formId: formId,
+        formName: name,
+        dataPointId: dataPointId,
+        submissionStart: submissionStart,
+        answer: JSON.stringify(transformAnswers),
+      });
+      setTimeout(() => {
+        onSaveSuccess(_cacheId);
+      }, 100);
     }
   };
 
