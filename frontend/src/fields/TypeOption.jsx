@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Space, Form, Radio, Checkbox } from "antd";
 import { Label } from "../components";
+import dataProviders from "../store";
 
 const TypeOption = ({
   options,
@@ -13,6 +14,14 @@ const TypeOption = ({
   altText,
 }) => {
   const { option } = options;
+  const { language } = dataProviders.Values();
+  const activeLang = language?.active;
+
+  const renderLangText = (altText) => {
+    const findLang = altText?.find((x) => x?.language === activeLang);
+    return findLang?.text ? ` / ${findLang.text}` : "";
+  };
+
   return (
     <Form.Item
       className="field"
@@ -36,6 +45,7 @@ const TypeOption = ({
             {option.map((o, io) => (
               <Checkbox key={io} value={o.value}>
                 {o.text}
+                {renderLangText(o?.altText)}
               </Checkbox>
             ))}
           </Space>
@@ -46,6 +56,7 @@ const TypeOption = ({
             {option.map((o, io) => (
               <Radio key={io} value={o.value}>
                 {o.text}
+                {renderLangText(o?.altText)}
               </Radio>
             ))}
           </Space>
