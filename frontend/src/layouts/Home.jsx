@@ -138,13 +138,6 @@ const Home = () => {
     });
   };
 
-  const onSaveFailed = (e) => {
-    const { status, statusText } = e.response;
-    console.error(status, statusText);
-    setIsSave(false);
-    setError(e.response);
-  };
-
   // Save submission to IndexedDB
   const onSave = () => {
     const { _cacheId, surveyId, name, dataPointId, submissionStart } = forms;
