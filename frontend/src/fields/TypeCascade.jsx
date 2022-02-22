@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Space, Form, Select } from "antd";
-import Label from "../components/Label";
+import { Form, Select } from "antd";
+import { Label } from "../components";
 import api from "../lib/api";
 import { findLast, take } from "lodash";
 import dataProviders from "../store";
@@ -18,6 +18,7 @@ const TypeCascade = ({
   levels,
   form,
   cascadeResource,
+  altText,
 }) => {
   const cascadeAnswer = form.getFieldValue(id);
   const state = dataProviders.Values();
@@ -35,7 +36,7 @@ const TypeCascade = ({
         ? findLast(stored)
         : cascadeAnswer?.[cascadeValues.length - 1];
     return tail?.id || tail?.name || tail;
-  }, [cascadeAnswer, stored, cascadeValues]);
+  }, [cascadeAnswer, stored, cascadeValues, level]);
 
   const updateCompleteState = (value) => {
     const answer = { [id]: value };
@@ -103,7 +104,7 @@ const TypeCascade = ({
           console.log(error);
         });
     }
-  }, [cascadeValues, tail]);
+  }, [cascadeValues, tail, alias, cascadeResource, level]);
 
   const invalid = mandatory && stored?.length !== level.length;
 
@@ -126,6 +127,7 @@ const TypeCascade = ({
           text={text}
           help={help}
           mandatory={mandatory}
+          altText={altText}
         />
       </div>
       {cascadeValues.map((x, xi) => (

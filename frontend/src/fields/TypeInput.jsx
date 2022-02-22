@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, InputNumber } from "antd";
-import Label from "../components/Label";
+import { Label } from "../components";
 import { checkFilledForm } from "../lib/form";
 import dataProviders from "../store";
 
@@ -42,6 +42,7 @@ const TypeInput = ({
   validationRule,
   requireDoubleEntry,
   form,
+  altText,
 }) => {
   const inputAnswer = form.getFieldValue(id);
   const [value, setValue] = useState(inputAnswer || null);
@@ -52,25 +53,28 @@ const TypeInput = ({
   const { forms, dataPointName } = state;
   const { questionGroup } = forms;
 
-  const updateCompleteState = (value) => {
-    const answer = { [id]: value };
-    form.setFieldsValue(answer);
-    const errorFields = form.getFieldsError();
-    const formValues = form.getFieldsValue();
-    const { completeQg } = checkFilledForm(
-      errorFields,
-      dataPointName,
-      questionGroup,
-      answer,
-      formValues
-    );
-    dispatch({
-      type: "UPDATE GROUP",
-      payload: {
-        complete: completeQg.flatMap((qg) => qg.i),
-      },
-    });
-  };
+  const updateCompleteState = useCallback(
+    (value) => {
+      const answer = { [id]: value };
+      form.setFieldsValue(answer);
+      const errorFields = form.getFieldsError();
+      const formValues = form.getFieldsValue();
+      const { completeQg } = checkFilledForm(
+        errorFields,
+        dataPointName,
+        questionGroup,
+        answer,
+        formValues
+      );
+      dispatch({
+        type: "UPDATE GROUP",
+        payload: {
+          complete: completeQg.flatMap((qg) => qg.i),
+        },
+      });
+    },
+    [dataPointName, dispatch, form, id, questionGroup]
+  );
 
   const setFirstDoubleEntryValue = (val) => {
     setValue(val);
@@ -88,7 +92,14 @@ const TypeInput = ({
     } else {
       updateCompleteState(inputAnswer || null);
     }
-  }, [doubleEntryValue, doubleEntryError, value]);
+  }, [
+    doubleEntryValue,
+    doubleEntryError,
+    value,
+    inputAnswer,
+    requireDoubleEntry,
+    updateCompleteState,
+  ]);
 
   return (
     <div>
@@ -104,6 +115,7 @@ const TypeInput = ({
                 help={help}
                 mandatory={mandatory}
                 requireDoubleEntry={requireDoubleEntry}
+                altText={altText}
               />
             }
             rules={rules}
@@ -146,6 +158,7 @@ const TypeInput = ({
               help={help}
               mandatory={mandatory}
               requireDoubleEntry={requireDoubleEntry}
+              altText={altText}
             />
           }
           rules={rules}

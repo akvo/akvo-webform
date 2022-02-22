@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
@@ -28,8 +28,10 @@ import {
   SubmissionListDrawer,
 } from "../components";
 import uuid from "uuid/v4";
+import moment from "moment";
+import range from "lodash/range";
 
-const isSaveFeatureEnabled = false;
+const saveFeature = true;
 const detectMobile = () => {
   //** Use references from https://stackoverflow.com/a/11381730 */
   const toMatch = [
@@ -45,7 +47,7 @@ const detectMobile = () => {
     return navigator.userAgent.match(toMatchItem);
   });
   return (
-    window.matchMedia("only screen and (max-width: 800px)").matches ||
+    window.matchMedia("only screen and (max-width: 1064px)").matches ||
     mobileBrowser
   );
 };
@@ -72,6 +74,46 @@ const Home = () => {
     setIsMobile(detectMobile());
   });
 
+  const isSaveFeatureEnabled = useMemo(
+    () => saveFeature && !isMobile,
+    [isMobile]
+  );
+
+  const fetchSubmissionList = () => {
+    // get all submission list from indexedDB
+    getAllAnswerFromDB().then((res) => {
+      setSubmissionList(res);
+    });
+  };
+
+  const fethSubmissionByCache = useCallback(
+    (cacheId) => {
+      return cacheId
+        ? getAnswerFromDB(cacheId).then((res) => {
+            if (res?.answer) {
+              const data = JSON.parse(res.answer);
+              // fill form
+              data.forEach(({ question_id, type, answer }) => {
+                // check if string a valid date
+                if (type === "date" && answer) {
+                  form.setFieldsValue({
+                    [question_id]: moment(answer),
+                  });
+                } else {
+                  form.setFieldsValue({
+                    [question_id]: answer,
+                  });
+                }
+              });
+              return { ...res, answer: data };
+            }
+            return res;
+          })
+        : new Promise((resolve) => resolve({}));
+    },
+    [form]
+  );
+
   const onComplete = (values) => {
     setIsSubmit(true);
     const responses = transformRequest(questionGroup, values);
@@ -88,13 +130,11 @@ const Home = () => {
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
-    console.log("Finish", data);
     api
       .post(`/submit-form?`, data, { "content-type": "application/json" })
       .then((res) => {
-        console.log(res.data);
         form.resetFields();
-        deleteAnswerByIdFromDB(formId);
+        deleteAnswerByIdFromDB(forms?._cacheId);
         deleteFormByIdFromDB(formId);
         setIsSubmit(false);
         setNotification({
@@ -119,9 +159,7 @@ const Home = () => {
     console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 
-  const onSaveSuccess = (res) => {
-    const _cache = res?.data?.id;
-    localStorage.setItem("_cache", _cache);
+  const onSaveSuccess = (_cache) => {
     let savedLink = window.location.href;
     savedLink = savedLink.includes(_cache)
       ? savedLink
@@ -135,38 +173,53 @@ const Home = () => {
     });
   };
 
-  const onSaveFailed = (e) => {
-    const { status, statusText } = e.response;
-    console.error(status, statusText);
-    setIsSave(false);
-    setError(e.response);
-  };
-
+  // Save submission to IndexedDB
   const onSave = () => {
-    setIsSave(true);
-    getAnswerFromDB(cacheId).then((res) => {
-      if (localStorage.getItem("_cache") !== null) {
-        api
-          .put(`/form_instance/${localStorage.getItem("_cache")}`, res, {
-            "content-type": "application/json",
-          })
-          .then((res) => {
-            onSaveSuccess(res);
-          })
-          .catch((e) => {
-            onSaveFailed(e);
-          });
-      } else {
-        api
-          .post(`/form_instance`, res, { "content-type": "application/json" })
-          .then((res) => {
-            onSaveSuccess(res);
-          })
-          .catch((e) => {
-            onSaveFailed(e);
-          });
-      }
-    });
+    const {
+      _cacheId,
+      surveyId,
+      name,
+      dataPointId,
+      submissionStart,
+      surveyGroupName,
+    } = forms;
+    if (surveyId) {
+      setIsSave(true);
+      const answer = form.getFieldsValue();
+      const questions = questionGroup.flatMap((qg) => {
+        const qsTmp = qg.question.map((q) => ({
+          ...q,
+          // add question group index & repeatable
+          qg_index: qg?.index,
+          qg_repeat: qg?.repeat,
+        }));
+        return qsTmp;
+      });
+      const transformAnswers = Object.keys(answer).map((key) => {
+        const findQuestion = questions.find((q) => q.id === key);
+        const value = answer?.[key];
+        return {
+          question_id: key,
+          answer: value,
+          type: findQuestion?.type,
+          qg_index: findQuestion?.qg_index,
+          qg_repeat: findQuestion?.qg_repeat,
+        };
+      });
+      saveAnswerToDB({
+        cacheId: _cacheId,
+        formId: formId,
+        formName: name,
+        surveyGroupName: surveyGroupName,
+        dataPointId: dataPointId,
+        submissionStart: submissionStart,
+        answer: JSON.stringify(transformAnswers),
+      });
+      setTimeout(() => {
+        onSaveSuccess(_cacheId);
+        fetchSubmissionList();
+      }, 100);
+    }
   };
 
   const onValuesChange = (qg, value, values) => {
@@ -192,130 +245,57 @@ const Home = () => {
   };
 
   useEffect(() => {
-    // get all submission list from indexedDB
-    getAllAnswerFromDB().then((res) => {
-      setSubmissionList(res);
-    });
-
-    checkDB().then((res) => {
-      const answerValues = {};
-      api
-        .get(`form/${formId}`)
-        .then((res) => {
-          let formData = generateForm(res.data);
-          // transform formData question group
-          // to return repeatable question value if value defined
-          let questionGroups = formData?.questionGroup;
-          if (answerValues?.answer) {
-            questionGroups = formData?.questionGroup.map((qg, qgi) => {
-              const findQg = answerValues?.answer?.find(
-                (ans) => ans?.qg_index === qgi
-              );
-              return {
-                ...qg,
-                repeat: findQg?.qg_repeat || 1,
-              };
-            });
-          }
-          // add form metadata when form loaded
-          formData = {
-            ...formData,
-            questionGroup: questionGroups,
-            dataPointId: answerValues?.dataPointId || generateDataPointId(),
-            deviceId: "Akvo Flow Web",
-            submissionStart: answerValues?.submissionStart || Date.now(),
-            _cacheId: cacheId || uuid(),
-          };
-          saveFormToDB({
-            formId: formId,
-            app: formData?.app,
-            version: formData?.version,
-            formData: formData,
-          });
-          dispatch({ type: "INIT FORM", payload: formData });
-        })
-        .catch((e) => {
-          const { status, statusText } = e.response;
-          console.error(`${formId}`, status, statusText);
-          setError(e.response);
-        });
-
-      // ## TODO:: Manage this load answer value later
-      // fill form from dexie or from cacheId & fetch from db
-      /*
-      const getData =
-        cacheId && isSaveFeatureEnabled
-          ? api
-              .get(`form_instance/${cacheId}`)
-              .then((res) => JSON.parse(res?.data?.state))
-          : getAnswerFromDB(cacheId);
-      getData
-        .then((res) => {
-          if (res?.answer) {
-            const data = JSON.parse(res.answer);
-            data.forEach(({ question_id, type, answer }) => {
-              // check if string a valid date
-              if (type === "date" && answer) {
-                form.setFieldsValue({
-                  [question_id]: moment(answer),
-                });
-              } else {
-                form.setFieldsValue({
-                  [question_id]: answer,
+    if (!forms?.surveyId) {
+      fetchSubmissionList();
+      checkDB().then(() => {
+        fethSubmissionByCache(cacheId).then((answerValues) => {
+          api
+            .get(`form/${formId}`)
+            .then((res) => {
+              let formData = generateForm(res.data);
+              // transform formData question group
+              // to return repeatable question value if value defined
+              let questionGroups = formData?.questionGroup;
+              if (answerValues?.answer) {
+                questionGroups = formData?.questionGroup.map((qg, qgi) => {
+                  const findQg = answerValues?.answer?.find(
+                    (ans) => ans?.qg_index === qgi
+                  );
+                  const repeat = findQg?.qg_repeat || 1;
+                  return {
+                    ...qg,
+                    repeat: repeat,
+                    repeats: range(repeat),
+                  };
                 });
               }
+              // add form metadata when form loaded
+              formData = {
+                ...formData,
+                questionGroup: questionGroups,
+                dataPointId: answerValues?.dataPointId || generateDataPointId(),
+                deviceId: "Akvo Flow Web",
+                submissionStart: answerValues?.submissionStart || Date.now(),
+                _cacheId: cacheId || uuid(),
+              };
+              saveFormToDB({
+                formId: formId,
+                app: formData?.app,
+                version: formData?.version,
+                formData: formData,
+              });
+              dispatch({ type: "INIT FORM", payload: formData });
+              dispatch({ type: "INIT LANGUAGE", payload: formData });
+            })
+            .catch((e) => {
+              const { status, statusText } = e.response;
+              console.error(`${formId}`, status, statusText);
+              setError(e.response);
             });
-            return { ...res, answer: data };
-          }
-          return res;
-        })
-        .then((answerValues) => {
-          console.log(answerValues);
         });
-        */
-    });
-  }, [formId, cacheId, form, dispatch]);
-
-  // Save answer to IndexedDB
-  useEffect(() => {
-    const { _cacheId, surveyId, name, dataPointId, submissionStart } = forms;
-    if (surveyId) {
-      const answer = form.getFieldsValue();
-      const isAnswered = Object.keys(answer).filter(
-        (key) => answer[key]
-      )?.length;
-      if (isAnswered) {
-        const questions = questionGroup.flatMap((qg) => {
-          const qsTmp = qg.question.map((q) => ({
-            ...q,
-            // add question group index & repeatable
-            qg_index: qg?.index,
-            qg_repeat: qg?.repeat,
-          }));
-          return qsTmp;
-        });
-        const transformAnswers = Object.keys(answer).map((key) => {
-          const findQuestion = questions.find((q) => q.id === key);
-          const value = answer?.[key];
-          return {
-            question_id: key,
-            answer: value,
-            type: findQuestion?.type,
-            qg_index: findQuestion?.qg_index,
-            qg_repeat: findQuestion?.qg_repeat,
-          };
-        });
-        saveAnswerToDB({
-          cacheId: _cacheId,
-          formId: formId,
-          formName: name,
-          dataPointId: dataPointId,
-          submissionStart: submissionStart,
-          answer: JSON.stringify(transformAnswers),
-        });
-      }
+      });
     }
-  }, [form.getFieldsValue(), formId, forms, questionGroup]);
+  }, [forms, formId, cacheId, dispatch, fethSubmissionByCache]);
 
   const sidebarProps = useMemo(() => {
     return {
@@ -352,6 +332,7 @@ const Home = () => {
         onSave={onSave}
         isSave={isSave}
         isSaveFeatureEnabled={isSaveFeatureEnabled}
+        setNotification={setNotification}
       />
       {!isMobile && (
         <Col span={6} className="sidebar sticky">
@@ -422,7 +403,11 @@ const Home = () => {
       <NotificationModal {...notification} isMobile={isMobile} />
       {/* Saved submissions drawer */}
       {!isMobile && submissionList.length && (
-        <SubmissionListDrawer submissionList={submissionList} />
+        <SubmissionListDrawer
+          submissionList={submissionList}
+          fetchSubmissionList={fetchSubmissionList}
+          setNotification={setNotification}
+        />
       )}
     </Row>
   );

@@ -32,10 +32,13 @@ body {
   color: #000 !important;
 }
 
+.leaflet-top.leaflet-left {
+  z-index: 900;
+}
 .leaflet-top,
 .leaflet-bottom {
   position: absolute;
-  z-index: 999;
+  z-index: 900;
   pointer-events: none;
 }
 
