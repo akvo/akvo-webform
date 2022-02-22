@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button } from "antd";
+import { Button, Space } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { FaStarOfLife } from "react-icons/fa";
 import dataProviders from "../store";
@@ -33,20 +33,22 @@ const Label = ({
 
   const langText = useMemo(() => {
     const findLang = altText?.find((x) => x?.language === activeLang);
-    return findLang ? <p>{findLang?.text}</p> : "";
+    return findLang ? <div>{findLang?.text}</div> : "";
   }, [altText, activeLang]);
 
   return (
     <div className="field-label">
-      <div>
-        {keyform + 1}. {text}
-        {mandatory && <FaStarOfLife className="icon required" />}
-        {requireDoubleEntry && (
-          <i className="double-entry-text">Require Double Entry</i>
-        )}
-      </div>
-      {langText}
-      {help && help?.text && help?.text !== "" && <Help {...help} />}
+      <Space direction="vertical">
+        <div>
+          {keyform + 1}. {text}
+          {mandatory && <FaStarOfLife className="icon required" />}
+          {requireDoubleEntry && (
+            <i className="double-entry-text">Require Double Entry</i>
+          )}
+        </div>
+        {langText}
+        {help && help?.text && help?.text !== "" && <Help {...help} />}
+      </Space>
     </div>
   );
 };
