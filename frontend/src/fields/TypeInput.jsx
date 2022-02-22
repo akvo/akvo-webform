@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, InputNumber } from "antd";
-import Label from "../components/Label";
+import { Label } from "../components";
 import { checkFilledForm } from "../lib/form";
 import dataProviders from "../store";
 
@@ -42,6 +42,7 @@ const TypeInput = ({
   validationRule,
   requireDoubleEntry,
   form,
+  altText,
 }) => {
   const inputAnswer = form.getFieldValue(id);
   const [value, setValue] = useState(inputAnswer || null);
@@ -114,6 +115,7 @@ const TypeInput = ({
                 help={help}
                 mandatory={mandatory}
                 requireDoubleEntry={requireDoubleEntry}
+                altText={altText}
               />
             }
             rules={rules}
@@ -156,6 +158,7 @@ const TypeInput = ({
               help={help}
               mandatory={mandatory}
               requireDoubleEntry={requireDoubleEntry}
+              altText={altText}
             />
           }
           rules={rules}

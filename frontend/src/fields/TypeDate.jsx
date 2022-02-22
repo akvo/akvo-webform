@@ -1,8 +1,8 @@
 import React from "react";
 import { Form, DatePicker } from "antd";
-import Label from "../components/Label";
+import { Label } from "../components";
 
-const TypeDate = ({ id, text, keyform, mandatory, rules, help }) => {
+const TypeDate = ({ id, text, keyform, mandatory, rules, help, altText }) => {
   return (
     <Form.Item
       className="field"
@@ -14,6 +14,7 @@ const TypeDate = ({ id, text, keyform, mandatory, rules, help }) => {
           text={text}
           help={help}
           mandatory={mandatory}
+          altText={altText}
         />
       }
       rules={rules}

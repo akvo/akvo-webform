@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Button } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { FaStarOfLife } from "react-icons/fa";
+import dataProviders from "../store";
 
 const Help = ({ text }) => {
   const [show, setShow] = useState(false);
@@ -19,16 +20,32 @@ const Help = ({ text }) => {
   );
 };
 
-const Label = ({ keyform, text, mandatory, help, requireDoubleEntry }) => {
+const Label = ({
+  keyform,
+  text,
+  mandatory,
+  help,
+  requireDoubleEntry,
+  altText,
+}) => {
+  const { language } = dataProviders.Values();
+  const activeLang = language?.active;
+
+  const langText = useMemo(() => {
+    const findLang = altText?.find((x) => x?.language === activeLang);
+    return findLang ? <p>{findLang?.text}</p> : "";
+  }, [altText, activeLang]);
+
   return (
     <div className="field-label">
-      <p>
+      <div>
         {keyform + 1}. {text}
         {mandatory && <FaStarOfLife className="icon required" />}
         {requireDoubleEntry && (
           <i className="double-entry-text">Require Double Entry</i>
         )}
-      </p>
+      </div>
+      {langText}
       {help && help?.text && help?.text !== "" && <Help {...help} />}
     </div>
   );

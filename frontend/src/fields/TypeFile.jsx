@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import { Upload, Form } from "antd";
-import Label from "../components/Label";
+import { Label } from "../components";
 import { BsCardImage } from "react-icons/bs";
 import uuid from "uuid/v4";
 
 const { Dragger } = Upload;
 
-const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
+const TypeFile = ({
+  id,
+  text,
+  form,
+  keyform,
+  mandatory,
+  rules,
+  help,
+  altText,
+}) => {
   const fileAnswer = form.getFieldValue(id);
   const [fileLoaded, setFileLoaded] = useState(fileAnswer || null);
 
@@ -60,6 +69,7 @@ const TypeFile = ({ id, text, form, keyform, mandatory, rules, help }) => {
           text={text}
           help={help}
           mandatory={mandatory}
+          altText={altText}
         />
       }
       rules={rules}

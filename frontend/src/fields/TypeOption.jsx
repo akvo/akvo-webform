@@ -1,8 +1,17 @@
 import React from "react";
 import { Space, Form, Radio, Checkbox } from "antd";
-import Label from "../components/Label";
+import { Label } from "../components";
 
-const TypeOption = ({ options, id, text, keyform, mandatory, rules, help }) => {
+const TypeOption = ({
+  options,
+  id,
+  text,
+  keyform,
+  mandatory,
+  rules,
+  help,
+  altText,
+}) => {
   const { option } = options;
   return (
     <Form.Item
@@ -15,6 +24,7 @@ const TypeOption = ({ options, id, text, keyform, mandatory, rules, help }) => {
           text={text}
           help={help}
           mandatory={mandatory}
+          altText={altText}
         />
       }
       rules={rules}

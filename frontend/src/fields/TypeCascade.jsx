@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Space, Form, Select } from "antd";
-import Label from "../components/Label";
+import { Form, Select } from "antd";
+import { Label } from "../components";
 import api from "../lib/api";
 import { findLast, take } from "lodash";
 import dataProviders from "../store";
@@ -18,6 +18,7 @@ const TypeCascade = ({
   levels,
   form,
   cascadeResource,
+  altText,
 }) => {
   const cascadeAnswer = form.getFieldValue(id);
   const state = dataProviders.Values();
@@ -126,6 +127,7 @@ const TypeCascade = ({
           text={text}
           help={help}
           mandatory={mandatory}
+          altText={altText}
         />
       </div>
       {cascadeValues.map((x, xi) => (
