@@ -171,7 +171,14 @@ const Home = () => {
 
   // Save submission to IndexedDB
   const onSave = () => {
-    const { _cacheId, surveyId, name, dataPointId, submissionStart } = forms;
+    const {
+      _cacheId,
+      surveyId,
+      name,
+      dataPointId,
+      submissionStart,
+      surveyGroupName,
+    } = forms;
     if (surveyId) {
       setIsSave(true);
       const answer = form.getFieldsValue();
@@ -199,6 +206,7 @@ const Home = () => {
         cacheId: _cacheId,
         formId: formId,
         formName: name,
+        surveyGroupName: surveyGroupName,
         dataPointId: dataPointId,
         submissionStart: submissionStart,
         answer: JSON.stringify(transformAnswers),

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Drawer, Select } from "antd";
+import React, { useState, useMemo } from "react";
+import { Drawer, Space, Table, Button } from "antd";
 import moment from "moment";
 
 const DrawerToggle = ({ setVisible, visible }) => {
@@ -11,8 +11,53 @@ const DrawerToggle = ({ setVisible, visible }) => {
   );
 };
 
+const columns = [
+  {
+    title: "Questionnaire",
+    dataIndex: "surveyGroupName",
+    key: "surveyGroupName",
+    render: (text, record) => `${text} - ${record?.formName}`,
+  },
+  {
+    title: "Submission Start",
+    dataIndex: "submissionStart",
+    key: "submissionStart",
+    render: (text) => moment(text).format("MMMM Do YYYY"),
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (record) => {
+      const { formId, cacheId } = record;
+      const link = `${window.location.origin}/${formId}/${cacheId}`;
+      return (
+        <Space>
+          <Button
+            size="small"
+            type="primary"
+            ghost
+            onClick={() => window.location.replace(link)}
+          >
+            Load
+          </Button>
+          <Button size="small" danger>
+            Delete
+          </Button>
+        </Space>
+      );
+    },
+  },
+];
+
 const SubmissionListDrawer = ({ submissionList }) => {
   const [visible, setVisible] = useState(false);
+
+  const dataSource = useMemo(() => {
+    return submissionList.map((s, si) => ({
+      key: si + 1,
+      ...s,
+    }));
+  }, [submissionList]);
 
   return (
     <>
@@ -21,32 +66,18 @@ const SubmissionListDrawer = ({ submissionList }) => {
         className="submissions-drawer-container"
         title="Submissions"
         placement="left"
+        width="450"
         visible={visible}
         onClose={() => setVisible(!visible)}
       >
         <DrawerToggle setVisible={setVisible} visible={visible} />
-        <Select
-          showSearch
-          placeholder="Select Submission"
-          className="submission-list-select"
-          options={submissionList.map((q) => ({
-            label: `${q?.formName} - ${moment(q?.submissionStart).format(
-              "MMMM Do YYYY"
-            )}`,
-            value: q?.cacheId,
-          }))}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-          onChange={(cache) => {
-            const findSubmission = submissionList.find(
-              (s) => s.cacheId === cache
-            );
-            const { formId, cacheId } = findSubmission;
-            const link = `${window.location.origin}/${formId}/${cacheId}`;
-            window.location.replace(link);
-          }}
+        <Table
+          columns={columns}
+          dataSource={dataSource}
+          pagination={false}
+          scroll={{ y: "600" }}
+          loading={dataSource?.length === 0}
+          size="small"
         />
       </Drawer>
     </>
