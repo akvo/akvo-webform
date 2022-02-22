@@ -29,6 +29,7 @@ import {
 } from "../components";
 import uuid from "uuid/v4";
 import moment from "moment";
+import range from "lodash/range";
 
 const saveFeature = true;
 const detectMobile = () => {
@@ -85,32 +86,29 @@ const Home = () => {
     });
   };
 
-  const fethSubmissionByCache = (cacheId) => {
-    getAnswerFromDB(cacheId)
-      .then((res) => {
-        if (res?.answer) {
-          const data = JSON.parse(res.answer);
-          // fill form
-          data.forEach(({ question_id, type, answer }) => {
-            // check if string a valid date
-            if (type === "date" && answer) {
-              form.setFieldsValue({
-                [question_id]: moment(answer),
-              });
-            } else {
-              form.setFieldsValue({
-                [question_id]: answer,
-              });
-            }
-          });
-          return { ...res, answer: data };
-        }
-        return res;
-      })
-      .then((answerValues) => {
-        console.log(answerValues);
-      });
-  };
+  const fethSubmissionByCache = (cacheId) =>
+    cacheId
+      ? getAnswerFromDB(cacheId).then((res) => {
+          if (res?.answer) {
+            const data = JSON.parse(res.answer);
+            // fill form
+            data.forEach(({ question_id, type, answer }) => {
+              // check if string a valid date
+              if (type === "date" && answer) {
+                form.setFieldsValue({
+                  [question_id]: moment(answer),
+                });
+              } else {
+                form.setFieldsValue({
+                  [question_id]: answer,
+                });
+              }
+            });
+            return { ...res, answer: data };
+          }
+          return res;
+        })
+      : new Promise((resolve) => resolve({}));
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -128,11 +126,9 @@ const Home = () => {
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
-    console.log("Finish", data);
     api
       .post(`/submit-form?`, data, { "content-type": "application/json" })
       .then((res) => {
-        console.log(res.data);
         form.resetFields();
         deleteAnswerByIdFromDB(formId);
         deleteFormByIdFromDB(formId);
@@ -238,48 +234,51 @@ const Home = () => {
 
   useEffect(() => {
     fetchSubmissionList();
-    checkDB().then((res) => {
-      const answerValues = {};
-      api
-        .get(`form/${formId}`)
-        .then((res) => {
-          let formData = generateForm(res.data);
-          // transform formData question group
-          // to return repeatable question value if value defined
-          let questionGroups = formData?.questionGroup;
-          if (answerValues?.answer) {
-            questionGroups = formData?.questionGroup.map((qg, qgi) => {
-              const findQg = answerValues?.answer?.find(
-                (ans) => ans?.qg_index === qgi
-              );
-              return {
-                ...qg,
-                repeat: findQg?.qg_repeat || 1,
-              };
+    checkDB().then(() => {
+      fethSubmissionByCache(cacheId).then((answerValues) => {
+        api
+          .get(`form/${formId}`)
+          .then((res) => {
+            let formData = generateForm(res.data);
+            // transform formData question group
+            // to return repeatable question value if value defined
+            let questionGroups = formData?.questionGroup;
+            if (answerValues?.answer) {
+              questionGroups = formData?.questionGroup.map((qg, qgi) => {
+                const findQg = answerValues?.answer?.find(
+                  (ans) => ans?.qg_index === qgi
+                );
+                const repeat = findQg?.qg_repeat || 1;
+                return {
+                  ...qg,
+                  repeat: repeat,
+                  repeats: range(repeat),
+                };
+              });
+            }
+            // add form metadata when form loaded
+            formData = {
+              ...formData,
+              questionGroup: questionGroups,
+              dataPointId: answerValues?.dataPointId || generateDataPointId(),
+              deviceId: "Akvo Flow Web",
+              submissionStart: answerValues?.submissionStart || Date.now(),
+              _cacheId: cacheId || uuid(),
+            };
+            saveFormToDB({
+              formId: formId,
+              app: formData?.app,
+              version: formData?.version,
+              formData: formData,
             });
-          }
-          // add form metadata when form loaded
-          formData = {
-            ...formData,
-            questionGroup: questionGroups,
-            dataPointId: answerValues?.dataPointId || generateDataPointId(),
-            deviceId: "Akvo Flow Web",
-            submissionStart: answerValues?.submissionStart || Date.now(),
-            _cacheId: cacheId || uuid(),
-          };
-          saveFormToDB({
-            formId: formId,
-            app: formData?.app,
-            version: formData?.version,
-            formData: formData,
+            dispatch({ type: "INIT FORM", payload: formData });
+          })
+          .catch((e) => {
+            const { status, statusText } = e.response;
+            console.error(`${formId}`, status, statusText);
+            setError(e.response);
           });
-          dispatch({ type: "INIT FORM", payload: formData });
-        })
-        .catch((e) => {
-          const { status, statusText } = e.response;
-          console.error(`${formId}`, status, statusText);
-          setError(e.response);
-        });
+      });
     });
   }, [formId, cacheId, form, dispatch]);
 
@@ -388,10 +387,7 @@ const Home = () => {
       <NotificationModal {...notification} isMobile={isMobile} />
       {/* Saved submissions drawer */}
       {!isMobile && submissionList.length && (
-        <SubmissionListDrawer
-          submissionList={submissionList}
-          fethSubmissionByCache={fethSubmissionByCache}
-        />
+        <SubmissionListDrawer submissionList={submissionList} />
       )}
     </Row>
   );

@@ -11,7 +11,7 @@ const DrawerToggle = ({ setVisible, visible }) => {
   );
 };
 
-const SubmissionListDrawer = ({ submissionList, fethSubmissionByCache }) => {
+const SubmissionListDrawer = ({ submissionList }) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -40,8 +40,12 @@ const SubmissionListDrawer = ({ submissionList, fethSubmissionByCache }) => {
             option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
           onChange={(cache) => {
-            fethSubmissionByCache(cache);
-            setVisible(false);
+            const findSubmission = submissionList.find(
+              (s) => s.cacheId === cache
+            );
+            const { formId, cacheId } = findSubmission;
+            const link = `${window.location.origin}/${formId}/${cacheId}`;
+            window.location.replace(link);
           }}
         />
       </Drawer>
