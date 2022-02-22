@@ -1,23 +1,58 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 import { Row, Col, Button, Dropdown, Menu, message } from "antd";
 import { FiMoreHorizontal, FiMoreVertical } from "react-icons/fi";
 import { BiBarcodeReader } from "react-icons/bi";
 import dataProviders from "../store";
 import { generateDataPointNameDisplay } from "../lib/form";
+import { deleteAnswerByIdFromDB } from "../lib/db";
 
-const onClick = ({ key }) => {
-  message.info(`Click on item ${key}`);
+const onClick = (key, form, setNotification, forms, dispatch, cacheIdURL) => {
+  const clearForm = () => {
+    form.resetFields();
+    window.location.reload();
+    setNotification({ isVisible: false });
+  };
+
+  if (key === "reset") {
+    setNotification({
+      isVisible: true,
+      type: "clear",
+      onCancel: () => setNotification({ isVisible: false }),
+      onOk: () => {
+        if (cacheIdURL) {
+          // delete cache data from indexedDB
+          deleteAnswerByIdFromDB(cacheIdURL).then(() => clearForm());
+        } else {
+          clearForm();
+        }
+      },
+    });
+  } else {
+    message.info(`Click on item ${key}`);
+  }
 };
 
-const menu = (
-  <Menu onClick={onClick} className="menu-dropdown">
-    <Menu.Item key="print">Print form</Menu.Item>
-    <Menu.Item key="print-prefilled">Print prefilled form</Menu.Item>
-    <Menu.Item key="reset">Clear all responses</Menu.Item>
-  </Menu>
-);
+const MenuDropdown = ({ form, setNotification }) => {
+  const cacheIdURL = useParams()?.cacheId;
+  const dispatch = dataProviders.Actions();
+  const { forms } = dataProviders.Values();
 
-const DatapointDisplayName = ({ dataPointName, form }) => {
+  return (
+    <Menu
+      onClick={({ key }) =>
+        onClick(key, form, setNotification, forms, dispatch, cacheIdURL)
+      }
+      className="menu-dropdown"
+    >
+      <Menu.Item key="print">Print form</Menu.Item>
+      <Menu.Item key="print-prefilled">Print prefilled form</Menu.Item>
+      <Menu.Item key="reset">Clear all responses</Menu.Item>
+    </Menu>
+  );
+};
+
+const DatapointDisplayName = ({ dataPointName }) => {
   const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
   return (
     <div className="datapoint">
@@ -35,6 +70,7 @@ const FormHeader = ({
   onSave,
   isSave,
   isSaveFeatureEnabled,
+  setNotification,
 }) => {
   const { dataPointName, forms } = dataProviders.Values();
   const newDataPointName = dataPointName.map((x) => {
@@ -68,10 +104,7 @@ const FormHeader = ({
         </Col>
         <Col xs={12} sm={6} md={18} lg={12} className="left">
           {!isMobile && (
-            <DatapointDisplayName
-              dataPointName={newDataPointName}
-              form={form}
-            />
+            <DatapointDisplayName dataPointName={newDataPointName} />
           )}
           <Button
             size={isMobile ? "middle" : "large"}
@@ -105,7 +138,12 @@ const FormHeader = ({
               )}
             </>
           )}
-          <Dropdown overlay={menu} placement="bottomCenter">
+          <Dropdown
+            overlay={
+              <MenuDropdown form={form} setNotification={setNotification} />
+            }
+            placement="bottomCenter"
+          >
             {isMobile ? (
               <FiMoreVertical className="more" />
             ) : (
@@ -115,10 +153,7 @@ const FormHeader = ({
         </Col>
         {isMobile && isDisplayNameShown && (
           <Col span={24}>
-            <DatapointDisplayName
-              dataPointName={newDataPointName}
-              form={form}
-            />
+            <DatapointDisplayName dataPointName={newDataPointName} />
           </Col>
         )}
       </Row>
