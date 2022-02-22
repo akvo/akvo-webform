@@ -36,7 +36,7 @@ const TypeCascade = ({
         ? findLast(stored)
         : cascadeAnswer?.[cascadeValues.length - 1];
     return tail?.id || tail?.name || tail;
-  }, [cascadeAnswer, stored, cascadeValues]);
+  }, [cascadeAnswer, stored, cascadeValues, level]);
 
   const updateCompleteState = (value) => {
     const answer = { [id]: value };
@@ -104,7 +104,7 @@ const TypeCascade = ({
           console.log(error);
         });
     }
-  }, [cascadeValues, tail]);
+  }, [cascadeValues, tail, alias, cascadeResource, level]);
 
   const invalid = mandatory && stored?.length !== level.length;
 
