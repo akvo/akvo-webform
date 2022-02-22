@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Space, Form, Radio, Checkbox } from "antd";
 import { Label } from "../components";
 import dataProviders from "../store";
