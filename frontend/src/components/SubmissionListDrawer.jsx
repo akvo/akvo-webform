@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Drawer, Space, Table, Button } from "antd";
+import { deleteAnswerByIdFromDB } from "../lib/db";
 import moment from "moment";
 
 const DrawerToggle = ({ setVisible, visible }) => {
@@ -11,46 +12,65 @@ const DrawerToggle = ({ setVisible, visible }) => {
   );
 };
 
-const columns = [
-  {
-    title: "Questionnaire",
-    dataIndex: "surveyGroupName",
-    key: "surveyGroupName",
-    render: (text, record) => `${text} - ${record?.formName}`,
-  },
-  {
-    title: "Submission Start",
-    dataIndex: "submissionStart",
-    key: "submissionStart",
-    render: (text) => moment(text).format("MMMM Do YYYY"),
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (record) => {
-      const { formId, cacheId } = record;
-      const link = `${window.location.origin}/${formId}/${cacheId}`;
-      return (
-        <Space>
-          <Button
-            size="small"
-            type="primary"
-            ghost
-            onClick={() => window.location.replace(link)}
-          >
-            Load
-          </Button>
-          <Button size="small" danger>
-            Delete
-          </Button>
-        </Space>
-      );
-    },
-  },
-];
-
-const SubmissionListDrawer = ({ submissionList }) => {
+const SubmissionListDrawer = ({
+  submissionList,
+  fetchSubmissionList,
+  setNotification,
+}) => {
   const [visible, setVisible] = useState(false);
+
+  const columns = [
+    {
+      title: "Questionnaire",
+      dataIndex: "surveyGroupName",
+      key: "surveyGroupName",
+      render: (text, record) => `${text} - ${record?.formName}`,
+    },
+    {
+      title: "Submission Start",
+      dataIndex: "submissionStart",
+      key: "submissionStart",
+      render: (text) => moment(text).format("MMMM Do YYYY"),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (record) => {
+        const { formId, cacheId } = record;
+        const link = `${window.location.origin}/${formId}/${cacheId}`;
+        return (
+          <Space>
+            <Button
+              size="small"
+              type="primary"
+              ghost
+              onClick={() => window.location.replace(link)}
+            >
+              Load
+            </Button>
+            <Button
+              size="small"
+              danger
+              onClick={() => {
+                setNotification({
+                  isVisible: true,
+                  type: "delete-saved-submission",
+                  onCancel: () => setNotification({ isVisible: false }),
+                  onOk: () => {
+                    deleteAnswerByIdFromDB(cacheId);
+                    fetchSubmissionList();
+                    setNotification({ isVisible: false });
+                  },
+                });
+              }}
+            >
+              Delete
+            </Button>
+          </Space>
+        );
+      },
+    },
+  ];
 
   const dataSource = useMemo(() => {
     return submissionList.map((s, si) => ({

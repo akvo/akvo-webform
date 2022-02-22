@@ -63,6 +63,19 @@ const NotificationModal = ({
             </Space>
           ),
         };
+      case "delete-saved-submission":
+        return {
+          icon: <QuestionCircleOutlined />,
+          title: "Are you sure want to delete this submission?",
+          extra: (
+            <Space size={75}>
+              <Button onClick={onOk} type="danger">
+                Delete
+              </Button>
+              <Button onClick={onCancel}>Cancel</Button>
+            </Space>
+          ),
+        };
       default:
         return {
           status: "error",

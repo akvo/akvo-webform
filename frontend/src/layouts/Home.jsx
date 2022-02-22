@@ -395,7 +395,11 @@ const Home = () => {
       <NotificationModal {...notification} isMobile={isMobile} />
       {/* Saved submissions drawer */}
       {!isMobile && submissionList.length && (
-        <SubmissionListDrawer submissionList={submissionList} />
+        <SubmissionListDrawer
+          submissionList={submissionList}
+          fetchSubmissionList={fetchSubmissionList}
+          setNotification={setNotification}
+        />
       )}
     </Row>
   );
