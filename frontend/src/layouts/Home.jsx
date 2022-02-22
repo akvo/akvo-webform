@@ -28,6 +28,7 @@ import {
   SubmissionListDrawer,
 } from "../components";
 import uuid from "uuid/v4";
+import moment from "moment";
 
 const saveFeature = true;
 const detectMobile = () => {
@@ -76,6 +77,46 @@ const Home = () => {
     () => saveFeature && !isMobile,
     [isMobile]
   );
+
+  const fetchSubmissionList = () => {
+    // get all submission list from indexedDB
+    getAllAnswerFromDB().then((res) => {
+      setSubmissionList(res);
+    });
+  };
+
+  const fethSubmissionByCache = (cacheId) => {
+    const getData =
+      cacheId && isSaveFeatureEnabled
+        ? api
+            .get(`form_instance/${cacheId}`)
+            .then((res) => JSON.parse(res?.data?.state))
+        : getAnswerFromDB(cacheId);
+    getAnswerFromDB(cacheId)
+      .then((res) => {
+        if (res?.answer) {
+          const data = JSON.parse(res.answer);
+          // fill form
+          data.forEach(({ question_id, type, answer }) => {
+            // check if string a valid date
+            if (type === "date" && answer) {
+              form.setFieldsValue({
+                [question_id]: moment(answer),
+              });
+            } else {
+              form.setFieldsValue({
+                [question_id]: answer,
+              });
+            }
+          });
+          return { ...res, answer: data };
+        }
+        return res;
+      })
+      .then((answerValues) => {
+        console.log(answerValues);
+      });
+  };
 
   const onComplete = (values) => {
     setIsSubmit(true);
@@ -174,6 +215,7 @@ const Home = () => {
       });
       setTimeout(() => {
         onSaveSuccess(_cacheId);
+        fetchSubmissionList();
       }, 100);
     }
   };
@@ -201,11 +243,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    // get all submission list from indexedDB
-    getAllAnswerFromDB().then((res) => {
-      setSubmissionList(res);
-    });
-
+    fetchSubmissionList();
     checkDB().then((res) => {
       const answerValues = {};
       api
@@ -248,40 +286,6 @@ const Home = () => {
           console.error(`${formId}`, status, statusText);
           setError(e.response);
         });
-
-      // ## TODO:: Manage this load answer value later
-      // fill form from dexie or from cacheId & fetch from db
-      /*
-      const getData =
-        cacheId && isSaveFeatureEnabled
-          ? api
-              .get(`form_instance/${cacheId}`)
-              .then((res) => JSON.parse(res?.data?.state))
-          : getAnswerFromDB(cacheId);
-      getData
-        .then((res) => {
-          if (res?.answer) {
-            const data = JSON.parse(res.answer);
-            data.forEach(({ question_id, type, answer }) => {
-              // check if string a valid date
-              if (type === "date" && answer) {
-                form.setFieldsValue({
-                  [question_id]: moment(answer),
-                });
-              } else {
-                form.setFieldsValue({
-                  [question_id]: answer,
-                });
-              }
-            });
-            return { ...res, answer: data };
-          }
-          return res;
-        })
-        .then((answerValues) => {
-          console.log(answerValues);
-        });
-        */
     });
   }, [formId, cacheId, form, dispatch]);
 
@@ -390,7 +394,10 @@ const Home = () => {
       <NotificationModal {...notification} isMobile={isMobile} />
       {/* Saved submissions drawer */}
       {!isMobile && submissionList.length && (
-        <SubmissionListDrawer submissionList={submissionList} />
+        <SubmissionListDrawer
+          submissionList={submissionList}
+          fethSubmissionByCache={fethSubmissionByCache}
+        />
       )}
     </Row>
   );

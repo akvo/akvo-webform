@@ -11,7 +11,7 @@ const DrawerToggle = ({ setVisible, visible }) => {
   );
 };
 
-const SubmissionListDrawer = ({ submissionList }) => {
+const SubmissionListDrawer = ({ submissionList, fethSubmissionByCache }) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -39,7 +39,10 @@ const SubmissionListDrawer = ({ submissionList }) => {
           filterOption={(input, option) =>
             option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
-          onChange={(e) => console.log(e)}
+          onChange={(cache) => {
+            fethSubmissionByCache(cache);
+            setVisible(false);
+          }}
         />
       </Drawer>
     </>
