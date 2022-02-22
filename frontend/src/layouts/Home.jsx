@@ -47,7 +47,7 @@ const detectMobile = () => {
     return navigator.userAgent.match(toMatchItem);
   });
   return (
-    window.matchMedia("only screen and (max-width: 800px)").matches ||
+    window.matchMedia("only screen and (max-width: 1064px)").matches ||
     mobileBrowser
   );
 };
@@ -252,6 +252,7 @@ const Home = () => {
           api
             .get(`form/${formId}`)
             .then((res) => {
+              console.log(res.data);
               let formData = generateForm(res.data);
               // transform formData question group
               // to return repeatable question value if value defined
