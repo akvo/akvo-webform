@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import L from "leaflet";
 import {
   MapContainer,
@@ -36,7 +36,7 @@ const DraggableMarker = ({ changePos, position }) => {
         }
       },
     }),
-    []
+    [changePos]
   );
 
   useMapEvents({
@@ -69,7 +69,7 @@ const MapRef = ({ center }) => {
 const Maps = ({ id, center, position, onChange, changePos }) => {
   return (
     <div className="field field-map">
-      <Row justify="space-between" style={{ marginBottom: "10px" }}>
+      <Row justify="space-between">
         <Col span={12} style={{ paddingRight: "10px" }}>
           <InputNumber
             placeholder="Latitude"

@@ -17,9 +17,14 @@ const TypeOption = ({
   const { language } = dataProviders.Values();
   const activeLang = language?.active;
 
-  const renderLangText = (altText) => {
+  const renderQuestionAnswerLangText = (altText) => {
     const findLang = altText?.find((x) => x?.language === activeLang);
-    return findLang?.text ? ` / ${findLang.text}` : "";
+    return findLang?.text ? (
+      <>
+        {" "}
+        &#47; <span className="translation-text">{findLang.text}</span>
+      </>
+    ) : null;
   };
 
   return (
@@ -45,7 +50,7 @@ const TypeOption = ({
             {option.map((o, io) => (
               <Checkbox key={io} value={o.value}>
                 {o.text}
-                {renderLangText(o?.altText)}
+                {renderQuestionAnswerLangText(o?.altText)}
               </Checkbox>
             ))}
           </Space>
@@ -56,7 +61,7 @@ const TypeOption = ({
             {option.map((o, io) => (
               <Radio key={io} value={o.value}>
                 {o.text}
-                {renderLangText(o?.altText)}
+                {renderQuestionAnswerLangText(o?.altText)}
               </Radio>
             ))}
           </Space>

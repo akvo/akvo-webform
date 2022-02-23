@@ -162,11 +162,22 @@ export const checkFilledForm = (
   return { filled, completeQg, isDpName };
 };
 
-export const generateDataPointNameDisplay = (dataPointName) =>
-  dataPointName
+export const generateDataPointNameDisplay = (dataPointName, form) => {
+  const newDataPointName = dataPointName.map((x) => {
+    let findValue = form.getFieldValue(x?.id);
+    if (Array.isArray(findValue)) {
+      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
+    }
+    return {
+      ...x,
+      value: x?.value || findValue || false,
+    };
+  });
+  return newDataPointName
     .filter((x) => x.value)
     .map((x) => x.value)
     .join(" - ");
+};
 
 export const generateDataPointId = () => {
   const dataPointId = [

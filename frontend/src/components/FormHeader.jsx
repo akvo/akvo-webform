@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Button, Dropdown, Menu, message } from "antd";
+import { Row, Col, Button, Dropdown, Menu, message, Space } from "antd";
 import { FiMoreHorizontal, FiMoreVertical } from "react-icons/fi";
 import { BiBarcodeReader } from "react-icons/bi";
 import dataProviders from "../store";
@@ -67,8 +67,7 @@ const LangDropdown = () => {
   );
 };
 
-const DatapointDisplayName = ({ dataPointName }) => {
-  const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
+const DatapointDisplayName = ({ dataPointNameDisplay }) => {
   return (
     <div className="datapoint">
       {dataPointNameDisplay.length ? <BiBarcodeReader className="icon" /> : ""}
@@ -88,18 +87,28 @@ const FormHeader = ({
   setNotification,
 }) => {
   const { dataPointName, forms, language } = dataProviders.Values();
-  const newDataPointName = dataPointName.map((x) => {
-    let findValue = form.getFieldValue(x?.id);
-    if (Array.isArray(findValue)) {
-      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
+  const dataPointNameDisplay = generateDataPointNameDisplay(
+    dataPointName,
+    form
+  );
+  const isDisplayNameShown = dataPointNameDisplay.length > 0;
+  const { defaultLang, active } = language;
+
+  const renderActiveLang = useMemo(() => {
+    if (defaultLang === active) {
+      return active;
     }
-    return {
-      ...x,
-      value: x?.value || findValue || false,
-    };
-  });
-  const isDisplayNameShown =
-    newDataPointName.filter((x) => x.value)?.length > 0;
+    return `${defaultLang} / ${active}`;
+  }, [defaultLang, active]);
+
+  const renderFormNameLang = useMemo(() => {
+    const findLang = forms?.altText?.find((x) => x?.language === active);
+    return findLang?.text ? (
+      <span className="translation-text">{findLang.text}</span>
+    ) : (
+      ""
+    );
+  }, [forms, active]);
 
   return (
     <Col
@@ -114,16 +123,21 @@ const FormHeader = ({
         justify="space-around"
       >
         <Col xs={12} sm={18} md={6} className="right">
-          <h1 className="logo">A.</h1>
-          <h1>{forms.name}</h1>
+          <Space size={0}>
+            <h1 className="logo">A.</h1>
+            <Space direction="vertical" size={0}>
+              <h1>{forms.name}</h1>
+              {renderFormNameLang}
+            </Space>
+          </Space>
         </Col>
         <Col xs={12} sm={6} md={18} className="left">
           {!isMobile && (
-            <DatapointDisplayName dataPointName={newDataPointName} />
+            <DatapointDisplayName dataPointNameDisplay={dataPointNameDisplay} />
           )}
           <Dropdown overlay={<LangDropdown />} placement="bottomCenter">
             <Button size={isMobile ? "middle" : "large"} className="lang">
-              {language?.active}
+              {renderActiveLang}
             </Button>
           </Dropdown>
           {!isMobile && (
@@ -166,7 +180,7 @@ const FormHeader = ({
         </Col>
         {isMobile && isDisplayNameShown && (
           <Col span={24}>
-            <DatapointDisplayName dataPointName={newDataPointName} />
+            <DatapointDisplayName dataPointNameDisplay={dataPointNameDisplay} />
           </Col>
         )}
       </Row>

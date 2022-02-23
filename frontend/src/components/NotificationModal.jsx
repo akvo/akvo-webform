@@ -2,8 +2,8 @@ import React from "react";
 import { Modal, Space, Button, Result, message } from "antd";
 import {
   ExclamationCircleOutlined,
-  QuestionCircleOutlined,
   CheckCircleOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 
 const NotificationModal = ({
@@ -31,8 +31,16 @@ const NotificationModal = ({
         return {
           status: "success",
           icon: <CheckCircleOutlined />,
-          title: "Form instance saved successfully.",
-          subTitle: `Saved link: ${savedLink}`,
+          title: "Submission saved successfully.",
+          subTitle: (
+            <Space direction="vertical">
+              <div className="info-text">
+                Not for sharing! This link only functional on your current
+                browser.
+              </div>
+              <div>{`Saved link: ${savedLink}`}</div>
+            </Space>
+          ),
           extra: (
             <Space direction="vertical">
               <Button
@@ -52,7 +60,8 @@ const NotificationModal = ({
         };
       case "clear":
         return {
-          icon: <QuestionCircleOutlined />,
+          status: "warning",
+          icon: <WarningOutlined />,
           title: "Clear all data entered in the form?",
           extra: (
             <Space size={75}>
@@ -65,7 +74,8 @@ const NotificationModal = ({
         };
       case "delete-saved-submission":
         return {
-          icon: <QuestionCircleOutlined />,
+          status: "warning",
+          icon: <WarningOutlined />,
           title: "Are you sure want to delete this submission?",
           extra: (
             <Space size={75}>

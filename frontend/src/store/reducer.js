@@ -1,4 +1,5 @@
 import isoLangs from "../lib/isoLangs";
+import uniq from "lodash/uniq";
 
 /* INITIAL LOAD */
 
@@ -20,22 +21,44 @@ const initDataPointName = ({ questionGroup }) => {
     .map((x) => ({ id: x.id, value: false }));
 };
 
-const initLang = ({ defaultLanguageCode, altText }) => {
+const initLang = ({ defaultLanguageCode, altText, questionGroup }) => {
+  // iterate question group to get available translation
+  let iterateLang = altText;
+  const questionGroupAltTexts = questionGroup?.flatMap((qg) => qg?.altText);
+  const questions = questionGroup?.flatMap((qg) => qg?.question);
+  const questionAltTexts = questions?.flatMap((q) => q?.altText);
+  const helpAltTexts = questions?.flatMap((q) => q?.help?.altText);
+  const optionAltTexts = questions?.flatMap((q) =>
+    q?.options?.option?.flatMap((o) => o?.altText)
+  );
+  iterateLang = [
+    ...iterateLang,
+    ...questionGroupAltTexts,
+    ...questionAltTexts,
+    ...helpAltTexts,
+    ...optionAltTexts,
+  ]
+    .filter((x) => x)
+    .map((x) => x?.language);
+  iterateLang = uniq(iterateLang);
+  // end of iterate
+
   const isoDefaultLang = isoLangs?.[defaultLanguageCode];
-  const defaultLang = {
+  const defaultLanguageList = {
     language: defaultLanguageCode,
     name: `${isoDefaultLang?.name} / ${isoDefaultLang?.nativeName}`,
   };
-  const langList = altText?.map((lang) => {
-    const findIsoLang = isoLangs?.[lang?.language];
+  const langList = iterateLang?.map((lang) => {
+    const findIsoLang = isoLangs?.[lang];
     return {
-      language: lang?.language,
+      language: lang,
       name: `${findIsoLang?.name} / ${findIsoLang?.nativeName}`,
     };
   });
   return {
+    defaultLang: defaultLanguageCode,
     active: defaultLanguageCode,
-    list: [defaultLang, ...langList],
+    list: [defaultLanguageList, ...langList],
   };
 };
 

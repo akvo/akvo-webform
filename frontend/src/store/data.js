@@ -53,6 +53,7 @@ const initialValue = {
   group: { active: 0, complete: [] },
   progress: 0,
   language: {
+    defaultLang: "en",
     active: "en",
     list: [],
   },

@@ -25,15 +25,13 @@
   }
 
   .form-header-container {
-    padding: 18px 0px;
+    padding: 22px 0px;
 
     .right {
-      display: inline-block;
       font-family: "Roboto Condensed", sans-serif;
 
       h1 {
         font-family: "Assistant", sans-serif;
-        line-height: 58px;
         padding: 0px;
         margin: 0px;
         font-size: 18px;
@@ -42,7 +40,7 @@
 
         &.logo {
           font-size: 16px;
-          line-height: 38px;
+          line-height: 48px;
           padding: 0px 10px;
           margin-right: 20px;
           border: 1px solid #f0f0f0;
@@ -155,7 +153,7 @@
 
     &.active {
       background: #f3f3f3;
-      color: #2b78e4;
+      color: #222;
     }
 
     &.complete {
@@ -190,6 +188,7 @@
   margin-bottom: -2px;
 
   &.required {
+    margin-left: 5px;
     font-size: 7px;
     vertical-align: super;
     color: #d74439;
@@ -234,6 +233,10 @@
   }
 
   .field-label {
+    .field-text {
+      font-size: 14px;
+    }
+
     .help {
       .ant-btn {
         border-color: #6a6a6a;
@@ -252,6 +255,11 @@
       p {
         font-size: 14px;
         margin-top: 14px;
+        display: block;
+      }
+
+      .help-text {
+        font-size: 14px;
         display: block;
       }
     }
@@ -356,7 +364,7 @@
       }
 
       .ant-select {
-        margin-top: 20px;
+        margin-top: 8px;
         width: 100%;
         display: inline-block;
       }
@@ -376,10 +384,10 @@
   }
 
   .field-map {
-    margin-top: -65px;
+    margin-top: -56px;
 
     .map-display {
-      margin-top: 30px;
+      margin-top: 20px;
       margin-bottom: 20px;
       padding: 10px;
       border: 1px solid #6a6a6a;
@@ -484,6 +492,22 @@ button,
   background-color: #fff;
 }
 
+.translation-text {
+  color: #2b78e4;
+
+  &.sidebar-list-item {
+    margin-left: 24px;
+  }
+}
+
+.notification-modal-wrap {
+  .info-text {
+    font-size: 20px;
+    color: #2b78e4;
+    font-weight: 600;
+  }
+}
+
 @media only screen and (max-width: 1064px) {
   .ant-card-head,
   .ant-card-body {
@@ -494,10 +518,10 @@ button,
     height: 79px;
     padding: 0 20px;
     .form-header-container {
-      padding: 10px 0;
+      padding: 14px 0;
     }
     &.mobile-header-with-display-name {
-      height: 129px;
+      height: 115px;
     }
 
     .form-header-container {
@@ -525,10 +549,10 @@ button,
 
   .datapoint {
     color: #6a6a6a;
-    padding: 12px 0;
+    padding: 0;
+    margin-top: 12px;
     display: inline-block;
     font-weight: bold;
-    line-height: 25px;
 
     .icon {
       font-size: 24px;
