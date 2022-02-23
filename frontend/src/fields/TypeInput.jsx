@@ -123,7 +123,7 @@ const TypeInput = ({
           >
             <Input value={value} disabled hidden />
           </Form.Item>
-          <div className="field-double-entry" style={{ marginTop: "-62px" }}>
+          <div className="field-double-entry" style={{ marginTop: "-56px" }}>
             {validationRule?.validationType === "numeric" ? (
               <InputNumber
                 onChange={(val) => setFirstDoubleEntryValue(val)}
@@ -136,7 +136,7 @@ const TypeInput = ({
               />
             )}
           </div>
-          <div className="field-double-entry" style={{ marginTop: "35px" }}>
+          <div className="field-double-entry">
             <DoubleEntry
               id={id}
               number={validationRule?.validationType === "numeric"}

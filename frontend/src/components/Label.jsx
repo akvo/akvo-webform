@@ -10,7 +10,10 @@ const Help = ({ activeLang, text, altText }) => {
   const langText = useMemo(() => {
     const findLang = altText?.find((x) => x?.language === activeLang);
     return findLang?.text ? (
-      <div dangerouslySetInnerHTML={{ __html: findLang.text }} />
+      <div
+        className="help-text"
+        dangerouslySetInnerHTML={{ __html: findLang.text }}
+      />
     ) : (
       ""
     );
@@ -28,7 +31,10 @@ const Help = ({ activeLang, text, altText }) => {
         </Button>
         {show && (
           <Space direction="vertical">
-            <div dangerouslySetInnerHTML={{ __html: text }} />
+            <div
+              className="help-text"
+              dangerouslySetInnerHTML={{ __html: text }}
+            />
             {langText}
           </Space>
         )}
@@ -56,7 +62,7 @@ const Label = ({
   return (
     <div className="field-label">
       <Space direction="vertical">
-        <div>
+        <div className="field-text">
           {keyform + 1}. {text}
           {mandatory && <FaStarOfLife className="icon required" />}
           {requireDoubleEntry && (

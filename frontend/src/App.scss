@@ -190,6 +190,7 @@
   margin-bottom: -2px;
 
   &.required {
+    margin-left: 5px;
     font-size: 7px;
     vertical-align: super;
     color: #d74439;
@@ -234,6 +235,10 @@
   }
 
   .field-label {
+    .field-text {
+      font-size: 14px;
+    }
+
     .help {
       .ant-btn {
         border-color: #6a6a6a;
@@ -252,6 +257,11 @@
       p {
         font-size: 14px;
         margin-top: 14px;
+        display: block;
+      }
+
+      .help-text {
+        font-size: 14px;
         display: block;
       }
     }
@@ -356,7 +366,7 @@
       }
 
       .ant-select {
-        margin-top: 20px;
+        margin-top: 8px;
         width: 100%;
         display: inline-block;
       }
@@ -376,10 +386,10 @@
   }
 
   .field-map {
-    margin-top: -65px;
+    margin-top: -56px;
 
     .map-display {
-      margin-top: 30px;
+      margin-top: 20px;
       margin-bottom: 20px;
       padding: 10px;
       border: 1px solid #6a6a6a;
