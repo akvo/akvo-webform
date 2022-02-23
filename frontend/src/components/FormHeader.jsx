@@ -67,8 +67,7 @@ const LangDropdown = () => {
   );
 };
 
-const DatapointDisplayName = ({ dataPointName }) => {
-  const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
+const DatapointDisplayName = ({ dataPointNameDisplay }) => {
   return (
     <div className="datapoint">
       {dataPointNameDisplay.length ? <BiBarcodeReader className="icon" /> : ""}
@@ -88,18 +87,11 @@ const FormHeader = ({
   setNotification,
 }) => {
   const { dataPointName, forms, language } = dataProviders.Values();
-  const newDataPointName = dataPointName.map((x) => {
-    let findValue = form.getFieldValue(x?.id);
-    if (Array.isArray(findValue)) {
-      findValue = findValue?.map((x) => x?.name || x)?.join(" - ");
-    }
-    return {
-      ...x,
-      value: x?.value || findValue || false,
-    };
-  });
-  const isDisplayNameShown =
-    newDataPointName.filter((x) => x.value)?.length > 0;
+  const dataPointNameDisplay = generateDataPointNameDisplay(
+    dataPointName,
+    form
+  );
+  const isDisplayNameShown = dataPointNameDisplay.length > 0;
 
   return (
     <Col
@@ -119,7 +111,7 @@ const FormHeader = ({
         </Col>
         <Col xs={12} sm={6} md={18} className="left">
           {!isMobile && (
-            <DatapointDisplayName dataPointName={newDataPointName} />
+            <DatapointDisplayName dataPointNameDisplay={dataPointNameDisplay} />
           )}
           <Dropdown overlay={<LangDropdown />} placement="bottomCenter">
             <Button size={isMobile ? "middle" : "large"} className="lang">
@@ -166,7 +158,7 @@ const FormHeader = ({
         </Col>
         {isMobile && isDisplayNameShown && (
           <Col span={24}>
-            <DatapointDisplayName dataPointName={newDataPointName} />
+            <DatapointDisplayName dataPointNameDisplay={dataPointNameDisplay} />
           </Col>
         )}
       </Row>

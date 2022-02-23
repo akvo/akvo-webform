@@ -1,7 +1,7 @@
 import Dexie from "dexie";
 
 const db = new Dexie("akvo");
-db.version(2).stores({
+db.version(3).stores({
   forms: "formId, app, version",
   answers: "cacheId, formId, dataPointId",
 });
@@ -40,6 +40,7 @@ export const saveAnswerToDB = ({
   formName,
   surveyGroupName,
   dataPointId,
+  dataPointName,
   submissionStart,
   answer,
 }) => {
@@ -50,6 +51,7 @@ export const saveAnswerToDB = ({
     formName,
     surveyGroupName,
     dataPointId,
+    dataPointName,
     submissionStart,
     answer,
   });

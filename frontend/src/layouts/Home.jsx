@@ -117,7 +117,10 @@ const Home = () => {
   const onComplete = (values) => {
     setIsSubmit(true);
     const responses = transformRequest(questionGroup, values);
-    const dataPointNameDisplay = generateDataPointNameDisplay(dataPointName);
+    const dataPointNameDisplay = generateDataPointNameDisplay(
+      dataPointName,
+      form
+    );
     const data = {
       dataPointId: forms?.dataPointId,
       deviceId: forms?.deviceId,
@@ -206,12 +209,17 @@ const Home = () => {
           qg_repeat: findQuestion?.qg_repeat,
         };
       });
+      const dataPointNameDisplay = generateDataPointNameDisplay(
+        dataPointName,
+        form
+      );
       saveAnswerToDB({
         cacheId: _cacheId,
         formId: formId,
         formName: name,
         surveyGroupName: surveyGroupName,
         dataPointId: dataPointId,
+        dataPointName: dataPointNameDisplay || "Untitled",
         submissionStart: submissionStart,
         answer: JSON.stringify(transformAnswers),
       });
