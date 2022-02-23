@@ -4,6 +4,7 @@ import {
   ExclamationCircleOutlined,
   QuestionCircleOutlined,
   CheckCircleOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 
 const NotificationModal = ({
@@ -31,7 +32,7 @@ const NotificationModal = ({
         return {
           status: "success",
           icon: <CheckCircleOutlined />,
-          title: "Form instance saved successfully.",
+          title: "Submission saved successfully.",
           subTitle: `Saved link: ${savedLink}`,
           extra: (
             <Space direction="vertical">
@@ -52,7 +53,8 @@ const NotificationModal = ({
         };
       case "clear":
         return {
-          icon: <QuestionCircleOutlined />,
+          status: "warning",
+          icon: <WarningOutlined />,
           title: "Clear all data entered in the form?",
           extra: (
             <Space size={75}>
@@ -65,7 +67,8 @@ const NotificationModal = ({
         };
       case "delete-saved-submission":
         return {
-          icon: <QuestionCircleOutlined />,
+          status: "warning",
+          icon: <WarningOutlined />,
           title: "Are you sure want to delete this submission?",
           extra: (
             <Space size={75}>
