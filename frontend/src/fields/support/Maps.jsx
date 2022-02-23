@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import L from "leaflet";
 import {
   MapContainer,
@@ -36,7 +36,7 @@ const DraggableMarker = ({ changePos, position }) => {
         }
       },
     }),
-    []
+    [changePos]
   );
 
   useMapEvents({
