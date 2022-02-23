@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Button, Dropdown, Menu, message } from "antd";
+import { Row, Col, Button, Dropdown, Menu, message, Space } from "antd";
 import { FiMoreHorizontal, FiMoreVertical } from "react-icons/fi";
 import { BiBarcodeReader } from "react-icons/bi";
 import dataProviders from "../store";
@@ -92,14 +92,23 @@ const FormHeader = ({
     form
   );
   const isDisplayNameShown = dataPointNameDisplay.length > 0;
+  const { defaultLang, active } = language;
 
   const renderActiveLang = useMemo(() => {
-    const { defaultLang, active } = language;
     if (defaultLang === active) {
       return active;
     }
     return `${defaultLang} / ${active}`;
-  }, [language]);
+  }, [defaultLang, active]);
+
+  const renderFormNameLang = useMemo(() => {
+    const findLang = forms?.altText?.find((x) => x?.language === active);
+    return findLang?.text ? (
+      <span className="translation-text">{findLang.text}</span>
+    ) : (
+      ""
+    );
+  }, [forms, active]);
 
   return (
     <Col
@@ -114,8 +123,13 @@ const FormHeader = ({
         justify="space-around"
       >
         <Col xs={12} sm={18} md={6} className="right">
-          <h1 className="logo">A.</h1>
-          <h1>{forms.name}</h1>
+          <Space size={0}>
+            <h1 className="logo">A.</h1>
+            <Space direction="vertical" size={0}>
+              <h1>{forms.name}</h1>
+              {renderFormNameLang}
+            </Space>
+          </Space>
         </Col>
         <Col xs={12} sm={6} md={18} className="left">
           {!isMobile && (

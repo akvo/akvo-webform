@@ -25,15 +25,13 @@
   }
 
   .form-header-container {
-    padding: 18px 0px;
+    padding: 22px 0px;
 
     .right {
-      display: inline-block;
       font-family: "Roboto Condensed", sans-serif;
 
       h1 {
         font-family: "Assistant", sans-serif;
-        line-height: 58px;
         padding: 0px;
         margin: 0px;
         font-size: 18px;
@@ -42,7 +40,7 @@
 
         &.logo {
           font-size: 16px;
-          line-height: 38px;
+          line-height: 48px;
           padding: 0px 10px;
           margin-right: 20px;
           border: 1px solid #f0f0f0;
@@ -512,7 +510,7 @@ button,
     height: 79px;
     padding: 0 20px;
     .form-header-container {
-      padding: 10px 0;
+      padding: 14px 0;
     }
     &.mobile-header-with-display-name {
       height: 129px;
