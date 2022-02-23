@@ -513,7 +513,7 @@ button,
       padding: 14px 0;
     }
     &.mobile-header-with-display-name {
-      height: 129px;
+      height: 115px;
     }
 
     .form-header-container {
@@ -541,10 +541,10 @@ button,
 
   .datapoint {
     color: #6a6a6a;
-    padding: 12px 0;
+    padding: 0;
+    margin-top: 12px;
     display: inline-block;
     font-weight: bold;
-    line-height: 25px;
 
     .icon {
       font-size: 24px;
