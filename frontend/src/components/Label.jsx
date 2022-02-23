@@ -11,7 +11,7 @@ const Help = ({ activeLang, text, altText }) => {
     const findLang = altText?.find((x) => x?.language === activeLang);
     return findLang?.text ? (
       <div
-        className="help-text"
+        className="help-text translation-text"
         dangerouslySetInnerHTML={{ __html: findLang.text }}
       />
     ) : (
@@ -56,7 +56,11 @@ const Label = ({
 
   const langText = useMemo(() => {
     const findLang = altText?.find((x) => x?.language === activeLang);
-    return findLang?.text ? <div>{findLang.text}</div> : "";
+    return findLang?.text ? (
+      <div className="field-text translation-text">{findLang.text}</div>
+    ) : (
+      ""
+    );
   }, [altText, activeLang]);
 
   return (

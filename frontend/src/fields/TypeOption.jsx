@@ -19,7 +19,12 @@ const TypeOption = ({
 
   const renderQuestionAnswerLangText = (altText) => {
     const findLang = altText?.find((x) => x?.language === activeLang);
-    return findLang?.text ? ` / ${findLang.text}` : "";
+    return findLang?.text ? (
+      <>
+        {" "}
+        &#47; <span className="translation-text">{findLang.text}</span>
+      </>
+    ) : null;
   };
 
   return (
