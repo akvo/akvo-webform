@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { List, Space, Button } from "antd";
 import {
   MdRadioButtonUnchecked,
@@ -62,7 +62,18 @@ const ListItem = ({
   setIsMobileMenuVisible,
 }) => {
   const dispatch = dataProviders.Actions();
+  const { language } = dataProviders.Values();
   const checkComplete = item?.repeatable ? `${index}-${item?.repeat}` : index;
+  const activeLang = language?.active;
+
+  const langText = useMemo(() => {
+    const findLang = item?.altText?.find((x) => x?.language === activeLang);
+    return findLang?.text ? (
+      <div className="translation-text sidebar-list-item">{findLang.text}</div>
+    ) : (
+      ""
+    );
+  }, [item, activeLang]);
 
   return (
     <List.Item
@@ -86,6 +97,7 @@ const ListItem = ({
           )}
           {item?.heading}
           {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
+          {langText}
         </div>
         {!complete.includes(checkComplete) && isSubmitFailed.length ? (
           <div className="sidebar-incomplete-text">

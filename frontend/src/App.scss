@@ -155,7 +155,7 @@
 
     &.active {
       background: #f3f3f3;
-      color: #2b78e4;
+      color: #222;
     }
 
     &.complete {
@@ -496,6 +496,10 @@ button,
 
 .translation-text {
   color: #2b78e4;
+
+  &.sidebar-list-item {
+    margin-left: 24px;
+  }
 }
 
 @media only screen and (max-width: 1064px) {
