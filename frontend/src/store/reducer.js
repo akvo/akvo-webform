@@ -44,7 +44,7 @@ const initLang = ({ defaultLanguageCode, altText, questionGroup }) => {
   // end of iterate
 
   const isoDefaultLang = isoLangs?.[defaultLanguageCode];
-  const defaultLang = {
+  const defaultLanguageList = {
     language: defaultLanguageCode,
     name: `${isoDefaultLang?.name} / ${isoDefaultLang?.nativeName}`,
   };
@@ -56,9 +56,9 @@ const initLang = ({ defaultLanguageCode, altText, questionGroup }) => {
     };
   });
   return {
-    default: defaultLanguageCode,
+    defaultLang: defaultLanguageCode,
     active: defaultLanguageCode,
-    list: [defaultLang, ...langList],
+    list: [defaultLanguageList, ...langList],
   };
 };
 

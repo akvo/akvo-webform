@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Button, Dropdown, Menu, message } from "antd";
 import { FiMoreHorizontal, FiMoreVertical } from "react-icons/fi";
@@ -93,6 +93,14 @@ const FormHeader = ({
   );
   const isDisplayNameShown = dataPointNameDisplay.length > 0;
 
+  const renderActiveLang = useMemo(() => {
+    const { defaultLang, active } = language;
+    if (defaultLang === active) {
+      return active;
+    }
+    return `${defaultLang} / ${active}`;
+  }, [language]);
+
   return (
     <Col
       span={24}
@@ -115,7 +123,7 @@ const FormHeader = ({
           )}
           <Dropdown overlay={<LangDropdown />} placement="bottomCenter">
             <Button size={isMobile ? "middle" : "large"} className="lang">
-              {language?.active}
+              {renderActiveLang}
             </Button>
           </Dropdown>
           {!isMobile && (
