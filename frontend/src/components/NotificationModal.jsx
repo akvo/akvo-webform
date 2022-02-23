@@ -32,7 +32,15 @@ const NotificationModal = ({
           status: "success",
           icon: <CheckCircleOutlined />,
           title: "Submission saved successfully.",
-          subTitle: `Saved link: ${savedLink}`,
+          subTitle: (
+            <Space direction="vertical">
+              <div className="info-text">
+                Not for sharing! This link only functional on your current
+                browser.
+              </div>
+              <div>{`Saved link: ${savedLink}`}</div>
+            </Space>
+          ),
           extra: (
             <Space direction="vertical">
               <Button

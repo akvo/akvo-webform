@@ -500,6 +500,14 @@ button,
   }
 }
 
+.notification-modal-wrap {
+  .info-text {
+    font-size: 20px;
+    color: #2b78e4;
+    font-weight: 600;
+  }
+}
+
 @media only screen and (max-width: 1064px) {
   .ant-card-head,
   .ant-card-body {
