@@ -26,17 +26,29 @@ const SubmissionListDrawer = ({
       title: "Questionnaire",
       dataIndex: "surveyGroupName",
       key: "surveyGroupName",
+      elipsis: true,
+      width: "108px",
       render: (text, record) => `${text} - ${record?.formName}`,
+    },
+    {
+      title: "Data Point Name",
+      dataIndex: "dataPointName",
+      key: "dataPointName",
+      elipsis: true,
     },
     {
       title: "Submission Start",
       dataIndex: "submissionStart",
       key: "submissionStart",
+      elipsis: true,
       render: (text) => moment(text).format("MMMM Do YYYY"),
     },
     {
       title: "Action",
       key: "action",
+      elipsis: true,
+      fixed: "right",
+      width: "128px",
       render: (record) => {
         const { formId, cacheId } = record;
         const origin = window.location.origin;
@@ -104,7 +116,7 @@ const SubmissionListDrawer = ({
           columns={columns}
           dataSource={dataSource}
           pagination={false}
-          scroll={{ y: "600" }}
+          scroll={{ y: "85vh", x: "525px", scrollToFirstRowOnChange: true }}
           loading={dataSource?.length === 0}
           size="small"
         />
