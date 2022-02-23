@@ -2,7 +2,6 @@ import React from "react";
 import { Modal, Space, Button, Result, message } from "antd";
 import {
   ExclamationCircleOutlined,
-  QuestionCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
