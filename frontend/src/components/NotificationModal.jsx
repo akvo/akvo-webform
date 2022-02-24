@@ -69,7 +69,7 @@ const NotificationModal = ({
           icon: <WarningOutlined />,
           title: "Clear all data entered in the form?",
           extra: (
-            <Space size={75}>
+            <Space>
               <Button size="large" onClick={onOk} type="danger">
                 Yes, clear it
               </Button>
@@ -94,7 +94,7 @@ const NotificationModal = ({
             </div>
           ),
           extra: (
-            <>
+            <Space>
               <Button size="large" className="button-next" onClick={onOk}>
                 Submit
               </Button>
@@ -105,7 +105,7 @@ const NotificationModal = ({
               >
                 Close
               </Button>
-            </>
+            </Space>
           ),
         };
       case "delete-saved-submission":
@@ -114,7 +114,7 @@ const NotificationModal = ({
           icon: <WarningOutlined />,
           title: "Are you sure want to delete this submission?",
           extra: (
-            <Space size={75}>
+            <Space>
               <Button size="large" onClick={onOk} type="danger">
                 Delete
               </Button>

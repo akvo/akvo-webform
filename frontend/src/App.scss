@@ -534,7 +534,10 @@ button,
 }
 
 @media only screen and (max-width: 1064px) {
-  .ant-card-head,
+  .ant-card-head {
+    padding: 0;
+  }
+
   .ant-card-body {
     padding: 12px 0;
   }
