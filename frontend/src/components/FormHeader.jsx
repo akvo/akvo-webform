@@ -44,8 +44,8 @@ const MenuDropdown = ({ form, setNotification }) => {
       }
       className="menu-dropdown"
     >
-      <Menu.Item key="print">Print form</Menu.Item>
-      <Menu.Item key="print-prefilled">Print prefilled form</Menu.Item>
+      {/* <Menu.Item key="print">Print form</Menu.Item> */}
+      {/* <Menu.Item key="print-prefilled">Print prefilled form</Menu.Item> */}
       <Menu.Item key="reset">Clear all responses</Menu.Item>
     </Menu>
   );

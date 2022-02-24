@@ -158,7 +158,15 @@ const Home = () => {
   };
 
   const onComplete = (values) => {
-    submitForm(values);
+    setNotification({
+      isVisible: true,
+      type: "captcha",
+      onCancel: () => setNotification({ isVisible: false }),
+      onOk: () => {
+        setNotification({ isVisible: false });
+        submitForm(values);
+      },
+    });
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {

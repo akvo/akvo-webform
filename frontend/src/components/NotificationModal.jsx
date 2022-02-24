@@ -1,10 +1,36 @@
-import React from "react";
-import { Modal, Space, Button, Result, message } from "antd";
+import React, { useEffect } from "react";
+import { Modal, Space, Button, Result, message, InputNumber } from "antd";
 import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
+
+const CaptchaNumber = () => {
+  useEffect(() => {
+    const captchaNumber = document.getElementById("captcha-number");
+    if (captchaNumber && captchaNumber.childNodes[0]) {
+      captchaNumber.removeChild(captchaNumber.childNodes[0]);
+    }
+    const validatorX = Math.floor(Math.random() * 9) + 1;
+    const validatorY = Math.floor(Math.random() * 9) + 1;
+    let canv = document.createElement("canvas");
+    canv.width = 200;
+    canv.height = 50;
+    let ctx = canv.getContext("2d");
+    ctx.font = "35px Assistant, sans-serif";
+    ctx.textAlign = "center";
+    ctx.strokeText(validatorX + "+" + validatorY, 100, 38);
+    captchaNumber.appendChild(canv);
+  }, []);
+
+  return (
+    <Space align="center" direction="vertical">
+      <div id="captcha-number"></div>
+      <InputNumber size="large" onChange={(e) => console.log(e)} />
+    </Space>
+  );
+};
 
 const NotificationModal = ({
   isMobile,
@@ -103,6 +129,25 @@ const NotificationModal = ({
             <Space>
               <Button size="large" onClick={onOk} type="danger">
                 Delete
+              </Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+            </Space>
+          ),
+        };
+      case "captcha":
+        return {
+          icon: <CaptchaNumber render={isVisible} />,
+          title: "",
+          extra: (
+            <Space>
+              <Button size="large" className="button-next" onClick={onOk}>
+                Submit
               </Button>
               <Button
                 size="large"
