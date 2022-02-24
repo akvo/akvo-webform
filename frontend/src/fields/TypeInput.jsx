@@ -136,7 +136,7 @@ const TypeInput = ({
               />
             )}
           </div>
-          <div className="field-double-entry">
+          <div className="field-double-entry" style={{ marginTop: "25px" }}>
             <DoubleEntry
               id={id}
               number={validationRule?.validationType === "numeric"}

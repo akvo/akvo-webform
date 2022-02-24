@@ -137,7 +137,7 @@ const NotificationModal = ({
       zIndex={9999}
       closable={false}
       wrapClassName={"notification-modal-wrap"}
-      width={isMobile ? "90%" : "520px"}
+      width={isMobile ? "75%" : "520px"}
     >
       <Result {...modalProps()} />
     </Modal>
