@@ -153,7 +153,7 @@ const Home = () => {
         const { status, statusText } = e.response;
         console.error(status, statusText);
         setIsSubmit(false);
-        // setError(e.response);
+        setError(e.response);
       });
   };
 
