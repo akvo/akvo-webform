@@ -88,10 +88,24 @@ const NotificationModal = ({
           status: "error",
           icon: <ExclamationCircleOutlined />,
           title: "Please fill in all required questions",
+          subTitle: (
+            <div className="info-text">
+              Or click Submit without fill in all required questions.
+            </div>
+          ),
           extra: (
-            <Button size="large" className="button-default" onClick={onOk}>
-              Okay
-            </Button>
+            <>
+              <Button size="large" className="button-next" onClick={onOk}>
+                Submit
+              </Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                Close
+              </Button>
+            </>
           ),
         };
       case "delete-saved-submission":
