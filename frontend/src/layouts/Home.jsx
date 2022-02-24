@@ -172,7 +172,6 @@ const Home = () => {
         submitForm(values);
       },
     });
-    console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 
   const onSaveSuccess = (_cache) => {
