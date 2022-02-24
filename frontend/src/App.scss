@@ -225,6 +225,7 @@
 
     .ant-card-head-title {
       padding-top: 30px;
+      padding-bottom: 0;
     }
   }
 
@@ -294,6 +295,10 @@
         width: unset;
       }
 
+      .field {
+        margin-top: 0;
+      }
+
       .field-title {
         padding: 9.5px 12px;
         border-radius: 5px 0px 0px 5px;
@@ -345,9 +350,12 @@
   .field {
     font-family: "Assistant", sans-serif;
     padding: 0px 20px;
+    margin-top: 12px;
   }
 
   .field-cascade {
+    margin-top: 12px;
+
     .ant-select {
       display: none;
     }
@@ -371,12 +379,10 @@
     }
 
     .error-cascade {
-      padding: 10px 20px 0px;
+      padding: 0 20px;
       font-family: "Assistant", sans-serif;
       color: #ff4d4f;
     }
-
-    padding-bottom: 20px;
   }
 
   .field-geo {
@@ -387,8 +393,8 @@
     margin-top: -56px;
 
     .map-display {
-      margin-top: 20px;
-      margin-bottom: 20px;
+      margin-top: 25px;
+      margin-bottom: 8px;
       padding: 10px;
       border: 1px solid #6a6a6a;
       border-radius: 10px;
@@ -396,12 +402,11 @@
   }
 
   .field-double-entry {
-    margin: 0px 20px 20px;
+    margin: 0 20px;
 
     .error-double-entry {
       font-family: "Assistant", sans-serif;
       color: #ff4d4f;
-      padding-top: 10px;
     }
   }
 }
@@ -424,7 +429,9 @@ button,
   padding-right: 25px;
   font-weight: bold;
   font-size: 14px;
+}
 
+.button-next {
   &:focus,
   &:visited,
   &:hover {
@@ -506,10 +513,33 @@ button,
     color: #2b78e4;
     font-weight: 600;
   }
+
+  .button-next {
+    border: 1px solid #222;
+  }
+
+  .ant-btn {
+    border-radius: 5px;
+    min-width: 120px;
+    font-size: 14px;
+
+    &.button-default {
+      border-color: #222;
+      color: #222;
+
+      &:hover {
+        color: #222;
+        border-color: #222;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 1064px) {
-  .ant-card-head,
+  .ant-card-head {
+    padding: 0;
+  }
+
   .ant-card-body {
     padding: 12px 0;
   }
@@ -563,5 +593,26 @@ button,
   .field-group .repeat-title {
     margin: 20px 0px;
     padding: 10px 20px;
+  }
+
+  .notification-modal-wrap {
+    .ant-modal-body {
+      padding: 0;
+
+      .ant-result-icon {
+        .anticon {
+          font-size: 64px;
+        }
+      }
+
+      .ant-result-title {
+        font-size: 18px;
+      }
+
+      .info-text {
+        font-size: 16px;
+        color: #2b78e4;
+      }
+    }
   }
 }

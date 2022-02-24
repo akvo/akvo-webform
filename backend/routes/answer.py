@@ -69,15 +69,16 @@ def submit_form(data: AnswerBase):
     with ZipFile(combined, 'w') as all_zip:
         all_zip.write(zip_name)
         for image in images:
-            img_name = image["id"]
-            img_blob = image["blob"]
-            img_blob = img_blob[img_blob.find(",")+1:]
-            with open(f"./tmp/images/{img_name}", "wb") as fh:
-                fh.write(base64.b64decode(img_blob))
-            if os.path.isfile('./tmp/images/' + img_name):
-                os.rename('./tmp/images/' + img_name, img_name)
-                all_zip.write(img_name)
-                os.remove(img_name)
+            if "id" in image:
+                img_name = image["id"]
+                img_blob = image["blob"]
+                img_blob = img_blob[img_blob.find(",")+1:]
+                with open(f"./tmp/images/{img_name}", "wb") as fh:
+                    fh.write(base64.b64decode(img_blob))
+                if os.path.isfile('./tmp/images/' + img_name):
+                    os.rename('./tmp/images/' + img_name, img_name)
+                    all_zip.write(img_name)
+                    os.remove(img_name)
 
     file_size = os.path.getsize(combined)
     uid = str(uuid.uuid4())

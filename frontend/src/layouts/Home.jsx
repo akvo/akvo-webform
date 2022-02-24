@@ -114,7 +114,7 @@ const Home = () => {
     [form]
   );
 
-  const onComplete = (values) => {
+  const submitForm = (values) => {
     setIsSubmit(true);
     const responses = transformRequest(questionGroup, values);
     const dataPointNameDisplay = generateDataPointNameDisplay(
@@ -157,9 +157,17 @@ const Home = () => {
       });
   };
 
+  const onComplete = (values) => {
+    submitForm(values);
+  };
+
   const onCompleteFailed = ({ values, errorFields }) => {
     setIsSubmitFailed(errorFields);
-    console.log("Failed", transformRequest(questionGroup, values), errorFields);
+    setNotification({
+      isVisible: true,
+      type: "submit-failed",
+      onCancel: () => setNotification({ isVisible: false }),
+    });
   };
 
   const onSaveSuccess = (_cache) => {

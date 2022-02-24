@@ -85,7 +85,7 @@ const TypeCascade = ({
           setCascadeValues([{ options: res.data, ...level[0] }]);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
     }
     if (cascadeValues.length && tail && cascadeValues.length < level.length) {
@@ -101,7 +101,7 @@ const TypeCascade = ({
           ]);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
     }
   }, [cascadeValues, tail, alias, cascadeResource, level]);

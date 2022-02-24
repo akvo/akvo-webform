@@ -89,7 +89,7 @@ class AnswerResponse(BaseModel):
                     temp.append({"text": value})
                     res = json.dumps(temp)
         # DATE TYPE
-        if atype == QuestionType.date.value:
+        if atype == QuestionType.date.value and value != '':
             try:
                 date_obj = datetime.strptime(value, "%Y-%m-%d")
                 res = int(datetime.timestamp(date_obj) * 1000)

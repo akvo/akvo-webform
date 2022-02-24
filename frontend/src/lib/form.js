@@ -93,14 +93,14 @@ export const transformRequest = (questionGroup, values) => {
     const answerType = findQuestion?.type;
     let value = values[key];
     // transform date value
-    if (answerType === "date") {
+    if (answerType === "date" && value) {
       value = moment(value).format("YYYY-MM-DD");
     }
     return {
       questionId: key.replace("Q", "").split("-")[0],
       iteration: parseInt(key.split("-")[1] || 0),
       answerType: answerType,
-      value: value,
+      value: value || "",
     };
   });
   // find geo question, check for localeNameFlag
