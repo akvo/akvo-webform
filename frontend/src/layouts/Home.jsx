@@ -167,10 +167,6 @@ const Home = () => {
       isVisible: true,
       type: "submit-failed",
       onCancel: () => setNotification({ isVisible: false }),
-      onOk: () => {
-        setNotification({ isVisible: false });
-        submitForm(values);
-      },
     });
   };
 
