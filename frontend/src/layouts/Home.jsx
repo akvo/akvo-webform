@@ -159,6 +159,11 @@ const Home = () => {
 
   const onCompleteFailed = ({ values, errorFields }) => {
     setIsSubmitFailed(errorFields);
+    setNotification({
+      isVisible: true,
+      type: "submit-failed",
+      onOk: () => setNotification({ isVisible: false }),
+    });
     console.log("Failed", transformRequest(questionGroup, values), errorFields);
   };
 

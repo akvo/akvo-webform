@@ -45,6 +45,7 @@ const NotificationModal = ({
             <Space direction="vertical">
               <Button
                 size="large"
+                className="button-next"
                 onClick={() => {
                   navigator.clipboard.writeText(savedLink);
                   message.info("Copied to clipboard!");
@@ -52,7 +53,11 @@ const NotificationModal = ({
               >
                 Copy to clipboard
               </Button>
-              <Button size="large" className="button-next" onClick={onCancel}>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
                 Close
               </Button>
             </Space>
@@ -65,11 +70,28 @@ const NotificationModal = ({
           title: "Clear all data entered in the form?",
           extra: (
             <Space size={75}>
-              <Button onClick={onOk} type="danger">
+              <Button size="large" onClick={onOk} type="danger">
                 Yes, clear it
               </Button>
-              <Button onClick={onCancel}>No, keep it</Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                No, keep it
+              </Button>
             </Space>
+          ),
+        };
+      case "submit-failed":
+        return {
+          status: "error",
+          icon: <ExclamationCircleOutlined />,
+          title: "Please fill in all required questions",
+          extra: (
+            <Button size="large" className="button-default" onClick={onOk}>
+              Okay
+            </Button>
           ),
         };
       case "delete-saved-submission":
@@ -79,10 +101,16 @@ const NotificationModal = ({
           title: "Are you sure want to delete this submission?",
           extra: (
             <Space size={75}>
-              <Button onClick={onOk} type="danger">
+              <Button size="large" onClick={onOk} type="danger">
                 Delete
               </Button>
-              <Button onClick={onCancel}>Cancel</Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
             </Space>
           ),
         };
@@ -92,7 +120,7 @@ const NotificationModal = ({
           icon: <ExclamationCircleOutlined />,
           title: "Error, something went wrong!",
           extra: (
-            <Button size="large" className="button-next" onClick={onCancel}>
+            <Button size="large" className="button-default" onClick={onCancel}>
               Close
             </Button>
           ),
