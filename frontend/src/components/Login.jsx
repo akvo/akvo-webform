@@ -1,18 +1,40 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Row, Col, Form, Input, Button, Typography } from "antd";
 import dataProviders from "../store";
 
 const { Text, Link } = Typography;
 
 const Login = () => {
-  const { forms } = dataProviders.Values();
+  const { forms, auth } = dataProviders.Values();
   const { surveyGroupName, name } = forms;
+  const dispatch = dataProviders.Actions();
+  const [isAuthError, setIsAuthError] = useState(false);
+
+  const onFinish = (values) => {
+    if (auth?.password === values?.password) {
+      const payload = {
+        ...values,
+        isLogin: true,
+      };
+      dispatch({ type: "LOGIN", payload: payload });
+    } else {
+      setIsAuthError(true);
+    }
+  };
 
   const surveyTitle = useMemo(() => {
     return surveyGroupName && name
       ? `${surveyGroupName} - ${name}`
       : "Loading...";
   }, [surveyGroupName, name]);
+
+  const authError = useMemo(() => {
+    return isAuthError ? (
+      <Text type="danger">Your password doesn't match!</Text>
+    ) : (
+      ""
+    );
+  }, [isAuthError]);
 
   return (
     <Row className="main login-container" align="middle" justify="center">
@@ -23,13 +45,16 @@ const Login = () => {
           <h2>{surveyTitle}</h2>
         </div>
         <div className="login-form">
-          <h4>Log in to submit data</h4>
+          <div className="login-form-title">
+            <h4>Log in to submit data</h4>
+            {authError}
+          </div>
           <Form
             name="login"
             layout="vertical"
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
-            onFinish={(values) => console.log(values)}
+            onFinish={onFinish}
           >
             <Form.Item
               label="Submitter"
@@ -39,7 +64,14 @@ const Login = () => {
               <Input size="large" />
             </Form.Item>
             <Form.Item
-              label="Password"
+              label={
+                <span>
+                  Password{" "}
+                  <Text italic>
+                    * please contact administrator for the password.
+                  </Text>
+                </span>
+              }
               name="password"
               rules={[{ required: true, message: "Password required." }]}
             >

@@ -233,18 +233,38 @@
   .login-form {
     margin-top: 56px;
 
+    .login-form-title {
+      margin-bottom: 24px;
+
+      h4 {
+        font-size: 16px;
+      }
+
+      .ant-typography-danger {
+        font-size: 15px;
+      }
+    }
+
     h4,
     label {
-      font-size: 16px;
       font-weight: 600;
     }
 
-    h4 {
-      margin-bottom: 24px;
+    label {
+      font-size: 15px;
+
+      &::before {
+        display: none !important;
+      }
+
+      .ant-typography {
+        font-size: 14px;
+        font-weight: 500;
+      }
     }
 
-    label {
-      font-size: 16px;
+    button {
+      margin-top: 8px;
     }
   }
 
