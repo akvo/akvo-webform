@@ -1,12 +1,25 @@
-import React, { useEffect } from "react";
-import { Modal, Space, Button, Result, message, InputNumber } from "antd";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  Modal,
+  Space,
+  Button,
+  Result,
+  message,
+  InputNumber,
+  Typography,
+} from "antd";
 import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
 
-const CaptchaNumber = () => {
+const { Text } = Typography;
+
+const CaptchaNumber = ({ validateCaptcha, setValidateCaptcha }) => {
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaInputValue, setCaptchaInputValue] = useState(false);
+
   useEffect(() => {
     const captchaNumber = document.getElementById("captcha-number");
     if (captchaNumber && captchaNumber.childNodes[0]) {
@@ -21,13 +34,41 @@ const CaptchaNumber = () => {
     ctx.font = "35px Assistant, sans-serif";
     ctx.textAlign = "center";
     ctx.strokeText(validatorX + "+" + validatorY, 100, 38);
+    setCaptchaValue(validatorX + validatorY);
     captchaNumber.appendChild(canv);
-  }, []);
+  }, [setCaptchaValue]);
+
+  const onChangeCaptchaInput = (value) => {
+    setCaptchaInputValue(value);
+    if (setValidateCaptcha) {
+      setValidateCaptcha(value === captchaValue);
+    }
+  };
+
+  const captchaError = useMemo(() => {
+    return !validateCaptcha && captchaInputValue !== false ? (
+      <Text type="danger">Please enter correct value</Text>
+    ) : (
+      ""
+    );
+  }, [validateCaptcha, captchaInputValue]);
 
   return (
     <Space align="center" direction="vertical">
       <div id="captcha-number"></div>
-      <InputNumber size="large" onChange={(e) => console.log(e)} />
+      <>
+        <Space align="start" direction="vertical" size={5}>
+          <InputNumber
+            min={1}
+            max={100}
+            size="large"
+            autoFocus={true}
+            value={captchaInputValue}
+            onChange={onChangeCaptchaInput}
+          />
+          {captchaError}
+        </Space>
+      </>
     </Space>
   );
 };
@@ -40,6 +81,8 @@ const NotificationModal = ({
   onCancel,
   savedLink,
 }) => {
+  const [validateCaptcha, setValidateCaptcha] = useState(false);
+
   const modalProps = () => {
     switch (type) {
       case "success":
@@ -142,11 +185,21 @@ const NotificationModal = ({
         };
       case "captcha":
         return {
-          icon: <CaptchaNumber render={isVisible} />,
+          icon: (
+            <CaptchaNumber
+              validateCaptcha={validateCaptcha}
+              setValidateCaptcha={setValidateCaptcha}
+            />
+          ),
           title: "",
           extra: (
             <Space>
-              <Button size="large" className="button-next" onClick={onOk}>
+              <Button
+                size="large"
+                className="button-next"
+                disabled={!validateCaptcha}
+                onClick={onOk}
+              >
                 Submit
               </Button>
               <Button
