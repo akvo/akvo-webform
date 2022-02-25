@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
@@ -26,6 +26,7 @@ import {
   NotificationModal,
   MobileFooter,
   SubmissionListDrawer,
+  Login,
 } from "../components";
 import uuid from "uuid/v4";
 import moment from "moment";
@@ -53,13 +54,15 @@ const detectMobile = () => {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
   const [error, setError] = useState(false);
   const { formId, cacheId } = useParams();
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
-  const { forms, dataPointName, group } = state;
+  const { forms, dataPointName, group, auth } = state;
   const { questionGroup } = forms;
   const { active, complete } = group;
+  const { isLogin, submitter } = auth;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSave, setIsSave] = useState(false);
@@ -72,6 +75,19 @@ const Home = () => {
   // check screen size or mobile browser
   window.addEventListener("resize", () => {
     setIsMobile(detectMobile());
+  });
+
+  // check before refresh
+  window.addEventListener("beforeunload", (e) => {
+    if (!isLogin) {
+      return undefined;
+    }
+    e.preventDefault();
+    const confirmationMessage =
+      "If you leave before saving, your changes will be lost." +
+      "Are you sure want to reload?";
+    (e || window.event).returnValue = confirmationMessage;
+    return confirmationMessage;
   });
 
   const isSaveFeatureEnabled = useMemo(
@@ -129,7 +145,7 @@ const Home = () => {
       instance: forms?.app,
       submissionStart: forms?.submissionStart,
       submissionStop: Date.now(),
-      username: "akvo-webform", // change later
+      username: submitter || "akvo-webform",
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
@@ -147,6 +163,12 @@ const Home = () => {
             const redirect = window.location.href.replace(`/${cacheId}`, "");
             window.location.replace(redirect);
           },
+          onCancel: () => {
+            setNotification({ isVisible: false });
+            setTimeout(() => {
+              navigate(`/${formId}/info`);
+            }, 100);
+          },
         });
       })
       .catch((e) => {
@@ -158,7 +180,15 @@ const Home = () => {
   };
 
   const onComplete = (values) => {
-    submitForm(values);
+    setNotification({
+      isVisible: true,
+      type: "captcha",
+      onCancel: () => setNotification({ isVisible: false }),
+      onOk: () => {
+        setNotification({ isVisible: false });
+        submitForm(values);
+      },
+    });
   };
 
   const onCompleteFailed = ({ values, errorFields }) => {
@@ -269,6 +299,24 @@ const Home = () => {
             .get(`form/${formId}`)
             .then((res) => {
               let formData = generateForm(res.data);
+              // ##TODO:: Create example for conditional passcode
+              /**
+               * passcode True: ["boq26jv0vava0a6", "6h12auccv5cevp5"]
+               * passcode False: ["boq26jv0w-wvvk6", "6h12afe7ffcevf5"]
+               */
+              let passcode = formData?.passcode;
+              if (["boq26jv0vava0a6", "6h12auccv5cevp5"].includes(formId)) {
+                passcode = true;
+              }
+              if (["boq26jv0w-wvvk6", "6h12afe7ffcevf5"].includes(formId)) {
+                passcode = false;
+              }
+              formData = {
+                ...formData,
+                passcode: passcode,
+              };
+              // END OF##TODO:: Create example for conditional passcode
+
               // transform formData question group
               // to return repeatable question value if value defined
               let questionGroups = formData?.questionGroup;
@@ -290,7 +338,7 @@ const Home = () => {
                 ...formData,
                 questionGroup: questionGroups,
                 dataPointId: answerValues?.dataPointId || generateDataPointId(),
-                deviceId: "Akvo Flow Web",
+                deviceId: "AkvoFlow Webforms",
                 submissionStart: answerValues?.submissionStart || Date.now(),
                 _cacheId: cacheId || uuid(),
               };
@@ -330,6 +378,10 @@ const Home = () => {
         messages={[error?.statusText || `Form Id ${formId} is not found`]}
       />
     );
+  }
+
+  if (!isLogin) {
+    return <Login />;
   }
 
   if (!forms) {

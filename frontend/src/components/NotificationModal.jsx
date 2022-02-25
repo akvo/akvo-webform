@@ -1,10 +1,84 @@
-import React from "react";
-import { Modal, Space, Button, Result, message } from "antd";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  Modal,
+  Space,
+  Button,
+  Result,
+  message,
+  InputNumber,
+  Typography,
+} from "antd";
 import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
+
+const { Text } = Typography;
+
+const CaptchaNumber = ({ validateCaptcha, setValidateCaptcha }) => {
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaInputValue, setCaptchaInputValue] = useState(false);
+
+  useEffect(() => {
+    const captchaNumber = document.getElementById("captcha-number");
+    if (captchaNumber && captchaNumber.childNodes[0]) {
+      captchaNumber.removeChild(captchaNumber.childNodes[0]);
+    }
+    if (captchaNumber) {
+      const validatorX = Math.floor(Math.random() * 9) + 1;
+      const validatorY = Math.floor(Math.random() * 9) + 1;
+      let canv = document.createElement("canvas");
+      canv.width = 200;
+      canv.height = 50;
+      let ctx = canv.getContext("2d");
+      ctx.font = "35px Assistant, sans-serif";
+      ctx.textAlign = "center";
+      ctx.strokeText(validatorX + "+" + validatorY, 100, 38);
+      setCaptchaValue(validatorX + validatorY);
+      captchaNumber.appendChild(canv);
+    }
+  }, [setCaptchaValue]);
+
+  const onChangeCaptchaInput = (value) => {
+    setCaptchaInputValue(value);
+    if (setValidateCaptcha) {
+      setValidateCaptcha(value === captchaValue);
+    }
+  };
+
+  const captchaError = useMemo(() => {
+    return !validateCaptcha && captchaInputValue !== false ? (
+      <Text type="danger">Please enter correct value</Text>
+    ) : (
+      ""
+    );
+  }, [validateCaptcha, captchaInputValue]);
+
+  return (
+    <Space align="center" direction="vertical" className="captcha-container">
+      <h2>You're going to submit the form.</h2>
+      <div className="captcha-box">
+        <div id="captcha-number"></div>
+        <>
+          <Space align="start" direction="vertical" size={5}>
+            <InputNumber
+              placeholder="Enter the sum"
+              min={1}
+              max={100}
+              size="large"
+              autoFocus={true}
+              value={captchaInputValue}
+              onChange={onChangeCaptchaInput}
+            />
+            {captchaError}
+          </Space>
+        </>
+      </div>
+    </Space>
+  );
+};
 
 const NotificationModal = ({
   isMobile,
@@ -14,17 +88,34 @@ const NotificationModal = ({
   onCancel,
   savedLink,
 }) => {
+  const [validateCaptcha, setValidateCaptcha] = useState(false);
+
   const modalProps = () => {
     switch (type) {
+      case "thank-you":
+        return {
+          status: "success",
+          icon: <FormOutlined />,
+          title: "Thank you for your submission!",
+        };
       case "success":
         return {
           status: "success",
           icon: <CheckCircleOutlined />,
           title: "Form submitted successfully.",
           extra: (
-            <Button size="large" className="button-next" onClick={onOk}>
-              New Submission
-            </Button>
+            <Space direction="vertical" size={15}>
+              <Button size="large" className="button-next" onClick={onOk}>
+                New Submission
+              </Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                Close
+              </Button>
+            </Space>
           ),
         };
       case "save-success":
@@ -42,7 +133,7 @@ const NotificationModal = ({
             </Space>
           ),
           extra: (
-            <Space direction="vertical">
+            <Space direction="vertical" size={15}>
               <Button
                 size="large"
                 className="button-next"
@@ -114,6 +205,35 @@ const NotificationModal = ({
             </Space>
           ),
         };
+      case "captcha":
+        return {
+          icon: (
+            <CaptchaNumber
+              validateCaptcha={validateCaptcha}
+              setValidateCaptcha={setValidateCaptcha}
+            />
+          ),
+          title: "",
+          extra: (
+            <Space>
+              <Button
+                size="large"
+                className="button-next"
+                disabled={!validateCaptcha}
+                onClick={onOk}
+              >
+                Submit
+              </Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+            </Space>
+          ),
+        };
       default:
         return {
           status: "error",
@@ -138,6 +258,7 @@ const NotificationModal = ({
       closable={false}
       wrapClassName={"notification-modal-wrap"}
       width={isMobile ? "75%" : "520px"}
+      destroyOnClose={true}
     >
       <Result {...modalProps()} />
     </Modal>

@@ -128,6 +128,23 @@ const reducer = (state, action) => {
           active: action.payload,
         },
       };
+    case "LOGIN":
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          isLogin: action.payload.isLogin,
+          submitter: action.payload.submitter,
+        },
+      };
+    case "LOGOUT":
+      return {
+        ...state,
+        auth: {
+          isLogin: false,
+          submitter: null,
+        },
+      };
 
     default:
       throw new Error();

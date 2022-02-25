@@ -1,13 +1,14 @@
 import "./App.scss";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, ErrorPage } from "./layouts";
+import { Home, ErrorPage, InfoPage } from "./layouts";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path=":formId" element={<Home />} />
+        <Route path=":formId/info" element={<InfoPage />} />
         <Route path=":formId/:cacheId" element={<Home />} />
         <Route
           path=""

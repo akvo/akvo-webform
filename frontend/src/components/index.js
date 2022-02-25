@@ -5,3 +5,4 @@ export { default as Sidebar } from "./Sidebar";
 export { default as NotificationModal } from "./NotificationModal";
 export { default as MobileFooter } from "./MobileFooter.jsx";
 export { default as SubmissionListDrawer } from "./SubmissionListDrawer.jsx";
+export { default as Login } from "./Login";
