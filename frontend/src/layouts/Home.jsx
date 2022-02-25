@@ -58,10 +58,10 @@ const Home = () => {
   const { formId, cacheId } = useParams();
   const dispatch = dataProviders.Actions();
   const state = dataProviders.Values();
-  const { forms, dataPointName, group } = state;
+  const { forms, dataPointName, group, auth } = state;
   const { questionGroup } = forms;
   const { active, complete } = group;
-  const { isLogin } = state?.auth;
+  const { isLogin, submitter } = auth;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSave, setIsSave] = useState(false);
@@ -131,7 +131,7 @@ const Home = () => {
       instance: forms?.app,
       submissionStart: forms?.submissionStart,
       submissionStop: Date.now(),
-      username: "akvo-webform", // change later
+      username: submitter || "akvo-webform",
       dataPointName: dataPointNameDisplay || "Untitled",
       responses: responses,
     };
