@@ -46,7 +46,7 @@ const Login = () => {
 
   const authError = useMemo(() => {
     return isAuthError ? (
-      <Text type="danger">Your password doesn't match!</Text>
+      <Text type="danger">Your passcode doesn't match!</Text>
     ) : (
       ""
     );
@@ -70,10 +70,7 @@ const Login = () => {
             <h2>{surveyTitle}</h2>
           </div>
           <div className="login-form">
-            <div className="login-form-title">
-              <h4>Log in to submit data</h4>
-              {authError}
-            </div>
+            <div className="login-form-title">{authError}</div>
             <Form
               name="login"
               layout="vertical"
@@ -93,14 +90,14 @@ const Login = () => {
               <Form.Item
                 label={
                   <Space direction="vertical" size={0}>
-                    Form Password
+                    Form Passcode
                     <Text italic>
-                      * please contact administrator for the password.
+                      * please contact administrator for the passcode.
                     </Text>
                   </Space>
                 }
                 name="password"
-                rules={[{ required: true, message: "Password required." }]}
+                rules={[{ required: true, message: "Passcode required." }]}
               >
                 <Input.Password size="large" />
               </Form.Item>
@@ -119,10 +116,6 @@ const Login = () => {
             </Form>
           </div>
           <div className="login-footer">
-            <Text>
-              AkvoFlow Webforms enabling remote Byod data collection.{" "}
-            </Text>
-            <Link>Data policy</Link>.{" "}
             <Link href="https://akvo.org/" target="_blank">
               Akvo.org
             </Link>
