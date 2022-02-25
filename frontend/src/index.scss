@@ -46,7 +46,8 @@ body {
   .ant-input,
   .ant-select-selector,
   .ant-input-number,
-  .ant-picker {
+  .ant-picker,
+  .ant-input-password {
     border: 1px solid #6a6a6a;
     border-radius: 5px;
   }
@@ -127,6 +128,24 @@ body {
           }
         }
       }
+    }
+  }
+
+  .ant-input-affix-wrapper {
+    &.ant-input-password {
+      svg {
+        color: #6a6a6a;
+
+        &:hover {
+          color: #222;
+        }
+      }
+    }
+  }
+
+  .ant-input-password {
+    .ant-input {
+      border: none !important;
     }
   }
 }

@@ -57,6 +57,11 @@ const initialValue = {
     active: "en",
     list: [],
   },
+  auth: {
+    isLogin: false,
+    submitter: null,
+    password: "secret",
+  },
 };
 
 export default initialValue;

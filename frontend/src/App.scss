@@ -199,6 +199,65 @@
   min-height: calc(100vh - 95px);
 }
 
+.login-container {
+  padding: 0 20px 100px 20px;
+  font-family: "Assistant", sans-serif;
+
+  .login-header {
+    h1 {
+      color: #6f6f6f;
+      padding: 0px;
+      margin: 0px;
+      font-size: 22px;
+      font-weight: bold;
+      display: inline-block;
+
+      &.logo {
+        font-size: 20px;
+        line-height: 48px;
+        padding: 0px 10px;
+        margin-right: 20px;
+        border: 1px solid #f0f0f0;
+        background: #f3f3f3;
+        border-radius: 5px;
+      }
+    }
+
+    h2 {
+      margin-top: 40px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  .login-form {
+    margin-top: 56px;
+
+    h4,
+    label {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    h4 {
+      margin-bottom: 24px;
+    }
+
+    label {
+      font-size: 16px;
+    }
+  }
+
+  .login-footer {
+    margin-top: 40px;
+
+    .ant-typography {
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+}
+
 .field-group {
   min-height: calc(100vh - 175px);
 

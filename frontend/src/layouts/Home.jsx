@@ -26,6 +26,7 @@ import {
   NotificationModal,
   MobileFooter,
   SubmissionListDrawer,
+  Login,
 } from "../components";
 import uuid from "uuid/v4";
 import moment from "moment";
@@ -60,6 +61,7 @@ const Home = () => {
   const { forms, dataPointName, group } = state;
   const { questionGroup } = forms;
   const { active, complete } = group;
+  const { isLogin } = state?.auth;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSave, setIsSave] = useState(false);
@@ -298,7 +300,7 @@ const Home = () => {
                 ...formData,
                 questionGroup: questionGroups,
                 dataPointId: answerValues?.dataPointId || generateDataPointId(),
-                deviceId: "Akvo Flow Web",
+                deviceId: "AkvoFlow Webforms",
                 submissionStart: answerValues?.submissionStart || Date.now(),
                 _cacheId: cacheId || uuid(),
               };
@@ -338,6 +340,10 @@ const Home = () => {
         messages={[error?.statusText || `Form Id ${formId} is not found`]}
       />
     );
+  }
+
+  if (!isLogin) {
+    return <Login />;
   }
 
   if (!forms) {
