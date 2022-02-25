@@ -14,28 +14,40 @@ const Login = () => {
   const [isAuthError, setIsAuthError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const showForm = forms?.surveyId;
+
   const onFinish = (values) => {
     setIsLoading(true);
-    api
-      .post(`/login/${formId}?`, values, { "content-type": "application/json" })
-      .then((res) => {
-        if (res?.status === 200) {
-          const { is_login, submitter } = res?.data;
-          dispatch({
-            type: "LOGIN",
-            payload: { isLogin: is_login, submitter: submitter },
-          });
-        } else {
+    if (forms?.passcode) {
+      api
+        .post(`/login/${formId}?`, values, {
+          "content-type": "application/json",
+        })
+        .then((res) => {
+          if (res?.status === 200) {
+            const { is_login, submitter } = res?.data;
+            dispatch({
+              type: "LOGIN",
+              payload: { isLogin: is_login, submitter: submitter },
+            });
+          } else {
+            setIsAuthError(true);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
           setIsAuthError(true);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsAuthError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      dispatch({
+        type: "LOGIN",
+        payload: { isLogin: true, submitter: values?.submitter },
       });
+      setIsLoading(false);
+    }
   };
 
   const surveyTitle = useMemo(() => {
@@ -69,57 +81,65 @@ const Login = () => {
           <div className="survey-title-wrapper">
             <h2>{surveyTitle}</h2>
           </div>
-          <div className="login-form">
-            <div className="login-form-title">{authError}</div>
-            <Form
-              name="login"
-              layout="vertical"
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
-              onFinish={onFinish}
-            >
-              <Form.Item
-                label="Submitter name"
-                name="submitter"
-                rules={[
-                  { required: true, message: "Submitter name required." },
-                ]}
-              >
-                <Input size="large" />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Space direction="vertical" size={0}>
-                    Form Passcode
-                    <Text italic>
-                      * please contact administrator for the passcode.
-                    </Text>
-                  </Space>
-                }
-                name="password"
-                rules={[{ required: true, message: "Passcode required." }]}
-              >
-                <Input.Password size="large" />
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="button-next"
-                  size="large"
-                  loading={isLoading}
-                  block
+          {showForm && (
+            <>
+              <div className="login-form">
+                <div className="login-form-title">{authError}</div>
+                <Form
+                  name="login"
+                  layout="vertical"
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  onFinish={onFinish}
                 >
-                  Start
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-          <div className="login-footer">
-            <Link href="https://akvo.org/" target="_blank">
-              Akvo.org
-            </Link>
-          </div>
+                  <Form.Item
+                    label="Submitter name"
+                    name="submitter"
+                    rules={[
+                      { required: true, message: "Submitter name required." },
+                    ]}
+                  >
+                    <Input size="large" />
+                  </Form.Item>
+                  {forms?.passcode && (
+                    <Form.Item
+                      label={
+                        <Space direction="vertical" size={0}>
+                          Form Passcode
+                          <Text italic>
+                            * please contact administrator for the passcode.
+                          </Text>
+                        </Space>
+                      }
+                      name="password"
+                      rules={[
+                        { required: true, message: "Passcode required." },
+                      ]}
+                    >
+                      <Input.Password size="large" />
+                    </Form.Item>
+                  )}
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="button-next"
+                      size="large"
+                      loading={isLoading}
+                      block
+                    >
+                      Start
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </div>
+              <div className="login-footer">
+                <Link href="https://akvo.org/" target="_blank">
+                  Akvo.org
+                </Link>
+              </div>
+            </>
+          )}
         </Col>
       </Row>
     </div>

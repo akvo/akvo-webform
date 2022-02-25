@@ -286,6 +286,24 @@ const Home = () => {
             .get(`form/${formId}`)
             .then((res) => {
               let formData = generateForm(res.data);
+              // ##TODO:: Create example for conditional passcode
+              /**
+               * passcode True: ["boq26jv0vava0a6", "6h12auccv5cevp5"]
+               * passcode False: ["boq26jv0w-wvvk6", "6h12afe7ffcevf5"]
+               */
+              let passcode = formData?.passcode;
+              if (["boq26jv0vava0a6", "6h12auccv5cevp5"].includes(formId)) {
+                passcode = true;
+              }
+              if (["boq26jv0w-wvvk6", "6h12afe7ffcevf5"].includes(formId)) {
+                passcode = false;
+              }
+              formData = {
+                ...formData,
+                passcode: passcode,
+              };
+              // END OF##TODO:: Create example for conditional passcode
+
               // transform formData question group
               // to return repeatable question value if value defined
               let questionGroups = formData?.questionGroup;
