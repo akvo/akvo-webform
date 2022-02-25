@@ -77,6 +77,19 @@ const Home = () => {
     setIsMobile(detectMobile());
   });
 
+  // check before refresh
+  window.addEventListener("beforeunload", (e) => {
+    if (!isLogin) {
+      return undefined;
+    }
+    e.preventDefault();
+    const confirmationMessage =
+      "If you leave before saving, your changes will be lost." +
+      "Are you sure want to reload?";
+    (e || window.event).returnValue = confirmationMessage;
+    return confirmationMessage;
+  });
+
   const isSaveFeatureEnabled = useMemo(
     () => saveFeature && !isMobile,
     [isMobile]
