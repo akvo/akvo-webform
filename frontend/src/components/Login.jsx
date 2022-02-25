@@ -1,25 +1,41 @@
 import React, { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Row, Col, Form, Input, Button, Typography, Space } from "antd";
 import dataProviders from "../store";
+import api from "../lib/api";
 
 const { Text, Link } = Typography;
 
 const Login = () => {
-  const { forms, auth } = dataProviders.Values();
+  const { formId } = useParams();
+  const { forms } = dataProviders.Values();
   const { surveyGroupName, name } = forms;
   const dispatch = dataProviders.Actions();
   const [isAuthError, setIsAuthError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onFinish = (values) => {
-    if (auth?.password === values?.password) {
-      const payload = {
-        ...values,
-        isLogin: true,
-      };
-      dispatch({ type: "LOGIN", payload: payload });
-    } else {
-      setIsAuthError(true);
-    }
+    setIsLoading(true);
+    api
+      .post(`/login/${formId}?`, values, { "content-type": "application/json" })
+      .then((res) => {
+        if (res?.status === 200) {
+          const { is_login, submitter } = res?.data;
+          dispatch({
+            type: "LOGIN",
+            payload: { isLogin: is_login, submitter: submitter },
+          });
+        } else {
+          setIsAuthError(true);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsAuthError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const surveyTitle = useMemo(() => {
@@ -94,6 +110,7 @@ const Login = () => {
                   htmlType="submit"
                   className="button-next"
                   size="large"
+                  loading={isLoading}
                   block
                 >
                   Start

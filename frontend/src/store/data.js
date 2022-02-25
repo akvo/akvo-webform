@@ -60,7 +60,6 @@ const initialValue = {
   auth: {
     isLogin: false,
     submitter: null,
-    password: "secret",
   },
 };
 

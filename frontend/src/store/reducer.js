@@ -141,7 +141,6 @@ const reducer = (state, action) => {
       return {
         ...state,
         auth: {
-          ...state.auth,
           isLogin: false,
           submitter: null,
         },
