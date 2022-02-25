@@ -12,6 +12,7 @@ import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
 
 const { Text } = Typography;
@@ -56,21 +57,25 @@ const CaptchaNumber = ({ validateCaptcha, setValidateCaptcha }) => {
   }, [validateCaptcha, captchaInputValue]);
 
   return (
-    <Space align="center" direction="vertical">
-      <div id="captcha-number"></div>
-      <>
-        <Space align="start" direction="vertical" size={5}>
-          <InputNumber
-            min={1}
-            max={100}
-            size="large"
-            autoFocus={true}
-            value={captchaInputValue}
-            onChange={onChangeCaptchaInput}
-          />
-          {captchaError}
-        </Space>
-      </>
+    <Space align="center" direction="vertical" className="captcha-container">
+      <h2>You're going to submit the form.</h2>
+      <div className="captcha-box">
+        <div id="captcha-number"></div>
+        <>
+          <Space align="start" direction="vertical" size={5}>
+            <InputNumber
+              placeholder="Enter the sum"
+              min={1}
+              max={100}
+              size="large"
+              autoFocus={true}
+              value={captchaInputValue}
+              onChange={onChangeCaptchaInput}
+            />
+            {captchaError}
+          </Space>
+        </>
+      </div>
     </Space>
   );
 };
@@ -87,6 +92,12 @@ const NotificationModal = ({
 
   const modalProps = () => {
     switch (type) {
+      case "thank-you":
+        return {
+          status: "success",
+          icon: <FormOutlined />,
+          title: "Thank you for your submission!",
+        };
       case "success":
         return {
           status: "success",
@@ -102,7 +113,7 @@ const NotificationModal = ({
                 className="button-default"
                 onClick={onCancel}
               >
-                Logout
+                Close
               </Button>
             </Space>
           ),

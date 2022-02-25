@@ -625,6 +625,19 @@ button,
   }
 }
 
+.captcha-container {
+  #captcha-number {
+    border: 1px solid #6f6f6f;
+    border-radius: 5px 5px 0 0;
+    padding: 1px;
+    border-bottom: none;
+  }
+  .ant-input-number {
+    border: 1px solid #6f6f6f;
+    border-radius: 0 0 5px 5px;
+  }
+}
+
 @media only screen and (max-width: 1064px) {
   .login-container {
     padding: 0 0 70px 0;

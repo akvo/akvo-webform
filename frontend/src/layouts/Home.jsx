@@ -151,7 +151,15 @@ const Home = () => {
           },
           onCancel: () => {
             setNotification({ isVisible: false });
-            dispatch({ type: "LOGOUT" });
+            setTimeout(() => {
+              setNotification({
+                isVisible: true,
+                type: "thank-you",
+                onCancel: () => {
+                  setNotification({ isVisible: false });
+                },
+              });
+            }, 100);
           },
         });
       })
