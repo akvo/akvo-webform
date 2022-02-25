@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Button, Form } from "antd";
 import ErrorPage from "./ErrorPage";
 import api from "../lib/api";
@@ -54,6 +54,7 @@ const detectMobile = () => {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
   const [error, setError] = useState(false);
   const { formId, cacheId } = useParams();
   const dispatch = dataProviders.Actions();
@@ -152,13 +153,7 @@ const Home = () => {
           onCancel: () => {
             setNotification({ isVisible: false });
             setTimeout(() => {
-              setNotification({
-                isVisible: true,
-                type: "thank-you",
-                onCancel: () => {
-                  setNotification({ isVisible: false });
-                },
-              });
+              navigate(`/${formId}/info`);
             }, 100);
           },
         });
