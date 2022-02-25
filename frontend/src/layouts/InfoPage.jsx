@@ -7,7 +7,7 @@ const { Link } = Typography;
 const InfoPage = () => {
   return (
     <div className="main login-container info-page-container">
-      <Row
+      {/* <Row
         align="middle"
         justify="center"
         className="login-header-wrapper info-page-header-wrapper"
@@ -20,7 +20,7 @@ const InfoPage = () => {
             <h1>AkvoFlow WebForms</h1>
           </div>
         </Col>
-      </Row>
+      </Row> */}
       <Row align="middle" justify="center">
         <Col xs={20} sm={16} md={12} lg={10} xl={8} xxl={6}>
           <div className="info-page-body">

@@ -645,10 +645,15 @@ button,
 
   .info-page-header-wrapper {
     padding: 0;
+    margin-bottom: 24px;
   }
 
   .info-page-header {
     text-align: center;
+  }
+
+  .info-page-content {
+    padding: 5px;
   }
 
   .info-page-footer {
