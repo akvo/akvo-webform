@@ -77,6 +77,7 @@ const Maps = ({ id, center, position, onChange, changePos }) => {
             value={position?.lat || null}
             min="-90"
             max="90"
+            controls={false}
             onChange={(e) => onChange("lat", e)}
           />
         </Col>
@@ -88,6 +89,7 @@ const Maps = ({ id, center, position, onChange, changePos }) => {
             value={position?.lng || null}
             min="-180"
             max="180"
+            controls={false}
             onChange={(e) => onChange("lng", e)}
           />
         </Col>
