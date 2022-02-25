@@ -149,6 +149,10 @@ const Home = () => {
             const redirect = window.location.href.replace(`/${cacheId}`, "");
             window.location.replace(redirect);
           },
+          onCancel: () => {
+            setNotification({ isVisible: false });
+            dispatch({ type: "LOGOUT" });
+          },
         });
       })
       .catch((e) => {

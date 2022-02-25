@@ -93,9 +93,18 @@ const NotificationModal = ({
           icon: <CheckCircleOutlined />,
           title: "Form submitted successfully.",
           extra: (
-            <Button size="large" className="button-next" onClick={onOk}>
-              New Submission
-            </Button>
+            <Space direction="vertical" size={15}>
+              <Button size="large" className="button-next" onClick={onOk}>
+                New Submission
+              </Button>
+              <Button
+                size="large"
+                className="button-default"
+                onClick={onCancel}
+              >
+                Logout
+              </Button>
+            </Space>
           ),
         };
       case "save-success":
@@ -113,7 +122,7 @@ const NotificationModal = ({
             </Space>
           ),
           extra: (
-            <Space direction="vertical">
+            <Space direction="vertical" size={15}>
               <Button
                 size="large"
                 className="button-next"
