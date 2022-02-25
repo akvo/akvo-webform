@@ -25,17 +25,19 @@ const CaptchaNumber = ({ validateCaptcha, setValidateCaptcha }) => {
     if (captchaNumber && captchaNumber.childNodes[0]) {
       captchaNumber.removeChild(captchaNumber.childNodes[0]);
     }
-    const validatorX = Math.floor(Math.random() * 9) + 1;
-    const validatorY = Math.floor(Math.random() * 9) + 1;
-    let canv = document.createElement("canvas");
-    canv.width = 200;
-    canv.height = 50;
-    let ctx = canv.getContext("2d");
-    ctx.font = "35px Assistant, sans-serif";
-    ctx.textAlign = "center";
-    ctx.strokeText(validatorX + "+" + validatorY, 100, 38);
-    setCaptchaValue(validatorX + validatorY);
-    captchaNumber.appendChild(canv);
+    if (captchaNumber) {
+      const validatorX = Math.floor(Math.random() * 9) + 1;
+      const validatorY = Math.floor(Math.random() * 9) + 1;
+      let canv = document.createElement("canvas");
+      canv.width = 200;
+      canv.height = 50;
+      let ctx = canv.getContext("2d");
+      ctx.font = "35px Assistant, sans-serif";
+      ctx.textAlign = "center";
+      ctx.strokeText(validatorX + "+" + validatorY, 100, 38);
+      setCaptchaValue(validatorX + validatorY);
+      captchaNumber.appendChild(canv);
+    }
   }, [setCaptchaValue]);
 
   const onChangeCaptchaInput = (value) => {
@@ -236,6 +238,7 @@ const NotificationModal = ({
       closable={false}
       wrapClassName={"notification-modal-wrap"}
       width={isMobile ? "75%" : "520px"}
+      destroyOnClose={true}
     >
       <Result {...modalProps()} />
     </Modal>
