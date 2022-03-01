@@ -126,7 +126,7 @@ const NotificationModal = ({
           subTitle: (
             <Space direction="vertical">
               <div className="info-text">
-                Not for sharing! This link only functional on your current
+                Not for sharing! This link is only functional on your current
                 browser.
               </div>
               <div>{`Saved link: ${savedLink}`}</div>
@@ -189,7 +189,8 @@ const NotificationModal = ({
         return {
           status: "warning",
           icon: <WarningOutlined />,
-          title: "Are you sure want to delete this submission?",
+          title:
+            "The saved entry will be deleted. This change is not reversible.",
           extra: (
             <Space>
               <Button size="large" onClick={onOk} type="danger">
