@@ -3,6 +3,7 @@ from routes.form import form_route
 from routes.cascade import cascade_route
 from routes.answer import answer_route
 from routes.auth import auth_route
+from routes.flow_data import flow_data_route
 from core.dev import Dev, dev_route
 
 app = FastAPI(
@@ -22,10 +23,11 @@ app = FastAPI(
 )
 dev = Dev()
 
+app.include_router(auth_route)
 app.include_router(form_route)
 app.include_router(cascade_route)
 app.include_router(answer_route)
-app.include_router(auth_route)
+app.include_router(flow_data_route)
 
 
 @app.get("/", tags=["Dev"])
