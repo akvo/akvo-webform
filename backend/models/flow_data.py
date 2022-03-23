@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List, Optional
 
 
 class FolderBase(BaseModel):
@@ -9,9 +10,14 @@ class FolderBase(BaseModel):
 
 class SurveyBase(BaseModel):
     id: int
-    name: str
+    name: Optional[str] = "New Survey"
     folderId: int
     surveyUrl: str
+
+
+class FolderSurveyBase(BaseModel):
+    surveys: List[SurveyBase]
+    folders: List[FolderBase]
 
 
 class FormBase(BaseModel):

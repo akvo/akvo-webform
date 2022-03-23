@@ -2,7 +2,7 @@ import requests as r
 from typing import Optional
 from fastapi import APIRouter, Request, Header, HTTPException
 from typing import List
-from models.flow_data import FolderBase, FormBase, SurveyBase
+from models.flow_data import FolderSurveyBase, FormBase
 
 flow_data_route = APIRouter()
 flow_api = "https://api-auth0.akvo.org/flow/orgs"
@@ -27,34 +27,27 @@ def get_headers(token: str):
 
 
 @flow_data_route.get('/flow-data/folders/{instance_name:path}',
-                     response_model=List[FolderBase],
+                     response_model=FolderSurveyBase,
                      summary="View Folders",
                      tags=["Flow Data"])
 def get_folders(req: Request,
                 instance_name: str,
                 parent_id: Optional[int] = None,
                 refresh_token: str = Header(...)):
-    url = f"{flow_api}/{instance_name}/folders?parent_id=0"
+    url = f"{flow_api}/{instance_name}"
+    folder_url = f"{url}/folders?parent_id=0"
+    survey_url = f"{url}/surveys?folder_id=0"
     if parent_id:
-        url = f"{flow_api}/{instance_name}/folders?parent_id={parent_id}"
+        folder_url = f"{url}/folders?parent_id={parent_id}"
+        survey_url = f"{url}/surveys?folder_id={parent_id}"
     headers = get_headers(refresh_token)
-    req = r.get(url, headers=headers)
-    return req.json().get("folders")
-
-
-@flow_data_route.get(
-    '/flow-data/surveys/{instance_name:path}/{folder_id:path}',
-    response_model=List[SurveyBase],
-    summary="View Surveys",
-    tags=["Flow Data"])
-def get_surveys(req: Request,
-                instance_name: str,
-                folder_id: int,
-                refresh_token: str = Header(...)):
-    url = f"{flow_api}/{instance_name}/surveys?folder_id={folder_id}"
-    headers = get_headers(refresh_token)
-    req = r.get(url, headers=headers)
-    return req.json().get("surveys")
+    folders = r.get(folder_url, headers=headers)
+    surveys = r.get(survey_url, headers=headers)
+    data = {
+        "folders": folders.json().get("folders"),
+        "surveys": surveys.json().get("surveys"),
+    }
+    return data
 
 
 @flow_data_route.get('/flow-data/forms/{instance_name:path}/{survey_id:path}',
