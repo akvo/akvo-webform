@@ -28,6 +28,7 @@ app.include_router(form_route)
 app.include_router(cascade_route)
 app.include_router(answer_route)
 app.include_router(flow_data_route)
+app.include_router(dev_route)
 
 
 @app.get("/", tags=["Dev"])
@@ -40,5 +41,5 @@ def health_check():
     return "OK"
 
 
-if dev.status:
-    app.include_router(dev_route)
+# if dev.status:
+#     app.include_router(dev_route)
