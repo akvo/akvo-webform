@@ -4,15 +4,22 @@ from typing import List, Optional
 
 class FolderBase(BaseModel):
     id: int
-    parentId: int
     name: str
+    type: str = "folder"
 
 
 class SurveyBase(BaseModel):
     id: int
     name: Optional[str] = "New Survey"
-    folderId: int
-    surveyUrl: str
+    type: str = "survey"
+
+
+class FormBase(BaseModel):
+    id: int
+    name: str
+    version: int
+    surveyId: int
+    type: str = "form"
 
 
 class FolderSurveyBase(BaseModel):
@@ -20,8 +27,8 @@ class FolderSurveyBase(BaseModel):
     folders: List[FolderBase]
 
 
-class FormBase(BaseModel):
+class FolderSurveyResponse(BaseModel):
     id: int
-    surveyId: int
-    name: str
-    version: int
+    name: Optional[str] = "New Survey"
+    url: str
+    type: str
