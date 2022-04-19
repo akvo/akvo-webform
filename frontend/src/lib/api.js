@@ -12,7 +12,7 @@ const API = () => {
     return api.token != null
       ? {
           ...config,
-          headers: { ...config.headers, Authorization: `Bearer ${api.token}` },
+          headers: { ...config.headers, "refresh-token": api.token },
         }
       : config;
   };

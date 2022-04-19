@@ -1,7 +1,7 @@
 import "./App.scss";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, ErrorPage, InfoPage } from "./layouts";
+import { Home, InfoPage, OauthLogin } from "./layouts";
 
 function App() {
   return (
@@ -10,16 +10,7 @@ function App() {
         <Route path=":formId" element={<Home />} />
         <Route path=":formId/info" element={<InfoPage />} />
         <Route path=":formId/:cacheId" element={<Home />} />
-        <Route
-          path=""
-          element={
-            <ErrorPage
-              status={505}
-              title={"Error Loading Form"}
-              messages={["Form Id is not defined"]}
-            />
-          }
-        />
+        <Route path="" element={<OauthLogin />} />
       </Routes>
     </BrowserRouter>
   );
