@@ -6,7 +6,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: 'Build, test & deploy'
+  - name: 'Build, Test & Deploy'
     task:
       secrets:
         - name: GCP
@@ -26,4 +26,13 @@ blocks:
         - name: 'Build&Test'
           commands:
             - ./ci/build.sh
+            - ./ci/deploy.sh
+  - name: "Promote to production"
+    run:
+      when: "tag =~ '.*'"
+    task:
+      jobs:
+        - name: Promote to production
+          commands:
+            - checkout
             - ./ci/deploy.sh
