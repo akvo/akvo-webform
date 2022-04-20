@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Form, Input, Button, Select, Space, Modal } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Button,
+  Select,
+  Space,
+  Modal,
+  notification,
+} from "antd";
 import dataProviders from "../store";
 import api from "../lib/api";
 import {
@@ -28,14 +38,25 @@ const OauthLogin = () => {
     const formData = new FormData();
     formData.append("username", values.email);
     formData.append("password", values.password);
-    api.post("/login", formData).then((res) => {
-      api.setToken(res.data.refresh_token);
-      setLoading(false);
-      dispatch({
-        type: "LOGIN",
-        payload: { isLogin: true, submitter: values.email },
+    api
+      .post("/login", formData)
+      .then((res) => {
+        api.setToken(res.data.refresh_token);
+        dispatch({
+          type: "LOGIN",
+          payload: { isLogin: true, submitter: values.email },
+        });
+      })
+      .catch(() => {
+        notification.error({
+          message: "Authentication failed",
+          description:
+            "The Email and/or Password that you have entered is incorrect",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    });
   };
 
   const searchForm = (values) => {
@@ -59,7 +80,6 @@ const OauthLogin = () => {
 
   const changeDropdown = (data, index) => {
     const [id, type, name, surveyId] = data.split("-");
-    console.log(surveyId);
     setFormDetail(false);
     if (type !== "form") {
       const url = `${type}s/${instanceName}?id=${id}`;
@@ -79,7 +99,7 @@ const OauthLogin = () => {
           }
           setLoadingIndex(null);
         })
-        .catch((err) => {
+        .catch(() => {
           setDropdownList([...currentDropdown, []]);
           setLoadingIndex(null);
         });

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Tabs, Card, Tag } from "antd";
+import { Tabs, Card, Tag, Alert } from "antd";
+import { WarningOutlined } from "@ant-design/icons";
 import api from "../lib/api";
 
 const { TabPane } = Tabs;
@@ -41,9 +42,22 @@ const FormInfo = ({ formDetail }) => {
           </li>
           <li>Click Connect to import the data.</li>
         </ol>
-      </TabPane>
-      <TabPane tab="Download" key="2">
-        Content of Tab Pane 2
+        <Alert
+          showIcon={true}
+          icon={<WarningOutlined />}
+          message={<b>Limitations</b>}
+          description={
+            <ol className="info-banner">
+              <li>Repeat groups are currently not supported.</li>
+              <li>
+                PowerBI imposes timeouts for Get Data requests. This may happen
+                while loading data from surveys with very high number of
+                submissions.
+              </li>
+            </ol>
+          }
+          type="error"
+        />
       </TabPane>
     </Tabs>
   );

@@ -872,4 +872,9 @@ ol {
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
   }
+
+  &.info-banner {
+    padding-inline-start: 15px;
+    margin-block-start: 0px;
+  }
 }
