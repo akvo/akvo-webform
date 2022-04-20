@@ -65,13 +65,27 @@ const OauthLogin = () => {
     setDropdownList([]);
     setFormDetail(false);
     setInstanceName(values.instance);
-    setDropdownList([[]]);
-    api.get(`/flow-data/folders/${values.instance}`).then((res) => {
-      const { surveys, folders } = res.data;
-      setDropdownList([[...folders, ...surveys]]);
-      setLoading(false);
-      setLoadingIndex(null);
-    });
+    setDropdownList([]);
+    api
+      .get(`/flow-data/folders/${values.instance}`)
+      .then((res) => {
+        const { surveys, folders } = res.data;
+        setDropdownList([[...folders, ...surveys]]);
+      })
+      .catch(() => {
+        notification.error({
+          message: "Failed",
+          description: (
+            <div>
+              <b>{values.instance}.akvoflow.org</b> is not found
+            </div>
+          ),
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        setLoadingIndex(null);
+      });
   };
 
   const onFinishFailed = (errorInfo) => {
