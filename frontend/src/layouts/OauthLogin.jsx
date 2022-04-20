@@ -72,24 +72,27 @@ const OauthLogin = () => {
         const { surveys, folders } = res.data;
         setDropdownList([[...folders, ...surveys]]);
       })
-      .catch(() => {
-        notification.error({
-          message: "Failed",
-          description: (
+      .catch((e) => {
+        const message =
+          e.response.status === 404 ? (
             <div>
               <b>{values.instance}.akvoflow.org</b> is not found
             </div>
-          ),
+          ) : (
+            <div>
+              You don't have permission to access
+              <b>{values.instance}.akvoflow.org</b>
+            </div>
+          );
+        notification.error({
+          message: "Failed",
+          description: message,
         });
       })
       .finally(() => {
         setLoading(false);
         setLoadingIndex(null);
       });
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
   };
 
   const changeDropdown = (data, index) => {
@@ -155,7 +158,6 @@ const OauthLogin = () => {
               name="login"
               layout="vertical"
               onFinish={auth.isLogin ? searchForm : onFinish}
-              onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
               {!auth.isLogin && (

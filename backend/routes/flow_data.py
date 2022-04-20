@@ -1,4 +1,5 @@
 import requests as r
+import pandas as pd
 from typing import Optional
 from fastapi import APIRouter, Request, Header, HTTPException
 from typing import List
@@ -7,6 +8,7 @@ from util.flow import get_headers, get_page
 
 flow_data_route = APIRouter()
 flow_api = "https://api-auth0.akvo.org/flow/orgs"
+flow_instances = pd.read_csv("./data/flow-survey-amazon-aws.csv")
 
 
 @flow_data_route.get('/flow-data/folders/{instance_name:path}',
@@ -17,15 +19,18 @@ def get_folders(req: Request,
                 instance_name: str,
                 id: Optional[int] = None,
                 refresh_token: str = Header(...)):
+    headers = get_headers(refresh_token)
+    instance = flow_instances[flow_instances.instances.eq(instance_name)]
+    if not instance.shape[0]:
+        raise HTTPException(status_code=404, detail="Instance Not Found")
+    if not headers:
+        raise HTTPException(status_code=401, detail="Authentication Failed")
     url = f"{flow_api}/{instance_name}"
     folder_url = f"{url}/folders?parent_id=0"
     survey_url = f"{url}/surveys?folder_id=0"
     if id:
         folder_url = f"{url}/folders?parent_id={id}"
         survey_url = f"{url}/surveys?folder_id={id}"
-    headers = get_headers(refresh_token)
-    if not headers:
-        raise HTTPException(status_code=401, detail="")
     folders = r.get(folder_url, headers=headers)
     folders = folders.json().get("folders")
     surveys = r.get(survey_url, headers=headers)
