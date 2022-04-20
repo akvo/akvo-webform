@@ -6,3 +6,4 @@ export { default as NotificationModal } from "./NotificationModal";
 export { default as MobileFooter } from "./MobileFooter.jsx";
 export { default as SubmissionListDrawer } from "./SubmissionListDrawer.jsx";
 export { default as Login } from "./Login";
+export { default as FormInfo } from "./FormInfo";

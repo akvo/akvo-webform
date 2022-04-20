@@ -219,6 +219,7 @@
 
       &.logo {
         margin-right: 20px;
+
         img {
           height: 48px;
           width: 48px;
@@ -296,6 +297,7 @@
     .icon,
     .icon:focus {
       color: #6a6a6a;
+
       &:hover {
         color: #222;
       }
@@ -505,6 +507,7 @@
   border-left: 1px solid #f0f0f0;
   padding: 20px 50px;
 }
+
 button,
 .button-next {
   border: none;
@@ -522,6 +525,26 @@ button,
   &:visited,
   &:hover {
     background-color: #222;
+    color: #fff;
+  }
+}
+
+.button-secondary {
+  border: none;
+  background-color: #929292;
+  border-radius: 5px;
+  color: #fff;
+  padding-left: 25px;
+  padding-right: 25px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.button-secondary {
+  &:focus,
+  &:visited,
+  &:hover {
+    background-color: #929292;
     color: #fff;
   }
 }
@@ -632,9 +655,33 @@ button,
     padding: 1px;
     border-bottom: none;
   }
+
   .ant-input-number {
     border: 1px solid #6f6f6f;
     border-radius: 0 0 5px 5px;
+  }
+}
+
+.ant-input-group-wrapper {
+  span {
+    &.ant-input-group-addon {
+      background: #ffffff;
+      border: 1px solid #6a6a6a;
+      border-left: 0px;
+      border-radius: 5px;
+      font-weight: 600;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+  }
+
+  .ant-input-group {
+    .ant-input {
+      &:first-child {
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+      }
+    }
   }
 }
 
@@ -679,6 +726,7 @@ button,
       h1 {
         &.logo {
           margin-right: 16px;
+
           img {
             height: 38px;
             width: 38px;
@@ -687,6 +735,7 @@ button,
       }
     }
   }
+
   .ant-card-head {
     padding: 0;
   }
@@ -698,9 +747,11 @@ button,
   .form-header {
     height: 79px;
     padding: 0 20px;
+
     .form-header-container {
       padding: 14px 0;
     }
+
     &.mobile-header-with-display-name {
       height: 115px;
     }
@@ -710,6 +761,7 @@ button,
         h1 {
           font-size: 16px;
         }
+
         h1.logo {
           padding: 0 8px;
           margin-right: 8px;
@@ -796,5 +848,33 @@ button,
     .info-page-footer {
       margin-top: 0;
     }
+  }
+}
+
+pre {
+  font-size: 12px;
+  background: #efefef;
+  padding: 3px 5px;
+  border-radius: 5px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+}
+
+ol {
+  &.info {
+    padding-inline-start: 25px;
+    margin-block-start: 0px;
+
+    li {
+      margin: 10px;
+    }
+
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  &.info-banner {
+    padding-inline-start: 15px;
+    margin-block-start: 0px;
   }
 }
