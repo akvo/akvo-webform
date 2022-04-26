@@ -20,7 +20,7 @@ class Dev:
 
 @dev_route.get('/generate/{alias:path}/{fid:path}',
                summary="Get form url",
-               response_model=PlainTextResponse,
+               response_class=PlainTextResponse,
                tags=["Dev"])
 def generate(req: Request, alias: str, fid: int):
     return Cipher(f"{alias}-{fid}").encode()
