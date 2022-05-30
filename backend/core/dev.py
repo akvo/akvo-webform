@@ -11,7 +11,7 @@ class Dev:
         self.status = "DEV" in environ
 
     def get_cached(self, file):
-        if self.status:
+        if not self.status:
             return False
         if not path.exists(file):
             return False
