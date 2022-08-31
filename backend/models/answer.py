@@ -23,7 +23,7 @@ class Image(TypedDict):
     qid: str
 
 
-ValueVar = TypeVar('ValueVal', int, str, List[str], Geolocation,
+ValueVar = TypeVar('ValueVal', str, int, float, List[str], Geolocation,
                    Image, List[CascadeBase], List[Option])
 
 
@@ -75,18 +75,18 @@ class AnswerResponse(BaseModel):
                 for rc in value:
                     if "text" in rc and "value" in rc:
                         temp.append({
-                            "text": rc["text"],
+                            "text": str(rc["text"]),
                             "code": str(rc["value"])
                         })
                     else:
-                        temp.append({"text": rc})
+                        temp.append({"text": str(rc)})
                 res = json.dumps(temp)
             else:
                 try:
                     json.loads(value)
-                    res = res
+                    res = str(res)
                 except ValueError:
-                    temp.append({"text": value})
+                    temp.append({"text": str(value)})
                     res = json.dumps(temp)
         # DATE TYPE
         if atype == QuestionType.date.value and value != '':
