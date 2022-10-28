@@ -28,10 +28,11 @@ def fetch_all(url, headers, formInstances=[]):
     data = get_data(url, headers)
     next_url = data.get('nextPageUrl')
     data = data.get('formInstances')
-    for d in data:
-        formInstances.append(d)
-    if next_url:
-        fetch_all(next_url, headers, formInstances)
+    if data:
+        for d in data:
+            formInstances.append(d)
+        if next_url:
+            fetch_all(next_url, headers, formInstances)
     return formInstances
 
 
