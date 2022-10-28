@@ -44,9 +44,9 @@ def data_handler(data, qType):
             return data
         if qType == 'OPTION':
             return handle_list(data, "text")
-        if qType == ['CASCADE']:
+        if qType == 'CASCADE':
             return handle_list(data, "name")
-        if qType == ['PHOTO', 'VIDEO']:
+        if qType in ['PHOTO', 'VIDEO']:
             return data.get('filename')
         if qType == 'VIDEO':
             return data.get('filename')
@@ -88,9 +88,15 @@ def get_page(instance: str, survey_id: int, form_id: int, token: str):
                 dt.update({c: col[c]})
             else:
                 for g in form_definition:
-                    answers = col[c][g['id']]
+                    answers = col.get(c)
+                    answers = answers.get(g['id']) if answers else None
                     for q in g['questions']:
-                        d = data_handler(answers[0].get(q['id']), q['type'])
+                        d = None
+                        try:
+                            a = answers[0].get(q['id'])
+                            d = data_handler(a, q['type'])
+                        except Exception as e:
+                            print(e.message)
                         n = "{}|{}".format(q['id'], q['name'])
                         dt.update({n: d})
         results.append(dt)
