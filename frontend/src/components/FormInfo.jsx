@@ -22,7 +22,7 @@ const FormInfo = ({ formDetail }) => {
             Advanced to select the right working mode. In URL parts, insert the
             following URL:
             <pre>
-              {window.origin}/api/flow-data/{instance}?survey_id={surveyId}
+              {window.origin}/api/flow-data/data/{instance}?survey_id={surveyId}
               &form_id={id}
             </pre>
           </li>
