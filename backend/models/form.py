@@ -93,7 +93,8 @@ class DependencyQuestion(BaseModel):
 
 
 @optional('altText', 'cascadeResource', 'help', 'levels', 'validationRule',
-          'requireDoubleEntry', 'options', 'dependency')
+          'requireDoubleEntry', 'personalData', 'options', 'dependency',
+          'answerStats')
 class Question(BaseModel):
     localeNameFlag: bool
     altText: Optional[List[AltText]] = []
@@ -108,6 +109,8 @@ class Question(BaseModel):
     dependency: List[DependencyQuestion]
     options: Options
     validationRule: Optional[ValidationRule]
+    personalData: Optional[bool] = None
+    answerStats: Optional[bool] = None
     requireDoubleEntry: Optional[bool] = None
 
     @validator("id", pre=True, always=True)
