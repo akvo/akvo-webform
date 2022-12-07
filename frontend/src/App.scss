@@ -708,6 +708,15 @@ button,
   }
 }
 
+.answer-stats-wrapper {
+  margin-left: 10px;
+
+  .ant-spin-sm .ant-spin-dot {
+    margin-left: 5px;
+    font-size: 12px;
+  }
+}
+
 @media only screen and (max-width: 1064px) {
   .login-container {
     padding: 0 0 70px 0;
