@@ -3,7 +3,7 @@ import { Space, Form, Radio, Checkbox, Progress, Spin } from "antd";
 import { Label } from "../components";
 import dataProviders from "../store";
 import api from "../lib/api";
-import { roundValue } from "../lib/util";
+import { roundValue, generateAnswerStatsURL } from "../lib/util";
 
 const TypeOption = ({
   options,
@@ -23,17 +23,8 @@ const TypeOption = ({
   // stats
   const [loadingStats, setLoadingStats] = useState(false);
   const [statsData, setStatsData] = useState({});
-  const state = dataProviders.Values();
-  const forms = state?.forms || {};
-  console.log(forms);
-  const {
-    alias: instanceName,
-    surveyGroupId: surveyId,
-    surveyId: formId,
-  } = forms;
-  const qid = id.includes("Q") ? parseInt(id.replace("Q", "")) : parseInt(id);
-  const url = `/stats?instance_name=${instanceName}&survey_id=${surveyId}&form_id=${formId}&question_id=${qid}`;
   const isStatsData = Object.values(statsData).length;
+  const url = generateAnswerStatsURL(id);
 
   useEffect(() => {
     // fetch answer stats value
@@ -77,10 +68,10 @@ const TypeOption = ({
   const renderAnswerStats = (text) => {
     if (answerStats && loadingStats) {
       return (
-        <span className="answer-stats-wrapper">
+        <span className="option-answer-stats-wrapper">
           <>
             <Progress percent={0} steps={5} showInfo={false} />{" "}
-            <Spin size="small" wrapperClassName="stats-loading-wrapper" />
+            <Spin size="small" />
           </>
         </span>
       );
@@ -88,7 +79,7 @@ const TypeOption = ({
     if (answerStats && isStatsData && !loadingStats) {
       const stats = statsData?.[text];
       return (
-        <span className="answer-stats-wrapper">
+        <span className="option-answer-stats-wrapper">
           {stats ? (
             stats
           ) : (

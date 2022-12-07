@@ -708,12 +708,26 @@ button,
   }
 }
 
-.answer-stats-wrapper {
+.option-answer-stats-wrapper {
   margin-left: 10px;
 
   .ant-spin-sm .ant-spin-dot {
     margin-left: 5px;
     font-size: 12px;
+  }
+}
+
+.input-answer-stats-wrapper {
+  margin-left: 10px;
+
+  .ant-spin-sm .ant-spin-dot {
+    margin-left: 5px;
+    font-size: 12px;
+  }
+
+  .input-answer-stats-item {
+    background-color: #efefef;
+    padding: 0 5px;
   }
 }
 
