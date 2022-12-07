@@ -1,6 +1,24 @@
 import requests as r
+from fastapi import HTTPException
+from pydantic import SecretStr
+from models.auth import Oauth2Base
 
 instance_base = 'https://api-auth0.akvo.org/flow/orgs/'
+auth_domain = "https://akvofoundation.eu.auth0.com/oauth/token"
+
+
+def get_token(username: str, password: SecretStr) -> Oauth2Base:
+    data = {
+        "client_id": "S6Pm0WF4LHONRPRKjepPXZoX1muXm1JS",
+        "username": username,
+        "password": password.get_secret_value(),
+        "grant_type": "password",
+        "scope": "offline_access"
+    }
+    req = r.post(auth_domain, data=data)
+    if req.status_code != 200:
+        raise HTTPException(status_code=401, detail="")
+    return req.json()
 
 
 def get_headers(token: str):
@@ -102,3 +120,15 @@ def get_page(instance: str, survey_id: int, form_id: int, token: str):
                         dt.update({n: d})
         results.append(dt)
     return results
+
+
+def get_stats(
+    instance: str, survey_id: int,
+    form_id: int, question_id: int, token: str
+):
+    stats_url = f"{instance_base}{instance}"
+    stats_url = f"{stats_url}/stats?survey_id={survey_id}"
+    stats_url = f"{stats_url}&form_id={form_id}&question_id={question_id}"
+    headers = get_headers(token=token)
+    data = get_data(uri=stats_url, auth=headers)
+    return data

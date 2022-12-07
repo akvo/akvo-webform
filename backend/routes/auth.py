@@ -1,26 +1,9 @@
-import requests as r
+from pydantic import SecretStr
 from fastapi import APIRouter, HTTPException, Request, Form
 from models.auth import Oauth2Base, AuthBase, AuthDict
-from pydantic import SecretStr
+from util.flow import get_token
 
 auth_route = APIRouter()
-auth_domain = "https://akvofoundation.eu.auth0.com/oauth/token"
-
-
-def get_token(username: str, password: SecretStr) -> Oauth2Base:
-    data = {
-        "client_id": "S6Pm0WF4LHONRPRKjepPXZoX1muXm1JS",
-        "username": username,
-        "password": password.get_secret_value(),
-        "grant_type": "password",
-        "scope": "offline_access"
-    }
-    req = r.post(auth_domain, data=data)
-    if req.status_code != 200:
-        raise HTTPException(
-                status_code=401,
-                detail="")
-    return req.json()
 
 
 @auth_route.post('/login',
@@ -33,6 +16,7 @@ def login(
     return get_token(username=username, password=password)
 
 
+# old login route
 @auth_route.post('/login/{form_id:path}',
                  summary="submitter login",
                  response_model=AuthDict,
