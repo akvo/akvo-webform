@@ -98,8 +98,8 @@ const TypeInput = ({
       return (
         <div className="input-answer-stats-wrapper">
           <Space align="center">
-            {statsData.map((sd) => (
-              <span className="input-answer-stats-item">
+            {statsData.map((sd, sdi) => (
+              <span key={`stat-${sdi}`} className="input-answer-stats-item">
                 {sd.name} : {roundValue(sd.value, 2)}
               </span>
             ))}

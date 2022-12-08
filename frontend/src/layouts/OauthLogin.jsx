@@ -80,7 +80,7 @@ const OauthLogin = () => {
             </div>
           ) : (
             <div>
-              You don't have permission to access
+              You don&apos;t have permission to access
               <b>{values.instance}.akvoflow.org</b>
             </div>
           );
@@ -200,7 +200,6 @@ const OauthLogin = () => {
                   htmlType="submit"
                   className="button-next"
                   size="large"
-                  htmlType="submit"
                   loading={loading}
                   block
                 >
@@ -244,7 +243,7 @@ const OauthLogin = () => {
                       <OrderedListOutlined />
                     )}
                     {o.name || "New Survey"}
-                    {!!o?.version ? `v${o.version}` : ""}
+                    {o?.version ? `v${o.version}` : ""}
                   </Space>
                 </Option>
               ))}

@@ -25,7 +25,7 @@ const Login = () => {
         })
         .then((res) => {
           if (res?.status === 200) {
-            const { is_login, submitter } = res?.data;
+            const { is_login, submitter } = res.data;
             dispatch({
               type: "LOGIN",
               payload: { isLogin: is_login, submitter: submitter },
@@ -58,7 +58,7 @@ const Login = () => {
 
   const authError = useMemo(() => {
     return isAuthError ? (
-      <Text type="danger">Your passcode doesn't match!</Text>
+      <Text type="danger">Your passcode doesn&apos;t match!</Text>
     ) : (
       ""
     );

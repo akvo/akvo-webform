@@ -80,7 +80,7 @@ const Home = () => {
   // check before refresh
   window.addEventListener("beforeunload", (e) => {
     if (!isLogin) {
-      return undefined;
+      return null;
     }
     e.preventDefault();
     const confirmationMessage =
@@ -151,7 +151,7 @@ const Home = () => {
     };
     api
       .post(`/submit-form?`, data, { "content-type": "application/json" })
-      .then((res) => {
+      .then(() => {
         form.resetFields();
         deleteAnswerByIdFromDB(forms?._cacheId);
         deleteFormByIdFromDB(formId);
@@ -191,7 +191,7 @@ const Home = () => {
     });
   };
 
-  const onCompleteFailed = ({ values, errorFields }) => {
+  const onCompleteFailed = ({ errorFields }) => {
     setIsSubmitFailed(errorFields);
     setNotification({
       isVisible: true,
@@ -385,7 +385,7 @@ const Home = () => {
   }
 
   if (!forms) {
-    console.log("Loading");
+    console.info("Loading");
   }
 
   const lastGroup = active + 1 === questionGroup.length;

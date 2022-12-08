@@ -30,7 +30,7 @@ const DraggableMarker = ({ changePos, position }) => {
     () => ({
       dragend() {
         const marker = markerRef.current;
-        if (marker != null) {
+        if (marker !== null) {
           const newPos = marker.getLatLng();
           changePos(newPos);
         }
