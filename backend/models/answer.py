@@ -23,8 +23,9 @@ class Image(TypedDict):
     qid: str
 
 
-ValueVar = TypeVar('ValueVal', str, int, float, List[str], Geolocation,
-                   Image, List[CascadeBase], List[Option])
+ValueVar = TypeVar(
+    'ValueVal', str, int, float, List[str], Geolocation,
+    Image, List[CascadeBase], List[Option])
 
 
 class AnswerResponse(BaseModel):
@@ -91,8 +92,11 @@ class AnswerResponse(BaseModel):
         # DATE TYPE
         if atype == QuestionType.date.value and value != '':
             try:
-                date_obj = datetime.strptime(value, "%Y-%m-%d")
-                res = int(datetime.timestamp(date_obj) * 1000)
+                try:
+                    date_obj = datetime.strptime(value, "%Y-%m-%d")
+                    res = int(datetime.timestamp(date_obj) * 1000)
+                except ValueError:
+                    res = res
             except TypeError:
                 res = res
         # GEO TYPE
