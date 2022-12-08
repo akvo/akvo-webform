@@ -70,14 +70,16 @@ const TypeInput = ({
         .get(url)
         .then((res) => {
           const { data } = res;
-          const stats = Object.keys(data).map((key) => {
-            const currValue = data[key];
-            const name = key === "sd" ? "standard deviation" : key;
-            return {
-              name: name,
-              value: currValue,
-            };
-          });
+          const stats = Object.keys(data)
+            .filter((key) => key !== "sd")
+            .map((key) => {
+              const currValue = data[key];
+              const name = key === "sd" ? "standard deviation" : key;
+              return {
+                name: name,
+                value: currValue,
+              };
+            });
           setStatsData(stats);
         })
         .finally(() => setLoadingStats(false));

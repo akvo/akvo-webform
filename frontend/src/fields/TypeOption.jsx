@@ -76,7 +76,7 @@ const TypeOption = ({
         </span>
       );
     }
-    if (answerStats && isStatsData && !loadingStats) {
+    if (answerStats && !loadingStats) {
       const stats = statsData?.[text];
       return (
         <span className="option-answer-stats-wrapper">
