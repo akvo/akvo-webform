@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tabs, Card, Tag, Alert } from "antd";
+import { Tabs, Tag, Alert } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
 import api from "../lib/api";
 

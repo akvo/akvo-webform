@@ -1,8 +1,3 @@
-from fastapi import APIRouter, HTTPException
-from models.answer import AnswerBase
-from models.form import QuestionType
-from zipfile import ZipFile, ZIP_DEFLATED
-from datetime import datetime
 import json
 import os
 import base64
@@ -10,6 +5,14 @@ import uuid
 import time
 import pandas as pd
 import requests as r
+from fastapi import APIRouter, HTTPException
+from fastapi import Request, Query
+from models.answer import AnswerBase
+from models.form import QuestionType
+from zipfile import ZipFile, ZIP_DEFLATED
+from datetime import datetime
+from pydantic import Required, SecretStr
+from util.flow import get_stats, get_token
 
 instance_list = './data/flow-survey-amazon-aws.csv'
 FLOW_SERVICE_URL = os.environ['FLOW_SERVICE_URL']
@@ -30,10 +33,11 @@ def remove_tmp(zip_name, combined):
         os.rename(combined, './tmp/ ' + combined)
 
 
-@answer_route.post('/submit-form',
-                   response_model=AnswerBase,
-                   summary="Submit form payload to Akvo Flow",
-                   tags=["Akvo Flow Webform"])
+@answer_route.post(
+    '/submit-form',
+    response_model=AnswerBase,
+    summary="Submit form payload to Akvo Flow",
+    tags=["Akvo Flow Webform"])
 def submit_form(data: AnswerBase):
     images = []
     responseTemp = []
@@ -72,7 +76,7 @@ def submit_form(data: AnswerBase):
             if "id" in image:
                 img_name = image["id"]
                 img_blob = image["blob"]
-                img_blob = img_blob[img_blob.find(",")+1:]
+                img_blob = img_blob[img_blob.find(",") + 1:]
                 with open(f"./tmp/images/{img_name}", "wb") as fh:
                     fh.write(base64.b64decode(img_blob))
                 if os.path.isfile('./tmp/images/' + img_name):
@@ -118,8 +122,9 @@ def submit_form(data: AnswerBase):
             "fileName": zip_name,
             "devId": data.deviceId
         }
-        result = r.get(f"https://{dashboard}.akvoflow.org/processor",
-                       params=params)
+        result = r.get(
+            f"https://{dashboard}.akvoflow.org/processor",
+            params=params)
         remove_tmp(zip_name, combined)
     else:
         # error here
@@ -127,3 +132,25 @@ def submit_form(data: AnswerBase):
         raise HTTPException(status_code=result.status_code, detail=result.text)
 
     return data
+
+
+@answer_route.get(
+    '/stats',
+    response_model=dict,
+    summary="Retrieving question statistics from Akvo Flow",
+    tags=["Akvo Flow Webform"])
+def get_stats_data(
+    req: Request,
+    instance_name: str = Query(default=Required),
+    survey_id: int = Query(default=Required),
+    form_id: int = Query(default=Required),
+    question_id: int = Query(default=Required),
+):
+    USERNAME = os.environ['AUTH0_USER']
+    PWD = os.environ['AUTH0_PWD']
+    res = get_token(username=USERNAME, password=SecretStr(PWD))
+    data = get_stats(
+        instance=instance_name, survey_id=survey_id,
+        form_id=form_id, question_id=question_id,
+        token=res.get('refresh_token'))
+    return data or {}

@@ -29,10 +29,10 @@ const CaptchaNumber = ({ validateCaptcha, setValidateCaptcha }) => {
     if (captchaNumber) {
       const validatorX = Math.floor(Math.random() * 9) + 1;
       const validatorY = Math.floor(Math.random() * 9) + 1;
-      let canv = document.createElement("canvas");
+      const canv = document.createElement("canvas");
       canv.width = 200;
       canv.height = 50;
-      let ctx = canv.getContext("2d");
+      const ctx = canv.getContext("2d");
       ctx.font = "35px Assistant, sans-serif";
       ctx.textAlign = "center";
       ctx.strokeText(validatorX + "+" + validatorY, 100, 38);
@@ -58,7 +58,7 @@ const CaptchaNumber = ({ validateCaptcha, setValidateCaptcha }) => {
 
   return (
     <Space align="center" direction="vertical" className="captcha-container">
-      <h2>You're going to submit the form.</h2>
+      <h2>You&apos;re going to submit the form.</h2>
       <div className="captcha-box">
         <div id="captcha-number"></div>
         <>

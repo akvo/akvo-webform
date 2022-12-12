@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Form, Input, InputNumber } from "antd";
+import { Form, Input, InputNumber, Spin, Space } from "antd";
 import { Label } from "../components";
 import { checkFilledForm } from "../lib/form";
 import dataProviders from "../store";
+import api from "../lib/api";
+import { roundValue, generateAnswerStatsURL } from "../lib/util";
 
 const DoubleEntry = ({
   id,
@@ -43,6 +45,7 @@ const TypeInput = ({
   requireDoubleEntry,
   form,
   altText,
+  answerStats,
 }) => {
   const inputAnswer = form.getFieldValue(id);
   const [value, setValue] = useState(inputAnswer || null);
@@ -52,6 +55,60 @@ const TypeInput = ({
   const state = dataProviders.Values();
   const { forms, dataPointName } = state;
   const { questionGroup } = forms;
+
+  // stats
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [statsData, setStatsData] = useState([]);
+  const isStatsData = statsData.length;
+  const url = generateAnswerStatsURL(id);
+
+  useEffect(() => {
+    // fetch answer stats value
+    if (answerStats && !isStatsData) {
+      setLoadingStats(true);
+      api
+        .get(url)
+        .then((res) => {
+          const { data } = res;
+          const stats = Object.keys(data)
+            .filter((key) => key !== "sd")
+            .map((key) => {
+              const currValue = data[key];
+              const name = key === "sd" ? "standard deviation" : key;
+              return {
+                name: name,
+                value: currValue,
+              };
+            });
+          setStatsData(stats);
+        })
+        .finally(() => setLoadingStats(false));
+    }
+  }, [url, answerStats, isStatsData]);
+
+  const renderAnswerStats = () => {
+    if (answerStats && loadingStats) {
+      return (
+        <div className="input-answer-stats-wrapper">
+          <Spin size="small" />
+        </div>
+      );
+    }
+    if (answerStats && isStatsData && !loadingStats) {
+      return (
+        <div className="input-answer-stats-wrapper">
+          <Space align="center">
+            {statsData.map((sd, sdi) => (
+              <span key={`stat-${sdi}`} className="input-answer-stats-item">
+                {sd.name} : {roundValue(sd.value, 2)}
+              </span>
+            ))}
+          </Space>
+        </div>
+      );
+    }
+    return null;
+  };
 
   const updateCompleteState = useCallback(
     (value) => {
@@ -109,14 +166,17 @@ const TypeInput = ({
             className="field"
             name={id}
             label={
-              <Label
-                keyform={keyform}
-                text={text}
-                help={help}
-                mandatory={mandatory}
-                requireDoubleEntry={requireDoubleEntry}
-                altText={altText}
-              />
+              <>
+                <Label
+                  keyform={keyform}
+                  text={text}
+                  help={help}
+                  mandatory={mandatory}
+                  requireDoubleEntry={requireDoubleEntry}
+                  altText={altText}
+                />
+                {renderAnswerStats()}
+              </>
             }
             rules={rules}
             required={false}
@@ -152,14 +212,17 @@ const TypeInput = ({
           key={keyform}
           name={id}
           label={
-            <Label
-              keyform={keyform}
-              text={text}
-              help={help}
-              mandatory={mandatory}
-              requireDoubleEntry={requireDoubleEntry}
-              altText={altText}
-            />
+            <>
+              <Label
+                keyform={keyform}
+                text={text}
+                help={help}
+                mandatory={mandatory}
+                requireDoubleEntry={requireDoubleEntry}
+                altText={altText}
+              />
+              {renderAnswerStats()}
+            </>
           }
           rules={rules}
           required={false}
