@@ -54,26 +54,33 @@ def flow_backup(headers: dict, survey_url: str, folder_url: str, dir: str):
                 file_name = f"{form_id}-{form_name}"
                 data_file = f"{survey_dir}/DATA-{file_name}.xlsx"
                 if not os.path.exists(data_file):
-                    created = export_spreadsheet(instance=instance_name,
-                                                 survey_id=survey.get("id"),
-                                                 form_id=form_id,
-                                                 token=refresh_token,
-                                                 custom_location=data_file)
-                    if created:
-                        file_log(f"CREATED : {data_file}")
-                    else:
-                        file_log(f"EMPTY   : {data_file}")
+                    try:
+                        created = export_spreadsheet(
+                            instance=instance_name,
+                            survey_id=survey.get("id"),
+                            form_id=form_id,
+                            token=refresh_token,
+                            custom_location=data_file)
+                        if created:
+                            file_log(f"CREATED : {data_file}")
+                        else:
+                            file_log(f"EMPTY   : {data_file}")
+                    except Exception as e:
+                        print(f"!!ERROR  : {str(e)}")
                 else:
                     file_log(f"EXISTS  : {data_file}")
                 form_file = f"{survey_dir}/FORM-{file_name}.xlsx"
                 if not os.path.exists(form_file):
-                    ziploc = f"./static/xml/{instance_name}"
-                    res = download_form(ziploc, instance_name, form_id)
-                    if res:
-                        odk(res, f"{survey_dir}/FORM-{file_name}.xlsx")
-                        file_log(f"CREATED : {form_file}")
-                    else:
-                        file_log(f"!!ERROR : {form_file}")
+                    try:
+                        ziploc = f"./static/xml/{instance_name}"
+                        res = download_form(ziploc, instance_name, form_id)
+                        if res:
+                            odk(res, f"{survey_dir}/FORM-{file_name}.xlsx")
+                            file_log(f"CREATED : {form_file}")
+                        else:
+                            file_log(f"!!ERROR : FILE: {form_file}")
+                    except Exception as e:
+                        print(f"!!ERROR  : {str(e)}")
                 else:
                     file_log(f"EXISTS  : {form_file}")
     for folder in folders:

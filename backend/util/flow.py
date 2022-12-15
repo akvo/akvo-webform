@@ -96,8 +96,6 @@ def handle_list(data, target):
         else:
             if value.get(target):
                 response.append(value.get(target, "").strip())
-            else:
-                print("ERROR  : " + data)
     return "|".join(response)
 
 
@@ -135,7 +133,8 @@ def handle_repeat_group(form_definition: dict, collections: list):
                                     dt.update(n)
                         if repeatable:
                             results[group_name].append(dr)
-        results["Raw Data"].append(dt)
+        if len(dt) > len(meta):
+            results["Raw Data"].append(dt)
     return results
 
 
@@ -205,7 +204,7 @@ def export_spreadsheet(instance: str,
             empty.append(d)
     if len(empty) == len(data):
         return None
-    file_location = f"./tmp/reports/DATA_CLEANING-{form_id}.xlsx"
+    file_location = f"./tmp/reports/{instance}-DATA_CLEANING-{form_id}.xlsx"
     if custom_location:
         file_location = custom_location
     metadata = [
