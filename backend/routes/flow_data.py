@@ -2,9 +2,10 @@ import requests as r
 import pandas as pd
 from typing import Optional
 from fastapi import APIRouter, Request, Header, HTTPException
+from fastapi.responses import FileResponse
 from typing import List
 from models.flow_data import FolderSurveyBase, FormBase
-from util.flow import get_headers, get_page
+from util.flow import get_headers, get_page, export_spreadsheet
 
 flow_data_route = APIRouter()
 flow_api = "https://api-auth0.akvo.org/flow/orgs"
@@ -69,3 +70,21 @@ def get_form_data(req: Request,
                     form_id=form_id,
                     token=token)
     return data
+
+
+@flow_data_route.get('/flow-data/spreadsheet/{instance_name:path}',
+                     summary="Download Spreadsheet Data",
+                     response_class=FileResponse,
+                     tags=["Flow Data"])
+def get_spreadsheet_data(req: Request,
+                         survey_id: int,
+                         form_id: int,
+                         instance_name: str,
+                         token: str = Header(...)):
+    file_path = export_spreadsheet(instance=instance_name,
+                                   survey_id=survey_id,
+                                   form_id=form_id,
+                                   token=token)
+    ftype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    file_name = file_path.split("/")[-1]
+    return FileResponse(path=file_path, filename=file_name, media_type=ftype)

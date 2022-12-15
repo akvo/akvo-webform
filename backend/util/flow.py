@@ -1,4 +1,5 @@
 import requests as r
+import pandas as pd
 from collections import defaultdict
 from fastapi import HTTPException
 from pydantic import SecretStr
@@ -75,7 +76,10 @@ def data_handler(data, qType):
         if qType == 'VIDEO':
             return data.get('filename', "")
         if qType == 'GEO':
-            return {'lat': data.get('lat'), 'long': data.get('long')}
+            lat = data.get('long')
+            long = data.get('lat')
+            if lat and long:
+                return f"{lat}|{long}"
         if qType == 'SIGNATURE':
             return data.get("name", "")
     return None
@@ -87,8 +91,10 @@ def handle_list(data, target):
         if value.get("code"):
             response.append("{}:{}".format(value.get("code"),
                                            value.get(target)))
-        else:
+        elif value.get(target):
             response.append(value.get(target))
+        else:
+            pass
     return "|".join(response)
 
 
@@ -175,3 +181,31 @@ def get_stats(instance: str, survey_id: int, form_id: int, question_id: int,
     headers = get_headers(token=token)
     data = get_data(uri=stats_url, auth=headers)
     return data
+
+
+def export_spreadsheet(instance: str, survey_id: int, form_id: int,
+                       token: str):
+    file_location = f"./tmp/reports/DATA_CLEANING-{form_id}.xlsx"
+    metadata = [
+        "id", "identifier", "submissionDate", "modifiedAt", "submitter",
+        "surveyalTime", "formVersion", "deviceIdentifier", "displayName"
+    ]
+    writter = pd.ExcelWriter(file_location, engine='xlsxwriter')
+    data = get_page(instance=instance,
+                    survey_id=survey_id,
+                    form_id=form_id,
+                    token=token,
+                    repeat=True)
+    for d in list(data):
+        df = pd.DataFrame(data[d])
+        questions = list(
+            filter(lambda x: x not in metadata + ["repeat"], list(df)))
+        if "repeat" in list(df):
+            questions = ["id", "identifier", "displayName", "repeat"
+                         ] + questions
+        else:
+            questions = metadata + questions
+        df = df[questions]
+        df.to_excel(writter, sheet_name=d, index=False)
+    writter.save()
+    return file_location
