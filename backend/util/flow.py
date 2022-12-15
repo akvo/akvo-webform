@@ -2,7 +2,6 @@ import requests as r
 import pandas as pd
 from collections import defaultdict
 from fastapi import HTTPException
-from pydantic import SecretStr
 from models.auth import Oauth2Base
 
 instance_base = 'https://api-auth0.akvo.org/flow/orgs/'
@@ -13,28 +12,29 @@ def def_value():
     return "Not Present"
 
 
-def get_token(username: str, password: SecretStr) -> Oauth2Base:
-    data = {
+def get_token(username: str, password: str) -> Oauth2Base:
+    payload = {
         "client_id": "S6Pm0WF4LHONRPRKjepPXZoX1muXm1JS",
         "username": username,
-        "password": password.get_secret_value(),
+        "password": password,
         "grant_type": "password",
         "scope": "offline_access"
     }
-    req = r.post(auth_domain, data=data)
+    req = r.post(auth_domain, data=payload)
     if req.status_code != 200:
         raise HTTPException(status_code=401, detail="")
     return req.json()
 
 
 def get_headers(token: str):
-    login = {
+    payload = {
         'client_id': 'S6Pm0WF4LHONRPRKjepPXZoX1muXm1JS',
         'grant_type': 'refresh_token',
         'refresh_token': token,
         'scope': 'openid email'
     }
-    req = r.post("https://akvofoundation.eu.auth0.com/oauth/token", data=login)
+    req = r.post("https://akvofoundation.eu.auth0.com/oauth/token",
+                 data=payload)
     if req.status_code != 200:
         return False
     return {
