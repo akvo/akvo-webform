@@ -90,12 +90,14 @@ def handle_list(data, target):
     response = []
     for value in data:
         if value.get("code"):
-            response.append("{}:{}".format(value.get("code"),
-                                           value.get(target)))
-        elif value.get(target):
-            response.append(value.get(target))
+            response.append("{}:{}".format(
+                value.get("code", "").strip(),
+                value.get(target, "").strip()))
         else:
-            pass
+            if value.get(target):
+                response.append(value.get(target, "").strip())
+            else:
+                print("ERROR  : " + data)
     return "|".join(response)
 
 
@@ -120,16 +122,19 @@ def handle_repeat_group(form_definition: dict, collections: list):
                         if group_name not in results:
                             results[group_name] = []
                     if answers:
+                        dr = meta
                         for ri, ans in enumerate(answers):
-                            dr = meta
                             dr.update({"repeat": ri + 1})
                             for q in g['questions']:
                                 a = ans.get(q['id'])
                                 d = data_handler(a, q['type'])
                                 n = {"{}|{}".format(q['id'], q['name']): d}
-                                dr.update(n) if repeatable else dt.update(n)
-                            if repeatable:
-                                results[group_name].append(dr)
+                                if repeatable:
+                                    dr.update(n)
+                                else:
+                                    dt.update(n)
+                        if repeatable:
+                            results[group_name].append(dr)
         results["Raw Data"].append(dt)
     return results
 

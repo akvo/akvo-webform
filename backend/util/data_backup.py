@@ -69,8 +69,11 @@ def flow_backup(headers: dict, survey_url: str, folder_url: str, dir: str):
                 if not os.path.exists(form_file):
                     ziploc = f"./static/xml/{instance_name}"
                     res = download_form(ziploc, instance_name, form_id)
-                    odk(res, f"{survey_dir}/FORM-{file_name}.xlsx")
-                    file_log(f"CREATED : {form_file}")
+                    if res:
+                        odk(res, f"{survey_dir}/FORM-{file_name}.xlsx")
+                        file_log(f"CREATED : {form_file}")
+                    else:
+                        file_log(f"!!ERROR : {form_file}")
                 else:
                     file_log(f"EXISTS  : {form_file}")
     for folder in folders:

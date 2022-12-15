@@ -10,8 +10,6 @@ if [[ $# -eq 0 ]] ; then
     exit 0
 fi
 
-echo "${1}"
-
 docker-compose exec backend \
     python -m util.data_backup \
     "${PERSONAL_FLOW_USERNAME}" \
