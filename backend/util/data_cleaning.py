@@ -6,13 +6,14 @@ if len(argv) < 4:
     print("wrong input")
     exit(1)
 
-token = get_token(username=argv[1], password=argv[2])
+login = get_token(username=argv[1], password=argv[2])
 
-if token:
+if login:
+    refresh_token = login.get("refresh_token")
     results = export_spreadsheet(instance=argv[3],
                                  survey_id=argv[4],
                                  form_id=argv[5],
-                                 token=token)
+                                 token=refresh_token)
     print(results)
 else:
     print("You don't have access to this instance")
