@@ -11,6 +11,12 @@ class ODKQuestionType(enum.Enum):
     integer = "integer"
     decimal = "decimal"
     photo = "image"
+    video = "video"
+    date = "date"
+    caddisfly = "caddisfly"
+    geoshape = "geoshape"
+    signature = "signature"
+    scan = "scan"
 
 
 def replace_name(obj):

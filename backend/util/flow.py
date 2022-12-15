@@ -1,5 +1,6 @@
 import requests as r
 import pandas as pd
+from typing import Optional
 from collections import defaultdict
 from fastapi import HTTPException
 from models.auth import Oauth2Base
@@ -183,29 +184,41 @@ def get_stats(instance: str, survey_id: int, form_id: int, question_id: int,
     return data
 
 
-def export_spreadsheet(instance: str, survey_id: int, form_id: int,
-                       token: str):
-    file_location = f"./tmp/reports/DATA_CLEANING-{form_id}.xlsx"
-    metadata = [
-        "id", "identifier", "submissionDate", "modifiedAt", "submitter",
-        "surveyalTime", "formVersion", "deviceIdentifier", "displayName"
-    ]
-    writter = pd.ExcelWriter(file_location, engine='xlsxwriter')
+def export_spreadsheet(instance: str,
+                       survey_id: int,
+                       form_id: int,
+                       token: str,
+                       custom_location: Optional[str] = None):
     data = get_page(instance=instance,
                     survey_id=survey_id,
                     form_id=form_id,
                     token=token,
                     repeat=True)
+    empty = []
     for d in list(data):
-        df = pd.DataFrame(data[d])
-        questions = list(
-            filter(lambda x: x not in metadata + ["repeat"], list(df)))
-        if "repeat" in list(df):
-            questions = ["id", "identifier", "displayName", "repeat"
-                         ] + questions
-        else:
-            questions = metadata + questions
-        df = df[questions]
-        df.to_excel(writter, sheet_name=d, index=False)
+        if not data[d]:
+            empty.append(d)
+    if len(empty) == len(data):
+        return None
+    file_location = f"./tmp/reports/DATA_CLEANING-{form_id}.xlsx"
+    if custom_location:
+        file_location = custom_location
+    metadata = [
+        "id", "identifier", "submissionDate", "modifiedAt", "submitter",
+        "surveyalTime", "formVersion", "deviceIdentifier", "displayName"
+    ]
+    writter = pd.ExcelWriter(file_location, engine='xlsxwriter')
+    for d in list(data):
+        if data[d]:
+            df = pd.DataFrame(data[d])
+            questions = list(
+                filter(lambda x: x not in metadata + ["repeat"], list(df)))
+            if "repeat" in list(df):
+                questions = ["id", "identifier", "displayName", "repeat"
+                             ] + questions
+            else:
+                questions = metadata + questions
+            df = df[questions]
+            df.to_excel(writter, sheet_name=d, index=False)
     writter.save()
     return file_location
