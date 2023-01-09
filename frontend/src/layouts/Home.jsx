@@ -80,7 +80,7 @@ const Home = () => {
   // check before refresh
   window.addEventListener("beforeunload", (e) => {
     if (!isLogin) {
-      return null;
+      return;
     }
     e.preventDefault();
     const confirmationMessage =
@@ -160,8 +160,32 @@ const Home = () => {
           isVisible: true,
           type: "success",
           onOk: () => {
-            const redirect = window.location.href.replace(`/${cacheId}`, "");
-            window.location.replace(redirect);
+            dispatch({
+              type: "INIT FORM",
+              payload: forms,
+            });
+            dispatch({
+              type: "UPDATE ANSWER",
+              payload: {
+                answer: [],
+                group: {
+                  active: 0,
+                  complete: [],
+                },
+                progress: 0,
+              },
+            });
+            setNotification({ isVisible: false });
+            // clear cacheId from URL if any
+            let URL = window.location.pathname;
+            if (URL.split("/").length > 2 && URL.includes(cacheId)) {
+              URL = URL.split("/")?.[1];
+              window.history.pushState(
+                "",
+                document.title,
+                `${window.location.origin}/${URL}`
+              );
+            }
           },
           onCancel: () => {
             setNotification({ isVisible: false });
