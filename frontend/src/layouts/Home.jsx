@@ -79,8 +79,9 @@ const Home = () => {
 
   // check before refresh
   window.addEventListener("beforeunload", (e) => {
-    if (!isLogin) {
-      return;
+    const submitted = localStorage.getItem("submitted"); // to handle show dirty popup
+    if (!isLogin || submitted) {
+      return null;
     }
     e.preventDefault();
     const confirmationMessage =
@@ -88,6 +89,12 @@ const Home = () => {
       "Are you sure want to reload?";
     (e || window.event).returnValue = confirmationMessage;
     return confirmationMessage;
+  });
+
+  // handle load page
+  window.addEventListener("load", (e) => {
+    localStorage.removeItem("submitted"); // to handle show dirty popup
+    e.preventDefault();
   });
 
   const isSaveFeatureEnabled = useMemo(
@@ -152,22 +159,26 @@ const Home = () => {
     api
       .post(`/submit-form?`, data, { "content-type": "application/json" })
       .then(() => {
+        localStorage.setItem("submitted", true); // to handle show dirty popup
         form.resetFields();
         deleteAnswerByIdFromDB(forms?._cacheId);
         deleteFormByIdFromDB(formId);
         setIsSubmit(false);
+        // set notification button event
         setNotification({
           isVisible: true,
           type: "success",
           onOk: () => {
+            // reset form
             dispatch({
               type: "INIT FORM",
               payload: forms,
             });
+            // reset answer
             dispatch({
               type: "UPDATE ANSWER",
               payload: {
-                answer: [],
+                answer: {},
                 group: {
                   active: 0,
                   complete: [],
@@ -176,6 +187,7 @@ const Home = () => {
               },
             });
             setNotification({ isVisible: false });
+            localStorage.removeItem("submitted"); // to handle show dirty popup
             // clear cacheId from URL if any
             let URL = window.location.pathname;
             if (URL.split("/").length > 2 && URL.includes(cacheId)) {
@@ -189,6 +201,7 @@ const Home = () => {
           },
           onCancel: () => {
             setNotification({ isVisible: false });
+            localStorage.removeItem("submitted"); // to handle show dirty popup
             setTimeout(() => {
               navigate(`/${formId}/info`);
             }, 100);
@@ -286,6 +299,7 @@ const Home = () => {
         answer: JSON.stringify(transformAnswers),
       });
       setTimeout(() => {
+        localStorage.setItem("submitted", true); // to handle show dirty popup
         onSaveSuccess(_cacheId);
         fetchSubmissionList();
       }, 100);
