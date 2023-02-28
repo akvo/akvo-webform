@@ -11,6 +11,12 @@ class ODKQuestionType(enum.Enum):
     integer = "integer"
     decimal = "decimal"
     photo = "image"
+    video = "video"
+    date = "date"
+    caddisfly = "caddisfly"
+    geoshape = "geoshape"
+    signature = "signature"
+    scan = "scan"
 
 
 def replace_name(obj):
@@ -83,8 +89,9 @@ def odk(form, res_path):
     for group in form["questionGroup"]:
         for q in group["question"]:
             if q["type"] == "option":
-                if q["options"]["allowMultiple"]:
-                    q.update({"type": "multiple_option"})
+                if q.get("options"):
+                    if q.get("options").get("allowMultiple"):
+                        q.update({"type": "multiple_option"})
             if q["type"] == "free":
                 qtype = "text"
                 if "validationRule" in q:

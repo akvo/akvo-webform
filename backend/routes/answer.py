@@ -11,7 +11,7 @@ from models.answer import AnswerBase
 from models.form import QuestionType
 from zipfile import ZipFile, ZIP_DEFLATED
 from datetime import datetime
-from pydantic import Required, SecretStr
+from pydantic import Required
 from util.flow import get_stats, get_token
 
 instance_list = './data/flow-survey-amazon-aws.csv'
@@ -147,8 +147,7 @@ def get_stats_data(
     question_id: int = Query(default=Required),
 ):
     USERNAME = os.environ['AUTH0_USER']
-    PWD = os.environ['AUTH0_PWD']
-    res = get_token(username=USERNAME, password=SecretStr(PWD))
+    res = get_token(username=USERNAME, password=os.environ['AUTH0_PWD'])
     data = get_stats(
         instance=instance_name, survey_id=survey_id,
         form_id=form_id, question_id=question_id,

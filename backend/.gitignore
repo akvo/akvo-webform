@@ -9,3 +9,5 @@ test
 /tmp/images/*.png
 /tmp/images/*.jpeg
 /tmp/*.zip
+/tmp/reports/*.xlsx
+/tmp/data_backup/*/*

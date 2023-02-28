@@ -13,6 +13,8 @@ auth_route = APIRouter()
 def login(
     req: Request, username: str = Form(...), password: SecretStr = Form(...)
 ) -> Oauth2Base:
+    print(password)
+    password = password.get_secret_value()
     return get_token(username=username, password=password)
 
 

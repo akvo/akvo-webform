@@ -24,12 +24,14 @@ def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
             try:
                 zip_url = httpx.get(cascade)
                 zip_url.raise_for_status()
-            except httpx.HTTPError as exc:
-                raise HTTPException(
-                    status_code=exc.response.status_code,
-                    detail=f"Error while requesting {exc.request.url!r}.")
-            z = ZipFile(BytesIO(zip_url.content))
-            z.extractall(ziploc)
+                z = ZipFile(BytesIO(zip_url.content))
+                z.extractall(ziploc)
+            except httpx.HTTPError:
+                pass
+            # except httpx.HTTPError as exc:
+                # raise HTTPException(
+                #     status_code=exc.response.status_code,
+                #     detail=f"Error while requesting {exc.request.url!r}.")
 
 
 def download_form(ziploc: str, alias: str, survey_id: int):
@@ -41,10 +43,12 @@ def download_form(ziploc: str, alias: str, survey_id: int):
     try:
         zip_url = httpx.get(f'{instance}/{survey_id}.zip')
         zip_url.raise_for_status()
-    except httpx.HTTPError as exc:
-        raise HTTPException(
-            status_code=exc.response.status_code,
-            detail=f"Error while requesting {exc.request.url!r}.")
+    except httpx.HTTPError:
+        return False
+    # except httpx.HTTPError as exc:
+        # raise HTTPException(
+        #     status_code=exc.response.status_code,
+        #     detail=f"Error while requesting {exc.request.url!r}.")
     if not os.path.exists(ziploc):
         os.mkdir(ziploc)
     z = ZipFile(BytesIO(zip_url.content))
