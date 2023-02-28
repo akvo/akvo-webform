@@ -39,16 +39,6 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: BASIC_ADMIN
-              valueFrom:
-                secretKeyRef:
-                  name: akvo-webform
-                  key: basic-admin
-            - name: BASIC_PWD
-              valueFrom:
-                secretKeyRef:
-                  name: akvo-webform
-                  key: basic-pwd
             - name: FLOW_SERVICE_URL
               valueFrom:
                 secretKeyRef:
