@@ -31,8 +31,6 @@ services:
     volumes:
       - ./backend:/app:delegated
     environment:
-      - BASIC_ADMIN=admin
-      - BASIC_PWD=webform
       - FLOW_SERVICE_URL
       - AUTH0_USER
       - AUTH0_PWD
