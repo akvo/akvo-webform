@@ -18,3 +18,4 @@ openpyxl==3.0.5
 XlsxWriter==3.0.2
 aiofiles==0.7.0
 python-multipart==0.0.5
+urllib3==1.26.16

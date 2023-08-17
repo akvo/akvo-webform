@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-serverconfig="akvo/akvo-flow-server-config.git"
 curl -H "Accept: application/vnd.github+json" \
      -H "Authorization: Bearer ${GITHUB_TOKEN}"\
      -H "X-GitHub-Api-Version: 2022-11-28" \
-     -L https://api.github.com/repos/${serverconfig}/tarball > akvo-flow-server-config.tar.gz
+     -L https://api.github.com/repos/akvo/akvo-flow-server-config/tarball > akvo-flow-server-config.tar.gz
+
+mkdir akvo-flow-server-config
+tar -xf akvo-flow-server-config.tar.gz -C akvo-flow-server-config --strip-component=1
 
 echo 'bucket,service,instances' > ./backend/data/flow-survey-amazon-aws.csv
 list=$(find ./akvo-flow-server-config -type f -name appengine-web.xml \
@@ -23,4 +25,4 @@ do
     echo "${bucket},${service},${instance}" | sed 's/\ //g' >> ./backend/data/flow-survey-amazon-aws.csv;
 done;
 
-# rm -rf akvo-flow-server-config.tar.gz
+rm -rf akvo-flow-server-config*
