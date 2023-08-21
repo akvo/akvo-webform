@@ -96,12 +96,25 @@ export const transformRequest = (questionGroup, values) => {
     if (answerType === "date" && value) {
       value = moment(value).format("YYYY-MM-DD");
     }
-    return {
+    const iteration = key.split("-")[1] || 0;
+    const result = {
       questionId: key.replace("Q", "").split("-")[0],
-      iteration: parseInt(key.split("-")[1] || 0),
+      iteration: isNaN(iteration) ? null : parseInt(iteration),
       answerType: answerType,
       value: value || "",
     };
+    if (findQuestion?.type === "option") {
+      const option = findQuestion?.options?.option?.find(
+        (o) => o.value === value
+      );
+      if (!option) {
+        return {
+          ...result,
+          isOther: true,
+        };
+      }
+    }
+    return result;
   });
   // find geo question, check for localeNameFlag
   // localeNameFlag === true, add meta_geo responses
