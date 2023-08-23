@@ -51,6 +51,8 @@ def submit_form(data: AnswerBase):
                 rc.value = json.dumps({"filename": value["id"]})
             except TypeError:
                 rc.value = value
+        if hasattr(rc, "isOther"):
+            del rc.isOther
         responseTemp.append(rc)
     data.responses = responseTemp
 
