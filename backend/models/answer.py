@@ -30,6 +30,7 @@ ValueVar = TypeVar(
 
 class AnswerResponse(BaseModel):
     answerType: str
+    isOther: Optional[bool] = None
     iteration: int
     questionId: str
     value: ValueVar
@@ -72,23 +73,29 @@ class AnswerResponse(BaseModel):
         # OPTION TYPE
         if atype == QuestionType.option.value:
             temp = []
+            isOther = values.get('isOther', False)
             if type(value) is list:
                 for rc in value:
                     if "text" in rc and "value" in rc:
-                        temp.append({
+                        it = {
                             "text": str(rc["text"]),
                             "code": str(rc["value"])
-                        })
+                        }
                     else:
-                        temp.append({"text": str(rc)})
+                        it = {"text": str(rc)}
+                    if isOther:
+                        it = {"isOther": True, **it}
+                    temp.append(it)
                 res = json.dumps(temp)
             else:
                 try:
                     json.loads(value)
                     res = str(res)
                 except ValueError:
-                    temp.append({"text": str(value)})
-                    res = json.dumps(temp)
+                    it = {"text": str(value)}
+                    if isOther:
+                        it = {"isOther": True, **it}
+                    res = json.dumps([it])
         # DATE TYPE
         if atype == QuestionType.date.value and value != '':
             try:
