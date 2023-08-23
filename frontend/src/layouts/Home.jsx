@@ -144,6 +144,7 @@ const Home = () => {
       dataPointName,
       form
     );
+    const filteredResponses = responses.filter((r) => r.iteration !== null);
     const data = {
       dataPointId: forms?.dataPointId,
       deviceId: forms?.deviceId,
@@ -154,7 +155,7 @@ const Home = () => {
       submissionStop: Date.now(),
       username: submitter || "akvo-webform",
       dataPointName: dataPointNameDisplay || "Untitled",
-      responses: responses,
+      responses: filteredResponses,
     };
     api
       .post(`/submit-form?`, data, { "content-type": "application/json" })

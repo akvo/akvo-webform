@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Space, Form, Radio, Checkbox, Progress, Spin } from "antd";
+import { Space, Form, Radio, Checkbox, Progress, Spin, Input } from "antd";
 import { Label } from "../components";
 import dataProviders from "../store";
 import api from "../lib/api";
@@ -16,9 +16,14 @@ const TypeOption = ({
   altText,
   answerStats,
 }) => {
-  const { option } = options;
+  const option = options.option;
+  const allowOther = options?.allowOther;
+  const [newOption, setNewOption] = useState("");
+  const { setFieldsValue } = Form.useForm();
   const { language } = dataProviders.Values();
   const activeLang = language?.active;
+
+  const otherOptionInputName = `other-${id}`;
 
   // stats
   const [loadingStats, setLoadingStats] = useState(false);
@@ -93,6 +98,12 @@ const TypeOption = ({
     return null;
   };
 
+  const onNewOptionChange = (event) => {
+    const value = event.target.value;
+    setNewOption(value);
+    setFieldsValue({ [id]: value });
+  };
+
   return (
     <Form.Item
       className="field"
@@ -132,6 +143,19 @@ const TypeOption = ({
                 {renderAnswerStats(o.text)}
               </Radio>
             ))}
+            {allowOther ? (
+              <Radio value={newOption} disabled={newOption ? false : true}>
+                <Form.Item name={otherOptionInputName} noStyle>
+                  <Input
+                    placeholder={"Type Other Answer"}
+                    value={newOption}
+                    onChange={onNewOptionChange}
+                  />
+                </Form.Item>
+              </Radio>
+            ) : (
+              ""
+            )}
           </Space>
         </Radio.Group>
       )}
