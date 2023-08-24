@@ -24,13 +24,12 @@ class Image(TypedDict):
 
 
 ValueVar = TypeVar(
-    'ValueVal', str, int, float, List[str], Geolocation,
+    'ValueVal', str, int, float, dict, List[str], Geolocation,
     Image, List[CascadeBase], List[Option])
 
 
 class AnswerResponse(BaseModel):
     answerType: str
-    isOther: Optional[bool] = None
     iteration: int
     questionId: str
     value: ValueVar
@@ -73,7 +72,6 @@ class AnswerResponse(BaseModel):
         # OPTION TYPE
         if atype == QuestionType.option.value:
             temp = []
-            isOther = values.get('isOther', False)
             if type(value) is list:
                 for rc in value:
                     if "text" in rc and "value" in rc:
@@ -82,20 +80,11 @@ class AnswerResponse(BaseModel):
                             "code": str(rc["value"])
                         }
                     else:
-                        it = {"text": str(rc)}
-                    if isOther:
-                        it = {"isOther": True, **it}
+                        it = rc
                     temp.append(it)
                 res = json.dumps(temp)
             else:
-                try:
-                    json.loads(value)
-                    res = str(res)
-                except ValueError:
-                    it = {"text": str(value)}
-                    if isOther:
-                        it = {"isOther": True, **it}
-                    res = json.dumps([it])
+                res = json.dumps([value])
         # DATE TYPE
         if atype == QuestionType.date.value and value != '':
             try:

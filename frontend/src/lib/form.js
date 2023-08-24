@@ -103,19 +103,36 @@ export const transformRequest = (questionGroup, values) => {
       answerType: answerType,
       value: value || "",
     };
-    if (findQuestion?.type === "option") {
-      const option = findQuestion?.options?.option?.find(
-        (o) => o.value === value
-      );
-      if (!option) {
-        return {
-          ...result,
-          isOther: true,
-        };
-      }
+    if (answerType === "option" && iteration === "other") {
+      // other option key = "{questionId}-other"
+      result.isOther = true;
     }
     return result;
   });
+  const otherOptionAnswers = res.filter(
+    (r) => r.answerType === "option" && r.isOther === true
+  );
+  const optionAnswers = res
+    .filter((r) => r.answerType === "option" && !r.isOther)
+    .map((r) => {
+      const otherAnswer = otherOptionAnswers.find(
+        (o) => o.questionId === r.questionId
+      );
+      const value = Array.isArray(r.value)
+        ? r.value.map((v) => {
+            return otherAnswer && otherAnswer.value === v
+              ? { text: v, isOther: true }
+              : { text: v };
+          })
+        : otherAnswer && otherAnswer.value === r.value
+        ? { text: r.value, isOther: true }
+        : { text: r.value };
+      return { ...r, value };
+    });
+
+  const nonOptionAnswers = res.filter((r) => r.answerType !== "option");
+  const result = [...nonOptionAnswers, ...optionAnswers];
+
   // find geo question, check for localeNameFlag
   // localeNameFlag === true, add meta_geo responses
   const qGeo = questions?.find((q) => q.type === "geo");
@@ -124,7 +141,7 @@ export const transformRequest = (questionGroup, values) => {
     const { lat, lng } = geoAnswer;
     const metaGeoValue = `${lat}|${lng}|0`;
     return [
-      ...res,
+      ...result,
       {
         questionId: "-2",
         iteration: 0,
@@ -133,7 +150,7 @@ export const transformRequest = (questionGroup, values) => {
       },
     ];
   }
-  return res;
+  return result;
 };
 
 export const checkFilledForm = (

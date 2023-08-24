@@ -23,7 +23,7 @@ const TypeOption = ({
   const { language } = dataProviders.Values();
   const activeLang = language?.active;
 
-  const otherOptionInputName = `other-${id}`;
+  const otherOptionInputName = `${id}-other`;
 
   // stats
   const [loadingStats, setLoadingStats] = useState(false);
@@ -131,6 +131,19 @@ const TypeOption = ({
                 {renderAnswerStats(o.text)}
               </Checkbox>
             ))}
+            {allowOther ? (
+              <Checkbox value={newOption} disabled={newOption ? false : true}>
+                <Form.Item name={otherOptionInputName} noStyle>
+                  <Input
+                    placeholder={"Type Other Answer"}
+                    value={newOption}
+                    onChange={onNewOptionChange}
+                  />
+                </Form.Item>
+              </Checkbox>
+            ) : (
+              ""
+            )}
           </Space>
         </Checkbox.Group>
       ) : (
