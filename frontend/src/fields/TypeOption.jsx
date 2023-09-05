@@ -18,8 +18,7 @@ const TypeOption = ({
 }) => {
   const option = options.option;
   const allowOther = options?.allowOther;
-  const [newOption, setNewOption] = useState("");
-  const { setFieldsValue } = Form.useForm();
+  const [values, setValues] = useState([]);
   const { language } = dataProviders.Values();
   const activeLang = language?.active;
 
@@ -98,10 +97,12 @@ const TypeOption = ({
     return null;
   };
 
-  const onNewOptionChange = (event) => {
-    const value = event.target.value;
-    setNewOption(value);
-    setFieldsValue({ [id]: value });
+  const onRadioGroupChange = ({ target: { value } }) => {
+    setValues([value]);
+  };
+
+  const onCheckboxGroupChange = (values) => {
+    setValues(values);
   };
 
   return (
@@ -122,7 +123,10 @@ const TypeOption = ({
       required={false}
     >
       {options?.allowMultiple ? (
-        <Checkbox.Group style={{ width: "100%" }}>
+        <Checkbox.Group
+          style={{ width: "100%" }}
+          onChange={onCheckboxGroupChange}
+        >
           <Space direction="vertical">
             {option.map((o, io) => (
               <Checkbox key={io} value={o.value}>
@@ -132,22 +136,20 @@ const TypeOption = ({
               </Checkbox>
             ))}
             {allowOther ? (
-              <Checkbox value={newOption} disabled={newOption ? false : true}>
-                <Form.Item name={otherOptionInputName} noStyle>
-                  <Input
-                    placeholder={"Type Other Answer"}
-                    value={newOption}
-                    onChange={onNewOptionChange}
-                  />
-                </Form.Item>
+              <Checkbox value="%other%">
+                {values.includes("%other%") ? (
+                  <Form.Item name={otherOptionInputName} noStyle>
+                    <Input placeholder="Type other answer" autoFocus />
+                  </Form.Item>
+                ) : (
+                  "Other..."
+                )}
               </Checkbox>
-            ) : (
-              ""
-            )}
+            ) : null}
           </Space>
         </Checkbox.Group>
       ) : (
-        <Radio.Group>
+        <Radio.Group onChange={onRadioGroupChange}>
           <Space direction="vertical">
             {option.map((o, io) => (
               <Radio key={io} value={o.value}>
@@ -157,18 +159,16 @@ const TypeOption = ({
               </Radio>
             ))}
             {allowOther ? (
-              <Radio value={newOption} disabled={newOption ? false : true}>
-                <Form.Item name={otherOptionInputName} noStyle>
-                  <Input
-                    placeholder={"Type Other Answer"}
-                    value={newOption}
-                    onChange={onNewOptionChange}
-                  />
-                </Form.Item>
+              <Radio value="%other%">
+                {values.includes("%other%") ? (
+                  <Form.Item name={otherOptionInputName} noStyle>
+                    <Input placeholder="Type other answer" autoFocus />
+                  </Form.Item>
+                ) : (
+                  "Other..."
+                )}
               </Radio>
-            ) : (
-              ""
-            )}
+            ) : null}
           </Space>
         </Radio.Group>
       )}

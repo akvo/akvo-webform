@@ -119,13 +119,13 @@ export const transformRequest = (questionGroup, values) => {
         (o) => o.questionId === r.questionId
       );
       const value = Array.isArray(r.value)
-        ? r.value.map((v) => {
-            return otherAnswer && otherAnswer.value === v
-              ? { text: v, isOther: true }
-              : { text: v };
-          })
-        : otherAnswer && otherAnswer.value === r.value
-        ? { text: r.value, isOther: true }
+        ? r.value.map((v) =>
+            otherAnswer && v === "%other%"
+              ? { text: otherAnswer.value, isOther: true }
+              : { text: v }
+          )
+        : otherAnswer && r.value === "%other%"
+        ? { text: otherAnswer.value, isOther: true }
         : { text: r.value };
       return { ...r, value };
     });
