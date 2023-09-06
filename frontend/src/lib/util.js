@@ -20,3 +20,14 @@ export const generateAnswerStatsURL = (questionId) => {
   const url = `/stats?instance_name=${instanceName}&survey_id=${surveyId}&form_id=${formId}&question_id=${qid}`;
   return url;
 };
+
+export const isString = (value) => {
+  const type = typeof value;
+  return (
+    type === "string" ||
+    (type === "object" &&
+      value !== null &&
+      !Array.isArray(value) &&
+      Object.prototype.toString.call(value) === "[object String]")
+  );
+};

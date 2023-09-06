@@ -3,6 +3,7 @@ import { Form } from "antd";
 import { validateDependency, mapRules, modifyDependency } from "../lib/form.js";
 import QuestionField from "./QuestionField";
 import dataProviders from "../store";
+import { isString } from "../lib/util.js";
 
 const Question = ({ fields, form, group, repeat }) => {
   const { answer } = dataProviders.Values();
@@ -17,10 +18,25 @@ const Question = ({ fields, form, group, repeat }) => {
     if (field?.mandatory) {
       rules = [
         {
-          validator: (_, value) =>
-            value
-              ? Promise.resolve()
-              : Promise.reject(new Error(`${field.text} is required`)),
+          validator: (_, value) => {
+            // handle empty multiple options
+            if (
+              field.type === "option" &&
+              Array.isArray(value) &&
+              value.length < 1
+            ) {
+              return Promise.reject(new Error(`${field.text} is required`));
+            }
+            // handle empty string
+            if (isString(value) && value.trim() === "") {
+              return Promise.reject(new Error(`${field.text} is required`));
+            }
+            // handle general empty value
+            if (!value) {
+              return Promise.reject(new Error(`${field.text} is required`));
+            }
+            return Promise.resolve();
+          },
         },
       ];
     }
