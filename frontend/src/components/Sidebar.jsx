@@ -11,9 +11,8 @@ import dataProviders from "../store";
 
 const Sidebar = ({
   active,
-  complete,
   questionGroup,
-  isSubmitFailed,
+  groupStatuses,
   isMobile,
   setIsMobileMenuVisible,
 }) => {
@@ -37,13 +36,11 @@ const Sidebar = ({
         </div>
       }
       dataSource={questionGroup}
-      renderItem={(item, key) => (
+      renderItem={(item) => (
         <ListItem
-          index={key}
           item={item}
           active={active}
-          complete={complete}
-          isSubmitFailed={isSubmitFailed}
+          status={groupStatuses.find((x) => x.index === item?.index)?.status}
           isMobile={isMobile}
           setIsMobileMenuVisible={setIsMobileMenuVisible}
         />
@@ -53,44 +50,38 @@ const Sidebar = ({
 };
 
 const ListItem = ({
-  index,
   item,
   active,
-  complete,
-  isSubmitFailed,
+  status,
   isMobile,
   setIsMobileMenuVisible,
 }) => {
   const dispatch = dataProviders.Actions();
   const { language } = dataProviders.Values();
-  const checkComplete = item?.repeatable ? `${index}-${item?.repeat}` : index;
   const activeLang = language?.active;
 
   const langText = useMemo(() => {
     const findLang = item?.altText?.find((x) => x?.language === activeLang);
     return findLang?.text ? (
       <div className="translation-text sidebar-list-item">{findLang.text}</div>
-    ) : (
-      ""
-    );
+    ) : null;
   }, [item, activeLang]);
 
   return (
     <List.Item
-      key={index}
       onClick={() => {
         isMobile && setIsMobileMenuVisible(false);
-        dispatch({ type: "UPDATE GROUP", payload: { active: index } });
+        dispatch({ type: "UPDATE GROUP", payload: { active: item.index } });
       }}
-      className={`sidebar-list ${active === index ? "active" : ""} ${
-        complete.includes(checkComplete) ? "complete" : ""
+      className={`sidebar-list ${active === item.index ? "active" : ""} ${
+        status === "complete" ? "complete" : ""
       }`}
     >
       <Space direction="vertical">
         <div>
-          {complete.includes(checkComplete) ? (
+          {status === "complete" ? (
             <MdCheckCircle className="icon" />
-          ) : active === index ? (
+          ) : active === item.index ? (
             <MdRadioButtonChecked className="icon" />
           ) : (
             <MdRadioButtonUnchecked className="icon" />
@@ -99,13 +90,11 @@ const ListItem = ({
           {item?.repeatable ? <MdRepeat className="icon icon-right" /> : ""}
           {langText}
         </div>
-        {!complete.includes(checkComplete) && isSubmitFailed.length ? (
+        {status === "error" ? (
           <div className="sidebar-incomplete-text">
             Please fill in all required questions
           </div>
-        ) : (
-          ""
-        )}
+        ) : null}
       </Space>
     </List.Item>
   );
