@@ -88,23 +88,22 @@ export const modifyDependency = ({ question }, { dependency }, repeat) => {
 export const transformRequest = (questionGroup, values) => {
   const questions = questionGroup.flatMap((qg) => qg.question);
   const res = Object.keys(values).map((key) => {
-    const keyTemp = key.split("-")[0]; // to get only question id for repeat answer
-    const findQuestion = questions.find((q) => q.id === keyTemp);
+    const keySplit = key.split("-");
+    const findQuestion = questions.find((q) => q.id === keySplit[0]);
     const answerType = findQuestion?.type;
     let value = values[key];
     // transform date value
     if (answerType === "date" && value) {
       value = moment(value).format("YYYY-MM-DD");
     }
-    const iteration = key.split("-")[1] || 0;
+    const iteration = isNaN(keySplit[1]) ? 0 : parseInt(keySplit[1]);
     const result = {
-      questionId: key.replace("Q", "").split("-")[0],
-      iteration: isNaN(iteration) ? null : parseInt(iteration),
+      questionId: keySplit[0].replace("Q", ""),
+      iteration: iteration,
       answerType: answerType,
       value: value || "",
     };
-    if (answerType === "option" && iteration === "other") {
-      // other option key = "{questionId}-other"
+    if (answerType === "option" && key.split("-").includes("other")) {
       result.isOther = true;
     }
     return result;
@@ -116,7 +115,7 @@ export const transformRequest = (questionGroup, values) => {
     .filter((r) => r.answerType === "option" && !r.isOther)
     .map((r) => {
       const otherAnswer = otherOptionAnswers.find(
-        (o) => o.questionId === r.questionId
+        (o) => o.questionId === r.questionId && o.iteration === r.iteration
       );
       const value = Array.isArray(r.value)
         ? r.value.map((v) =>
@@ -129,7 +128,6 @@ export const transformRequest = (questionGroup, values) => {
         : { text: r.value };
       return { ...r, value };
     });
-
   const nonOptionAnswers = res.filter((r) => r.answerType !== "option");
   const result = [...nonOptionAnswers, ...optionAnswers];
 

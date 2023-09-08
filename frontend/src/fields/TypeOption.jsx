@@ -138,7 +138,17 @@ const TypeOption = ({
             {allowOther ? (
               <Checkbox value="%other%">
                 {values.includes("%other%") ? (
-                  <Form.Item name={otherOptionInputName} noStyle>
+                  <Form.Item
+                    name={otherOptionInputName}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input other answer",
+                      },
+                    ]}
+                    noStyle
+                  >
                     <Input placeholder="Type other answer" autoFocus />
                   </Form.Item>
                 ) : (
@@ -161,7 +171,17 @@ const TypeOption = ({
             {allowOther ? (
               <Radio value="%other%">
                 {values.includes("%other%") ? (
-                  <Form.Item name={otherOptionInputName} noStyle>
+                  <Form.Item
+                    name={otherOptionInputName}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input other answer",
+                      },
+                    ]}
+                    noStyle
+                  >
                     <Input placeholder="Type other answer" autoFocus />
                   </Form.Item>
                 ) : (

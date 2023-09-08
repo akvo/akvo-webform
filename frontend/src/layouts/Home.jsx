@@ -61,16 +61,17 @@ const Home = () => {
   const state = dataProviders.Values();
   const { forms, dataPointName, group, auth } = state;
   const { questionGroup } = forms;
-  const { active, complete } = group;
+  const { active } = group;
   const { isLogin, submitter } = auth;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSave, setIsSave] = useState(false);
-  const [isSubmitFailed, setIsSubmitFailed] = useState([]);
   const [notification, setNotification] = useState({ isVisible: false });
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
   const [submissionList, setSubmissionList] = useState([]);
   const [isMobile, setIsMobile] = useState(detectMobile());
+  const [errorFields, setErrorFields] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   // check screen size or mobile browser
   window.addEventListener("resize", () => {
@@ -181,7 +182,6 @@ const Home = () => {
                 answer: {},
                 group: {
                   active: 0,
-                  complete: [],
                 },
                 progress: 0,
               },
@@ -229,7 +229,7 @@ const Home = () => {
   };
 
   const onCompleteFailed = ({ errorFields }) => {
-    setIsSubmitFailed(errorFields);
+    setErrorFields(errorFields);
     setNotification({
       isVisible: true,
       type: "submit-failed",
@@ -308,7 +308,9 @@ const Home = () => {
 
   const onValuesChange = (qg, value, values) => {
     const errorFields = form.getFieldsError();
-    const { filled, completeQg, isDpName } = checkFilledForm(
+    setErrorFields(errorFields);
+    setAnswers(values);
+    const { filled, isDpName } = checkFilledForm(
       errorFields,
       dataPointName,
       qg,
@@ -319,9 +321,6 @@ const Home = () => {
       type: "UPDATE ANSWER",
       payload: {
         answer: values,
-        group: {
-          complete: completeQg.flatMap((qg) => qg.i),
-        },
         dataPointName: isDpName && value,
         progress: (filled.length / errorFields.length) * 100,
       },
@@ -399,14 +398,55 @@ const Home = () => {
     }
   }, [forms, formId, cacheId, dispatch, fethSubmissionByCache]);
 
+  const groupStatuses = useMemo(() => {
+    return (questionGroup || []).map((group) => {
+      const mandatoryIds = group.question
+        .filter((q) => q.mandatory)
+        .map((q) => q.id);
+      const allowOtherIds = group.question
+        .filter((q) => q.type === "option" && q.options.allowOther)
+        .map((q) => q.id);
+      const requiredIds =
+        group.repeat > 1
+          ? mandatoryIds.flatMap((x) =>
+              Array(group.repeat)
+                .fill(0)
+                .map((_, i) => (i === 0 ? `${x}` : `${x}-${i}`))
+            )
+          : mandatoryIds;
+      const entries = Object.fromEntries(
+        Object.entries(answers).filter(([key]) => requiredIds.includes(key))
+      );
+      const blanks = Object.entries(entries).filter(([, value]) => {
+        return value === null || typeof value === "undefined";
+      });
+      const errors = errorFields.filter((e) => {
+        const id = e.name[0].split("-")[0];
+        return (
+          (requiredIds.includes(id) || allowOtherIds.includes(id)) &&
+          e.errors.length
+        );
+      });
+      const noMandatory = requiredIds.length === 0;
+      const hasEntries = Object.entries(entries).length > 0;
+      const hasBlanks = blanks.length > 0;
+      const hasErrors = errors.length > 0;
+      const status = hasErrors
+        ? "error"
+        : noMandatory || (hasEntries && !hasBlanks)
+        ? "complete"
+        : "";
+      return { index: group.index, status };
+    });
+  }, [questionGroup, answers, errorFields]);
+
   const sidebarProps = useMemo(() => {
     return {
       active: active,
-      complete: complete,
       questionGroup: questionGroup,
-      isSubmitFailed: isSubmitFailed,
+      groupStatuses: groupStatuses,
     };
-  }, [active, complete, questionGroup, isSubmitFailed]);
+  }, [active, questionGroup, groupStatuses]);
 
   if (error) {
     return (
