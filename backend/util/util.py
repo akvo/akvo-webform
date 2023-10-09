@@ -34,7 +34,7 @@ class Cipher():
         self.str_param = str_param
 
     def encode(self):
-        n = self.str_param.split("-")[1]
+        n = self.str_param.split("-")[-1]
         n = functools.reduce(lambda a, b: int(a) + int(b), list(str(n)))
         n = str(n)[-1]
         nab = "".join([
@@ -57,7 +57,7 @@ class Cipher():
                 for a in self.str_param[:-1]
             ])
             ad = ad.split("-")
-            return ad[0], int(ad[1])
+            return "-".join(ad[:-1]), int(ad[-1])
         except IndexError:
             pass
         return None, None
