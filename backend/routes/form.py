@@ -56,7 +56,7 @@ def download_form(ziploc: str, alias: str, survey_id: int):
     response = readxml(xml_path=xml_path, alias=alias)
     cascade_list = []
     for qg in response['questionGroup']:
-        for q in qg['question']:
+        for q in qg.get('question', []):
             if q['type'] == 'cascade':
                 cascade_list.append(q['cascadeResource'])
     if len(cascade_list) > 0:
@@ -75,7 +75,10 @@ def form(req: Request, id: str):
     if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
     ziploc = f'./static/xml/{alias}'
-    return download_form(ziploc, alias, survey_id)
+    form = download_form(ziploc, alias, survey_id)
+    if not form:
+        raise HTTPException(status_code=404, detail="Not Found")
+    return form
 
 
 @form_route.get('/xls-form/{id:path}',
