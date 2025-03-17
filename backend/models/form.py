@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 from typing_extensions import TypedDict
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, validator
 from util.model import optional
 
 
@@ -13,6 +13,8 @@ class QuestionType(Enum):
     date = "date"
     photo = "photo"
     geo = "geo"
+    geoshape = "geoshape"
+    signature = "signature"
 
 
 class ValidationType(Enum):
@@ -74,7 +76,7 @@ class Option(BaseModel):
 class Options(BaseModel):
     allowOther: bool
     allowMultiple: bool
-    option: List[Option]
+    option: Optional[List[Option]] = Field(default_factory=list)
 
 
 class DependencyQuestion(BaseModel):
@@ -124,19 +126,19 @@ class Question(BaseModel):
         return altText or []
 
 
-@optional('altText')
+@optional('altText', 'repeatable')
 class QuestionGroup(BaseModel):
-    altText: Optional[List[AltText]] = []
+    altText: Optional[List[AltText]] = Field(default_factory=list)
     heading: str
-    question: List[Question]
-    repeatable: bool
+    question: Optional[List[Question]] = Field(default_factory=list)
+    repeatable: Optional[bool]
 
     @validator("altText", pre=True, always=True)
     def set_alt_text(cls, altText):
         return altText or []
 
 
-@optional('altText')
+@optional('altText', 'surveyId')
 class FormBase(BaseModel):
     alias: str
     altText: Optional[List[AltText]] = []
