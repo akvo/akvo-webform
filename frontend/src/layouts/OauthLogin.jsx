@@ -11,6 +11,7 @@ import {
   Modal,
   notification,
   Checkbox,
+  Radio,
 } from "antd";
 import dataProviders from "../store";
 import api from "../lib/api";
@@ -38,6 +39,7 @@ const OauthLogin = () => {
   const [printSettings, setPrintSettings] = useState({
     sectionNumbering: true,
     questionNumbering: true,
+    orientation: "landscape",
   });
 
   const handlePrint = async (formUrl) => {
@@ -52,7 +54,7 @@ const OauthLogin = () => {
       // Remove the leading slash from formUrl
       const formId = formUrl.replace("/", "");
       const response = await api.get(
-        `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}`,
+        `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}&orientation=${printSettings.orientation}`,
         {
           responseType: "text",
         }
@@ -399,7 +401,22 @@ const OauthLogin = () => {
         okText="Print"
         confirmLoading={printLoading}
       >
-        <Space direction="vertical" style={{ width: "100%" }}>
+        <Space direction="vertical" style={{ width: "100%" }} size="middle">
+          <div>
+            <div style={{ marginBottom: "8px" }}>Page Orientation</div>
+            <Radio.Group
+              value={printSettings.orientation}
+              onChange={(e) =>
+                setPrintSettings({
+                  ...printSettings,
+                  orientation: e.target.value,
+                })
+              }
+            >
+              <Radio.Button value="portrait">Portrait</Radio.Button>
+              <Radio.Button value="landscape">Landscape</Radio.Button>
+            </Radio.Group>
+          </div>
           <Checkbox
             checked={printSettings.sectionNumbering}
             onChange={(e) =>

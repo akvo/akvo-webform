@@ -77,6 +77,7 @@ async def form_print(
     id: str,
     section_numbering: bool = True,
     question_numbering: bool = True,
+    orientation: str = "landscape",
 ):
     alias, survey_id = Cipher(id).decode()
     if alias is None:
@@ -89,7 +90,7 @@ async def form_print(
     try:
         # Initialize styler with Flow parser
         styler = WeasyPrintStyler(
-            orientation="landscape",
+            orientation=orientation,
             add_section_numbering=section_numbering,
             add_question_numbering=question_numbering,
             parser_type="flow",
