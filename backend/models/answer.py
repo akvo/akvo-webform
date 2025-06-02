@@ -24,8 +24,17 @@ class Image(TypedDict):
 
 
 ValueVar = TypeVar(
-    'ValueVal', str, int, float, dict, List[str], Geolocation,
-    Image, List[CascadeBase], List[Option])
+    "ValueVal",
+    str,
+    int,
+    float,
+    dict,
+    List[str],
+    Geolocation,
+    Image,
+    List[CascadeBase],
+    List[Option],
+)
 
 
 class AnswerResponse(BaseModel):
@@ -52,20 +61,15 @@ class AnswerResponse(BaseModel):
             try:
                 for rc in value:
                     if "name" in rc and "id" in rc:
-                        temp.append({
-                            "code": str(rc["id"]),
-                            "name": rc["name"]
-                        })
+                        temp.append(
+                            {"code": str(rc["id"]), "name": rc["name"]}
+                        )
                     elif "name" in rc and "code" in rc:
-                        temp.append({
-                            "code": str(rc["code"]),
-                            "name": rc["name"]
-                        })
+                        temp.append(
+                            {"code": str(rc["code"]), "name": rc["name"]}
+                        )
                     else:
-                        temp.append({
-                            "code": "",
-                            "name": rc["name"]
-                        })
+                        temp.append({"code": "", "name": rc["name"]})
                 res = json.dumps(temp)
             except TypeError:
                 res = res
@@ -77,7 +81,7 @@ class AnswerResponse(BaseModel):
                     if "text" in rc and "value" in rc:
                         it = {
                             "text": str(rc["text"]),
-                            "code": str(rc["value"])
+                            "code": str(rc["value"]),
                         }
                     else:
                         it = rc
@@ -86,7 +90,7 @@ class AnswerResponse(BaseModel):
             else:
                 res = json.dumps([value])
         # DATE TYPE
-        if atype == QuestionType.date.value and value != '':
+        if atype == QuestionType.date.value and value != "":
             try:
                 try:
                     date_obj = datetime.strptime(value, "%Y-%m-%d")
@@ -123,6 +127,10 @@ class AnswerBase(BaseModel):
     uuid: Optional[str] = None
     instance: Optional[str] = None
 
+    @validator("formId", pre=True, always=True)
+    def convert_form_id_to_string(cls, value):
+        return str(value)
+
     @validator("formVersion", pre=True, always=True)
     def set_form_version_to_float(cls, value):
         return float(value)
@@ -140,9 +148,11 @@ class AnswerBase(BaseModel):
         duration = value
         if not duration:
             start_date = datetime.fromtimestamp(
-                int(values["submissionStart"]) / 1000)
+                int(values["submissionStart"]) / 1000
+            )
             end_date = datetime.fromtimestamp(
-                int(values["submissionStop"]) / 1000)
+                int(values["submissionStop"]) / 1000
+            )
             duration = end_date - start_date
             duration = round(duration.total_seconds())
         if duration:
@@ -157,7 +167,7 @@ class AnswerBase(BaseModel):
             "answerType": "META_NAME",
             "iteration": 0,
             "questionId": "-1",
-            "value": values["dataPointName"]
+            "value": values["dataPointName"],
         }
         if values["dataPointName"] and meta_response not in value:
             value.append(meta_response)

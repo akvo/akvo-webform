@@ -35,7 +35,7 @@ class Levels(TypedDict):
     level: List[Level]
 
 
-@optional('maxVal', 'minVal')
+@optional("maxVal", "minVal")
 class ValidationRule(BaseModel):
     allowDecimal: bool
     signed: bool
@@ -44,7 +44,7 @@ class ValidationRule(BaseModel):
     validationType: ValidationType
 
 
-@optional('altText')
+@optional("altText")
 class Help(BaseModel):
     altText: Optional[List[AltText]] = []
     text: Optional[str] = ""
@@ -60,7 +60,7 @@ class Help(BaseModel):
         return altText or []
 
 
-@optional('altText')
+@optional("altText")
 class Option(BaseModel):
     altText: Optional[List[AltText]] = []
     value: str
@@ -94,9 +94,19 @@ class DependencyQuestion(BaseModel):
         return [answerValue]
 
 
-@optional('altText', 'cascadeResource', 'help', 'levels', 'validationRule',
-          'requireDoubleEntry', 'personalData', 'options', 'dependency',
-          'answerStats')
+@optional(
+    "altText",
+    "cascadeResource",
+    "help",
+    "levels",
+    "validationRule",
+    "requireDoubleEntry",
+    "personalData",
+    "options",
+    "dependency",
+    "answerStats",
+    "variableName",
+)
 class Question(BaseModel):
     localeNameFlag: bool
     altText: Optional[List[AltText]] = []
@@ -114,6 +124,7 @@ class Question(BaseModel):
     personalData: Optional[bool] = None
     answerStats: Optional[bool] = None
     requireDoubleEntry: Optional[bool] = None
+    variableName: Optional[str] = None
 
     @validator("id", pre=True, always=True)
     def set_id_value(cls, id):
@@ -126,7 +137,7 @@ class Question(BaseModel):
         return altText or []
 
 
-@optional('altText', 'repeatable')
+@optional("altText", "repeatable")
 class QuestionGroup(BaseModel):
     altText: Optional[List[AltText]] = Field(default_factory=list)
     heading: str
@@ -138,7 +149,7 @@ class QuestionGroup(BaseModel):
         return altText or []
 
 
-@optional('altText', 'surveyId')
+@optional("altText", "surveyId")
 class FormBase(BaseModel):
     alias: str
     altText: Optional[List[AltText]] = []
