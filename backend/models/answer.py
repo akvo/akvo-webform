@@ -127,6 +127,10 @@ class AnswerBase(BaseModel):
     uuid: Optional[str] = None
     instance: Optional[str] = None
 
+    @validator("formId", pre=True, always=True)
+    def convert_form_id_to_string(cls, value):
+        return str(value)
+
     @validator("formVersion", pre=True, always=True)
     def set_form_version_to_float(cls, value):
         return float(value)
