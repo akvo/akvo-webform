@@ -37,38 +37,81 @@ const OauthLogin = () => {
   const handlePrint = async (formUrl) => {
     try {
       setPrintLoading(true);
+      notification.info({
+        message: "Preparing Form",
+        description: "Generating printable version of the form...",
+        duration: 2,
+      });
+
       // Remove the leading slash from formUrl
       const formId = formUrl.replace("/", "");
       const response = await api.get(`/form/${formId}/print`, {
         responseType: "text",
       });
 
-      // Create a new window with the HTML content
+      // Create a hidden iframe to preload content
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+
+      // Write content to iframe and wait for resources to load
+      iframe.contentDocument.write(response.data);
+      iframe.contentDocument.close();
+
+      // Wait for all resources to load
+      await new Promise((resolve) => {
+        iframe.onload = resolve;
+        // Fallback if onload doesn't trigger
+        setTimeout(resolve, 1000);
+      });
+
+      notification.success({
+        message: "Form Ready",
+        description: "Opening print dialog...",
+        duration: 2,
+      });
+
+      // Create the actual print window with loaded content
       const printWindow = window.open("", "_blank");
       printWindow.document.write(response.data);
       printWindow.document.close();
 
-      // Wait for resources to load then print
-      printWindow.onload = function () {
+      // Add print styles for smooth transition
+      const style = printWindow.document.createElement("style");
+      style.textContent = `
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      `;
+      printWindow.document.head.appendChild(style);
+
+      // Wait a bit for the window to fully render
+      setTimeout(() => {
         printWindow.print();
-        // Close the window after print dialog is closed (optional)
+
+        // Monitor print dialog
         const checkPrintDialogClosed = setInterval(() => {
           if (printWindow.document.readyState === "complete") {
             clearInterval(checkPrintDialogClosed);
-            printWindow.close();
+            // Give user time to see the content before closing
+            setTimeout(() => {
+              printWindow.close();
+              // Clean up the preload iframe
+              document.body.removeChild(iframe);
+            }, 500);
           }
         }, 1000);
-      };
-
-      notification.success({
-        message: "Success",
-        description: "Print window has been opened",
-      });
+      }, 500);
     } catch (error) {
       notification.error({
         message: "Print Failed",
         description:
-          error.response?.data?.detail || "Failed to generate print view",
+          error.response?.data?.detail ||
+          "Failed to generate print view. Please try again.",
+        duration: 4,
       });
     } finally {
       setPrintLoading(false);
