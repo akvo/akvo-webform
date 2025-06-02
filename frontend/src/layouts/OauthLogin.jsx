@@ -39,23 +39,36 @@ const OauthLogin = () => {
       setPrintLoading(true);
       // Remove the leading slash from formUrl
       const formId = formUrl.replace("/", "");
-      const response = await api.get(`/form/${formId}?print=true`, {
-        responseType: 'blob'  // Important for handling PDF response
+      const response = await api.get(`/form/${formId}/print`, {
+        responseType: "text",
       });
 
-      // Create a blob URL and open it in a new window
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      // Create a new window with the HTML content
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(response.data);
+      printWindow.document.close();
+
+      // Wait for resources to load then print
+      printWindow.onload = function () {
+        printWindow.print();
+        // Close the window after print dialog is closed (optional)
+        const checkPrintDialogClosed = setInterval(() => {
+          if (printWindow.document.readyState === "complete") {
+            clearInterval(checkPrintDialogClosed);
+            printWindow.close();
+          }
+        }, 1000);
+      };
 
       notification.success({
         message: "Success",
-        description: "Form PDF has been generated",
+        description: "Print window has been opened",
       });
     } catch (error) {
       notification.error({
         message: "Print Failed",
-        description: error.response?.data?.detail || "Failed to generate PDF",
+        description:
+          error.response?.data?.detail || "Failed to generate print view",
       });
     } finally {
       setPrintLoading(false);

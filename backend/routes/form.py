@@ -3,13 +3,14 @@ import httpx
 from io import BytesIO
 from zipfile import ZipFile
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from data.flow import xml_survey
 from typing import List
 from models.form import FormBase
 from util.util import readxml, Cipher
 from util.odk import odk
 from core.dev import Dev
+from AkvoFormPrint.stylers.weasyprint_styler import WeasyPrintStyler
 
 dev = Dev()
 form_route = APIRouter()
@@ -66,21 +67,56 @@ def download_form(ziploc: str, alias: str, survey_id: int):
 
 
 @form_route.get(
+    "/form/{id:path}/print",
+    summary="Get Printable HTML Version of Form",
+    response_class=HTMLResponse,
+    tags=["Akvo Flow Webform"],
+)
+async def form_print(req: Request, id: str):
+    alias, survey_id = Cipher(id).decode()
+    if alias is None:
+        raise HTTPException(status_code=404, detail="Not Found")
+    ziploc = f"./static/xml/{alias}"
+    form_data = download_form(ziploc, alias, survey_id)
+    if not form_data:
+        raise HTTPException(status_code=404, detail="Not Found")
+
+    try:
+        # Initialize styler with Flow parser
+        styler = WeasyPrintStyler(
+            orientation="landscape",
+            add_section_numbering=True,
+            parser_type="flow",
+            raw_json=form_data,
+        )
+
+        # Generate HTML
+        html_content = styler.render_html()
+        filename = f"form-{survey_id}.html"
+        headers = {"Content-Disposition": f'inline; filename="{filename}"'}
+        return HTMLResponse(
+            content=html_content, media_type="text/html", headers=headers
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@form_route.get(
     "/form/{id:path}",
     summary="Get Akvo Flow Webform Format",
     response_model=FormBase,
     response_model_exclude_none=True,
     tags=["Akvo Flow Webform"],
 )
-def form(req: Request, id: str):
+async def form(req: Request, id: str):
     alias, survey_id = Cipher(id).decode()
     if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
     ziploc = f"./static/xml/{alias}"
-    form = download_form(ziploc, alias, survey_id)
-    if not form:
+    form_data = download_form(ziploc, alias, survey_id)
+    if not form_data:
         raise HTTPException(status_code=404, detail="Not Found")
-    return form
+    return form_data
 
 
 @form_route.get(

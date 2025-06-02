@@ -11,7 +11,7 @@ from models.answer import AnswerBase
 from models.form import QuestionType
 from zipfile import ZipFile, ZIP_DEFLATED
 from datetime import datetime
-from pydantic import Required
+from typing import Annotated
 from util.flow import get_stats, get_token
 
 instance_list = "./data/flow-survey-amazon-aws.csv"
@@ -143,10 +143,10 @@ def submit_form(data: AnswerBase):
 )
 def get_stats_data(
     req: Request,
-    instance_name: str = Query(default=Required),
-    survey_id: int = Query(default=Required),
-    form_id: int = Query(default=Required),
-    question_id: int = Query(default=Required),
+    instance_name: Annotated[str, Query()],
+    survey_id: Annotated[int, Query()],
+    form_id: Annotated[int, Query()],
+    question_id: Annotated[int, Query()],
 ):
     USERNAME = os.environ["AUTH0_USER"]
     res = get_token(username=USERNAME, password=os.environ["AUTH0_PWD"])
