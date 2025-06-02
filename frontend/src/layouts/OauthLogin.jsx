@@ -32,6 +32,35 @@ const OauthLogin = () => {
   const [instanceName, setInstanceName] = useState(null);
   const [formDetail, setFormDetail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [printLoading, setPrintLoading] = useState(false);
+
+  const handlePrint = async (formUrl) => {
+    try {
+      setPrintLoading(true);
+      // Remove the leading slash from formUrl
+      const formId = formUrl.replace("/", "");
+      const response = await api.get(`/form/${formId}?print=true`, {
+        responseType: 'blob'  // Important for handling PDF response
+      });
+
+      // Create a blob URL and open it in a new window
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+
+      notification.success({
+        message: "Success",
+        description: "Form PDF has been generated",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Print Failed",
+        description: error.response?.data?.detail || "Failed to generate PDF",
+      });
+    } finally {
+      setPrintLoading(false);
+    }
+  };
 
   const onFinish = (values) => {
     setLoading(true);
@@ -265,16 +294,31 @@ const OauthLogin = () => {
               Show Form Detail
             </Button>
             {formDetail?.formUrl && (
-              <Link to={formDetail.formUrl}>
-                <Button
-                  type="primary"
-                  className="button-next"
-                  size="large"
-                  block
-                >
-                  Go To Form
-                </Button>
-              </Link>
+              <>
+                <Link to={formDetail.formUrl}>
+                  <Button
+                    type="primary"
+                    className="button-next"
+                    size="large"
+                    style={{ marginBottom: "20px" }}
+                    block
+                  >
+                    Go To Form
+                  </Button>
+                </Link>
+                <div>
+                  <Button
+                    type="primary"
+                    className="button-next"
+                    size="large"
+                    block
+                    loading={printLoading}
+                    onClick={() => handlePrint(formDetail.formUrl)}
+                  >
+                    Print Form
+                  </Button>
+                </div>
+              </>
             )}
           </Col>
         </Row>
