@@ -14,8 +14,8 @@ from datetime import datetime
 from pydantic import Required
 from util.flow import get_stats, get_token
 
-instance_list = './data/flow-survey-amazon-aws.csv'
-FLOW_SERVICE_URL = os.environ['FLOW_SERVICE_URL']
+instance_list = "./data/flow-survey-amazon-aws.csv"
+FLOW_SERVICE_URL = os.environ["FLOW_SERVICE_URL"]
 BASE_URL = "{}/upload".format(FLOW_SERVICE_URL)
 
 answer_route = APIRouter()
@@ -23,21 +23,22 @@ answer_route = APIRouter()
 
 def remove_tmp(zip_name, combined):
     # remove data
-    if not os.path.exists('./tmp'):
-        os.mkdir('./tmp')
-    if os.path.isfile('data.json'):
-        os.remove('data.json')
+    if not os.path.exists("./tmp"):
+        os.mkdir("./tmp")
+    if os.path.isfile("data.json"):
+        os.remove("data.json")
     if os.path.isfile(zip_name):
         os.remove(zip_name)
     if os.path.isfile(combined):
-        os.rename(combined, './tmp/ ' + combined)
+        os.rename(combined, "./tmp/ " + combined)
 
 
 @answer_route.post(
-    '/submit-form',
+    "/submit-form",
     response_model=AnswerBase,
     summary="Submit form payload to Akvo Flow",
-    tags=["Akvo Flow Webform"])
+    tags=["Akvo Flow Webform"],
+)
 def submit_form(data: AnswerBase):
     images = []
     responseTemp = []
@@ -62,69 +63,69 @@ def submit_form(data: AnswerBase):
         del data.instance
 
     # zip process
-    with open('data.json', 'w') as f:
+    with open("data.json", "w") as f:
         json.dump(json.loads(data.json()), f)
-    zip_name = _uuid + '.zip'
-    zip_file = ZipFile(zip_name, 'w')
-    zip_file.write('data.json', compress_type=ZIP_DEFLATED)
+    zip_name = _uuid + ".zip"
+    zip_file = ZipFile(zip_name, "w")
+    zip_file.write("data.json", compress_type=ZIP_DEFLATED)
     zip_file.close()
     os.rename(zip_name, zip_name)
     combined = "all-{}.zip".format(round(datetime.today().timestamp()))
-    with ZipFile(combined, 'w') as all_zip:
+    with ZipFile(combined, "w") as all_zip:
         all_zip.write(zip_name)
         for image in images:
             if "id" in image:
                 img_name = image["id"]
                 img_blob = image["blob"]
-                img_blob = img_blob[img_blob.find(",") + 1:]
+                img_blob = img_blob[img_blob.find(",") + 1 :]
                 with open(f"./tmp/images/{img_name}", "wb") as fh:
                     fh.write(base64.b64decode(img_blob))
-                if os.path.isfile('./tmp/images/' + img_name):
-                    os.rename('./tmp/images/' + img_name, img_name)
+                if os.path.isfile("./tmp/images/" + img_name):
+                    os.rename("./tmp/images/" + img_name, img_name)
                     all_zip.write(img_name)
                     os.remove(img_name)
 
     file_size = os.path.getsize(combined)
     uid = str(uuid.uuid4())
     params = {
-        'resumableChunkNumber': 1,
-        'resumableChunkSize': file_size,
-        'resumableCurrentChunkSize': file_size,
-        'resumableTotalSize': file_size,
-        'resumableType': 'application/zip',
-        'resumableIdentifier': uid,
-        'resumableFilename': combined,
-        'resumableRelativePath': combined,
-        'resumableTotalChunks': 1
+        "resumableChunkNumber": 1,
+        "resumableChunkSize": file_size,
+        "resumableCurrentChunkSize": file_size,
+        "resumableTotalSize": file_size,
+        "resumableType": "application/zip",
+        "resumableIdentifier": uid,
+        "resumableFilename": combined,
+        "resumableRelativePath": combined,
+        "resumableTotalChunks": 1,
     }
 
-    files = {'file': (combined, open(combined, 'rb'), 'application/zip')}
+    files = {"file": (combined, open(combined, "rb"), "application/zip")}
     result = r.post(BASE_URL, files=files, data=params)
     time.sleep(0.5)
 
-    if (result.status_code == 200):
+    if result.status_code == 200:
         instances = pd.read_csv(instance_list)
-        dashboard = instances[instances['bucket'] == instance_id]
-        dashboard = list(dashboard['instances'])[0]
+        dashboard = instances[instances["bucket"] == instance_id]
+        dashboard = list(dashboard["instances"])[0]
         params = {
-            'uniqueIdentifier': uid,
-            'filename': combined,
-            'baseURL': dashboard,
-            'appId': instance_id,
-            'uploadDomain': instance_id + '.s3.amazonaws.com',
-            'complete': 'true'
+            "uniqueIdentifier": uid,
+            "filename": combined,
+            "baseURL": dashboard,
+            "appId": instance_id,
+            "uploadDomain": instance_id + ".s3.amazonaws.com",
+            "complete": "true",
         }
         result = r.post(BASE_URL, data=params)
         time.sleep(0.5)
         params = {
-            "action": 'submit',
+            "action": "submit",
             "formID": data.formId,
             "fileName": zip_name,
-            "devId": data.deviceId
+            "devId": data.deviceId,
         }
         result = r.get(
-            f"https://{dashboard}.akvoflow.org/processor",
-            params=params)
+            f"https://{dashboard}.akvoflow.org/processor", params=params
+        )
         remove_tmp(zip_name, combined)
     else:
         # error here
@@ -135,10 +136,11 @@ def submit_form(data: AnswerBase):
 
 
 @answer_route.get(
-    '/stats',
+    "/stats",
     response_model=dict,
     summary="Retrieving question statistics from Akvo Flow",
-    tags=["Akvo Flow Webform"])
+    tags=["Akvo Flow Webform"],
+)
 def get_stats_data(
     req: Request,
     instance_name: str = Query(default=Required),
@@ -146,10 +148,13 @@ def get_stats_data(
     form_id: int = Query(default=Required),
     question_id: int = Query(default=Required),
 ):
-    USERNAME = os.environ['AUTH0_USER']
-    res = get_token(username=USERNAME, password=os.environ['AUTH0_PWD'])
+    USERNAME = os.environ["AUTH0_USER"]
+    res = get_token(username=USERNAME, password=os.environ["AUTH0_PWD"])
     data = get_stats(
-        instance=instance_name, survey_id=survey_id,
-        form_id=form_id, question_id=question_id,
-        token=res.get('refresh_token'))
+        instance=instance_name,
+        survey_id=survey_id,
+        form_id=form_id,
+        question_id=question_id,
+        token=res.get("refresh_token"),
+    )
     return data or {}
