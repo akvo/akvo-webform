@@ -10,6 +10,7 @@ import {
   Space,
   Modal,
   notification,
+  Checkbox,
 } from "antd";
 import dataProviders from "../store";
 import api from "../lib/api";
@@ -33,6 +34,11 @@ const OauthLogin = () => {
   const [formDetail, setFormDetail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [printLoading, setPrintLoading] = useState(false);
+  const [printSettingsVisible, setPrintSettingsVisible] = useState(false);
+  const [printSettings, setPrintSettings] = useState({
+    sectionNumbering: true,
+    questionNumbering: true,
+  });
 
   const handlePrint = async (formUrl) => {
     try {
@@ -45,9 +51,12 @@ const OauthLogin = () => {
 
       // Remove the leading slash from formUrl
       const formId = formUrl.replace("/", "");
-      const response = await api.get(`/form/${formId}/print`, {
-        responseType: "text",
-      });
+      const response = await api.get(
+        `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}`,
+        {
+          responseType: "text",
+        }
+      );
 
       // Create a hidden iframe to preload content
       const iframe = document.createElement("iframe");
@@ -115,6 +124,7 @@ const OauthLogin = () => {
       });
     } finally {
       setPrintLoading(false);
+      setPrintSettingsVisible(false);
     }
   };
 
@@ -369,7 +379,7 @@ const OauthLogin = () => {
                     size="large"
                     block
                     loading={printLoading}
-                    onClick={() => handlePrint(formDetail.formUrl)}
+                    onClick={() => setPrintSettingsVisible(true)}
                   >
                     Print Form
                   </Button>
@@ -379,6 +389,43 @@ const OauthLogin = () => {
           </Col>
         </Row>
       )}
+
+      {/* Print Settings Modal */}
+      <Modal
+        title="Print Settings"
+        visible={printSettingsVisible}
+        onOk={() => handlePrint(formDetail.formUrl)}
+        onCancel={() => setPrintSettingsVisible(false)}
+        okText="Print"
+        confirmLoading={printLoading}
+      >
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Checkbox
+            checked={printSettings.sectionNumbering}
+            onChange={(e) =>
+              setPrintSettings({
+                ...printSettings,
+                sectionNumbering: e.target.checked,
+              })
+            }
+          >
+            Add section numbering
+          </Checkbox>
+          <Checkbox
+            checked={printSettings.questionNumbering}
+            onChange={(e) =>
+              setPrintSettings({
+                ...printSettings,
+                questionNumbering: e.target.checked,
+              })
+            }
+          >
+            Add question numbering
+          </Checkbox>
+        </Space>
+      </Modal>
+
+      {/* Form Detail Modal */}
       {formDetail && (
         <Modal
           title={<div>Form: {formDetail?.name}</div>}

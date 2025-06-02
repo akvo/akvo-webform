@@ -72,7 +72,12 @@ def download_form(ziploc: str, alias: str, survey_id: int):
     response_class=HTMLResponse,
     tags=["Akvo Flow Webform"],
 )
-async def form_print(req: Request, id: str):
+async def form_print(
+    req: Request,
+    id: str,
+    section_numbering: bool = True,
+    question_numbering: bool = True,
+):
     alias, survey_id = Cipher(id).decode()
     if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
@@ -85,7 +90,8 @@ async def form_print(req: Request, id: str):
         # Initialize styler with Flow parser
         styler = WeasyPrintStyler(
             orientation="landscape",
-            add_section_numbering=True,
+            add_section_numbering=section_numbering,
+            add_question_numbering=question_numbering,
             parser_type="flow",
             raw_json=form_data,
         )
