@@ -10,6 +10,8 @@ import {
   Space,
   Modal,
   notification,
+  Checkbox,
+  Radio,
 } from "antd";
 import dataProviders from "../store";
 import api from "../lib/api";
@@ -32,6 +34,101 @@ const OauthLogin = () => {
   const [instanceName, setInstanceName] = useState(null);
   const [formDetail, setFormDetail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [printLoading, setPrintLoading] = useState(false);
+  const [printSettingsVisible, setPrintSettingsVisible] = useState(false);
+  const [printSettings, setPrintSettings] = useState({
+    sectionNumbering: true,
+    questionNumbering: true,
+    orientation: "landscape",
+  });
+
+  const handlePrint = async (formUrl) => {
+    try {
+      setPrintLoading(true);
+      notification.info({
+        message: "Preparing Form",
+        description: "Generating printable version of the form...",
+        duration: 2,
+      });
+
+      // Remove the leading slash from formUrl
+      const formId = formUrl.replace("/", "");
+      const response = await api.get(
+        `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}&orientation=${printSettings.orientation}`,
+        {
+          responseType: "text",
+        }
+      );
+
+      // Create a hidden iframe to preload content
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+
+      // Write content to iframe and wait for resources to load
+      iframe.contentDocument.write(response.data);
+      iframe.contentDocument.close();
+
+      // Wait for all resources to load
+      await new Promise((resolve) => {
+        iframe.onload = resolve;
+        // Fallback if onload doesn't trigger
+        setTimeout(resolve, 1000);
+      });
+
+      notification.success({
+        message: "Form Ready",
+        description: "Opening print dialog...",
+        duration: 2,
+      });
+
+      // Create the actual print window with loaded content
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(response.data);
+      printWindow.document.close();
+
+      // Add print styles for smooth transition
+      const style = printWindow.document.createElement("style");
+      style.textContent = `
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      `;
+      printWindow.document.head.appendChild(style);
+
+      // Wait a bit for the window to fully render
+      setTimeout(() => {
+        printWindow.print();
+
+        // Monitor print dialog
+        const checkPrintDialogClosed = setInterval(() => {
+          if (printWindow.document.readyState === "complete") {
+            clearInterval(checkPrintDialogClosed);
+            // Give user time to see the content before closing
+            setTimeout(() => {
+              printWindow.close();
+              // Clean up the preload iframe
+              document.body.removeChild(iframe);
+            }, 500);
+          }
+        }, 1000);
+      }, 500);
+    } catch (error) {
+      notification.error({
+        message: "Print Failed",
+        description:
+          error.response?.data?.detail ||
+          "Failed to generate print view. Please try again.",
+        duration: 4,
+      });
+    } finally {
+      setPrintLoading(false);
+      setPrintSettingsVisible(false);
+    }
+  };
 
   const onFinish = (values) => {
     setLoading(true);
@@ -265,20 +362,87 @@ const OauthLogin = () => {
               Show Form Detail
             </Button>
             {formDetail?.formUrl && (
-              <Link to={formDetail.formUrl}>
-                <Button
-                  type="primary"
-                  className="button-next"
-                  size="large"
-                  block
-                >
-                  Go To Form
-                </Button>
-              </Link>
+              <>
+                <Link to={formDetail.formUrl}>
+                  <Button
+                    type="primary"
+                    className="button-next"
+                    size="large"
+                    style={{ marginBottom: "20px" }}
+                    block
+                  >
+                    Go To Form
+                  </Button>
+                </Link>
+                <div>
+                  <Button
+                    type="primary"
+                    className="button-next"
+                    size="large"
+                    block
+                    loading={printLoading}
+                    onClick={() => setPrintSettingsVisible(true)}
+                  >
+                    Print Form
+                  </Button>
+                </div>
+              </>
             )}
           </Col>
         </Row>
       )}
+
+      {/* Print Settings Modal */}
+      <Modal
+        title="Print Settings"
+        visible={printSettingsVisible}
+        onOk={() => handlePrint(formDetail.formUrl)}
+        onCancel={() => setPrintSettingsVisible(false)}
+        okText="Print"
+        confirmLoading={printLoading}
+      >
+        <Space direction="vertical" style={{ width: "100%" }} size="middle">
+          <div>
+            <div style={{ marginBottom: "8px" }}>Page Orientation</div>
+            <Radio.Group
+              value={printSettings.orientation}
+              onChange={(e) =>
+                setPrintSettings({
+                  ...printSettings,
+                  orientation: e.target.value,
+                })
+              }
+            >
+              <Radio.Button value="portrait">Portrait</Radio.Button>
+              <Radio.Button value="landscape">Landscape</Radio.Button>
+            </Radio.Group>
+          </div>
+          <Checkbox
+            checked={printSettings.sectionNumbering}
+            onChange={(e) =>
+              setPrintSettings({
+                ...printSettings,
+                sectionNumbering: e.target.checked,
+              })
+            }
+          >
+            Add section numbering
+          </Checkbox>
+          <Checkbox
+            checked={printSettings.questionNumbering}
+            onChange={(e) =>
+              setPrintSettings({
+                ...printSettings,
+                questionNumbering: e.target.checked,
+              })
+            }
+          >
+            Add question numbering
+          </Checkbox>
+        </Space>
+      </Modal>
+
+      {/* Form Detail Modal */}
       {formDetail && (
         <Modal
           title={<div>Form: {formDetail?.name}</div>}

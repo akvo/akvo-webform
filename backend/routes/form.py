@@ -3,13 +3,14 @@ import httpx
 from io import BytesIO
 from zipfile import ZipFile
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from data.flow import xml_survey
 from typing import List
 from models.form import FormBase
 from util.util import readxml, Cipher
 from util.odk import odk
 from core.dev import Dev
+from AkvoFormPrint.stylers.weasyprint_styler import WeasyPrintStyler
 
 dev = Dev()
 form_route = APIRouter()
@@ -19,7 +20,7 @@ def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
     for cascade in cascade_list:
         cascade_file = cascade.split("/surveys/")[1]
         cascade_file = f"{ziploc}/{cascade_file}"
-        cascade_file = cascade_file.replace('.zip', '')
+        cascade_file = cascade_file.replace(".zip", "")
         if not os.path.exists(cascade_file):
             try:
                 zip_url = httpx.get(cascade)
@@ -29,9 +30,9 @@ def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
             except httpx.HTTPError:
                 pass
             # except httpx.HTTPError as exc:
-                # raise HTTPException(
-                #     status_code=exc.response.status_code,
-                #     detail=f"Error while requesting {exc.request.url!r}.")
+            # raise HTTPException(
+            #     status_code=exc.response.status_code,
+            #     detail=f"Error while requesting {exc.request.url!r}.")
 
 
 def download_form(ziploc: str, alias: str, survey_id: int):
@@ -41,59 +42,105 @@ def download_form(ziploc: str, alias: str, survey_id: int):
     if dev.get_cached(xml_path):
         return readxml(xml_path=xml_path, alias=alias)
     try:
-        zip_url = httpx.get(f'{instance}/{survey_id}.zip')
+        zip_url = httpx.get(f"{instance}/{survey_id}.zip")
         zip_url.raise_for_status()
     except httpx.HTTPError:
         return False
     # except httpx.HTTPError as exc:
-        # raise HTTPException(
-        #     status_code=exc.response.status_code,
-        #     detail=f"Error while requesting {exc.request.url!r}.")
+    # raise HTTPException(
+    #     status_code=exc.response.status_code,
+    #     detail=f"Error while requesting {exc.request.url!r}.")
     if not os.path.exists(ziploc):
         os.mkdir(ziploc)
     z = ZipFile(BytesIO(zip_url.content))
     z.extractall(ziploc)
     response = readxml(xml_path=xml_path, alias=alias)
     cascade_list = []
-    for qg in response['questionGroup']:
-        for q in qg.get('question', []):
-            if q['type'] == 'cascade':
-                cascade_list.append(q['cascadeResource'])
+    for qg in response["questionGroup"]:
+        for q in qg.get("question", []):
+            if q["type"] == "cascade":
+                cascade_list.append(q["cascadeResource"])
     if len(cascade_list) > 0:
-        cascade_list = [f'{instance}/{c}.zip' for c in cascade_list]
+        cascade_list = [f"{instance}/{c}.zip" for c in cascade_list]
         download_sqlite_asset(cascade_list, ziploc)
     return response
 
 
-@form_route.get('/form/{id:path}',
-                summary="Get Akvo Flow Webform Format",
-                response_model=FormBase,
-                response_model_exclude_none=True,
-                tags=["Akvo Flow Webform"])
-def form(req: Request, id: str):
+@form_route.get(
+    "/form/{id:path}/print",
+    summary="Get Printable HTML Version of Form",
+    response_class=HTMLResponse,
+    tags=["Akvo Flow Webform"],
+)
+async def form_print(
+    req: Request,
+    id: str,
+    section_numbering: bool = True,
+    question_numbering: bool = True,
+    orientation: str = "landscape",
+):
     alias, survey_id = Cipher(id).decode()
     if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
-    ziploc = f'./static/xml/{alias}'
-    form = download_form(ziploc, alias, survey_id)
-    if not form:
+    ziploc = f"./static/xml/{alias}"
+    form_data = download_form(ziploc, alias, survey_id)
+    if not form_data:
         raise HTTPException(status_code=404, detail="Not Found")
-    return form
+
+    try:
+        # Initialize styler with Flow parser
+        styler = WeasyPrintStyler(
+            orientation=orientation,
+            add_section_numbering=section_numbering,
+            add_question_numbering=question_numbering,
+            parser_type="flow",
+            raw_json=form_data,
+        )
+
+        # Generate HTML
+        html_content = styler.render_html()
+        filename = f"form-{survey_id}.html"
+        headers = {"Content-Disposition": f'inline; filename="{filename}"'}
+        return HTMLResponse(
+            content=html_content, media_type="text/html", headers=headers
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@form_route.get('/xls-form/{id:path}',
-                summary="Download XLS Form for ODK",
-                response_class=FileResponse,
-                tags=["Assets"])
+@form_route.get(
+    "/form/{id:path}",
+    summary="Get Akvo Flow Webform Format",
+    response_model=FormBase,
+    response_model_exclude_none=True,
+    tags=["Akvo Flow Webform"],
+)
+async def form(req: Request, id: str):
+    alias, survey_id = Cipher(id).decode()
+    if alias is None:
+        raise HTTPException(status_code=404, detail="Not Found")
+    ziploc = f"./static/xml/{alias}"
+    form_data = download_form(ziploc, alias, survey_id)
+    if not form_data:
+        raise HTTPException(status_code=404, detail="Not Found")
+    return form_data
+
+
+@form_route.get(
+    "/xls-form/{id:path}",
+    summary="Download XLS Form for ODK",
+    response_class=FileResponse,
+    tags=["Assets"],
+)
 def xls_form(req: Request, id: str):
     alias, survey_id = Cipher(id).decode()
     if alias is None:
         raise HTTPException(status_code=404, detail="Not Found")
-    ziploc = f'./static/xml/{alias}'
+    ziploc = f"./static/xml/{alias}"
     res = download_form(ziploc, alias, survey_id)
-    file_path = f'{ziploc}/{survey_id}.xlsx'
+    file_path = f"{ziploc}/{survey_id}.xlsx"
     odk(res, file_path)
-    ftype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    return FileResponse(path=file_path,
-                        filename=f'{survey_id}.xlsx',
-                        media_type=ftype)
+    ftype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    return FileResponse(
+        path=file_path, filename=f"{survey_id}.xlsx", media_type=ftype
+    )

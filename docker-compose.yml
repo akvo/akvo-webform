@@ -5,7 +5,7 @@ services:
     image: alpine:3.14.0
     command: ["tail", "-f", "/dev/null"]
   backend:
-    image: amancevice/pandas:0.24.2-slim
+    image: amancevice/pandas:slim-2.2.2
     working_dir: /app
     command: ["./dev.sh"]
     volumes:
