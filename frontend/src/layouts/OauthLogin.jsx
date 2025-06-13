@@ -59,7 +59,6 @@ const OauthLogin = () => {
       if (printSettings.outputFormat === "docx") {
         responseType = "blob";
       }
-      console.log(responseType);
       const response = await api.get(
         `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}&orientation=${printSettings.orientation}&output_format=${printSettings.outputFormat}`,
         {},
