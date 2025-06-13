@@ -1,19 +1,28 @@
 import os
+import time
 import httpx
 from io import BytesIO
 from zipfile import ZipFile
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from data.flow import xml_survey
-from typing import List
+from typing import List, Optional
 from models.form import FormBase
 from util.util import readxml, Cipher
 from util.odk import odk
 from core.dev import Dev
 from AkvoFormPrint.stylers.weasyprint_styler import WeasyPrintStyler
+from AkvoFormPrint.stylers.docx_renderer import DocxRenderer
+from starlette.background import BackgroundTask
+
 
 dev = Dev()
 form_route = APIRouter()
+
+
+def remove_file(path: str):
+    time.sleep(5)
+    os.remove(path)
 
 
 def download_sqlite_asset(cascade_list: List[str], ziploc: str) -> None:
@@ -68,16 +77,16 @@ def download_form(ziploc: str, alias: str, survey_id: int):
 
 @form_route.get(
     "/form/{id:path}/print",
-    summary="Get Printable HTML Version of Form",
-    response_class=HTMLResponse,
+    summary="Get Printable HTML or DOCX Version of Form",
     tags=["Akvo Flow Webform"],
 )
 async def form_print(
     req: Request,
     id: str,
-    section_numbering: bool = True,
-    question_numbering: bool = True,
-    orientation: str = "landscape",
+    section_numbering: Optional[bool] = True,
+    question_numbering: Optional[bool] = True,
+    orientation: Optional[str] = "landscape",
+    output_format: Optional[str] = "pdf",
 ):
     alias, survey_id = Cipher(id).decode()
     if alias is None:
@@ -89,21 +98,48 @@ async def form_print(
 
     try:
         # Initialize styler with Flow parser
-        styler = WeasyPrintStyler(
-            orientation=orientation,
-            add_section_numbering=section_numbering,
-            add_question_numbering=question_numbering,
-            parser_type="flow",
-            raw_json=form_data,
-        )
+        if output_format == "pdf":
+            styler = WeasyPrintStyler(
+                orientation=orientation,
+                add_section_numbering=section_numbering,
+                add_question_numbering=question_numbering,
+                parser_type="flow",
+                raw_json=form_data,
+            )
 
-        # Generate HTML
-        html_content = styler.render_html()
-        filename = f"form-{survey_id}.html"
-        headers = {"Content-Disposition": f'inline; filename="{filename}"'}
-        return HTMLResponse(
-            content=html_content, media_type="text/html", headers=headers
-        )
+            # Generate HTML
+            html_content = styler.render_html()
+            filename = f"form-{survey_id}.html"
+            headers = {"Content-Disposition": f'inline; filename="{filename}"'}
+            return HTMLResponse(
+                content=html_content,
+                media_type="text/html",
+                headers=headers,
+            )
+        if output_format == "docx":
+            filename = f"form-{survey_id}.docx"
+            file_path = f"./tmp/{filename}"
+            styler = DocxRenderer(
+                orientation=orientation,
+                add_section_numbering=section_numbering,
+                add_question_numbering=question_numbering,
+                parser_type="flow",
+                raw_json=form_data,
+                output_path=file_path,
+            )
+            # return a file to download
+            styler.render_docx()
+
+            with open(file_path, "rb") as f:
+                print("DOCX size:", len(f.read()))
+
+            return FileResponse(
+                path=file_path,
+                media_type="application/octet-stream",
+                filename=filename,
+                background=BackgroundTask(remove_file, path=file_path),
+            )
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

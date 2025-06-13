@@ -37,9 +37,10 @@ const OauthLogin = () => {
   const [printLoading, setPrintLoading] = useState(false);
   const [printSettingsVisible, setPrintSettingsVisible] = useState(false);
   const [printSettings, setPrintSettings] = useState({
-    sectionNumbering: true,
-    questionNumbering: true,
+    sectionNumbering: false,
+    questionNumbering: false,
     orientation: "landscape",
+    outputFormat: "pdf",
   });
 
   const handlePrint = async (formUrl) => {
@@ -53,69 +54,93 @@ const OauthLogin = () => {
 
       // Remove the leading slash from formUrl
       const formId = formUrl.replace("/", "");
+
+      let responseType = "text";
+      if (printSettings.outputFormat === "docx") {
+        responseType = "blob";
+      }
+      console.log(responseType);
       const response = await api.get(
-        `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}&orientation=${printSettings.orientation}`,
+        `/form/${formId}/print?section_numbering=${printSettings.sectionNumbering}&question_numbering=${printSettings.questionNumbering}&orientation=${printSettings.orientation}&output_format=${printSettings.outputFormat}`,
+        {},
         {
-          responseType: "text",
+          responseType: responseType,
         }
       );
 
-      // Create a hidden iframe to preload content
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
+      // if output format is docx, the backend should return file and FE should download it
+      if (printSettings.outputFormat === "docx") {
+        const blob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `form-${formId}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
 
-      // Write content to iframe and wait for resources to load
-      iframe.contentDocument.write(response.data);
-      iframe.contentDocument.close();
+      if (printSettings.outputFormat === "pdf") {
+        // Create a hidden iframe to preload content
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
 
-      // Wait for all resources to load
-      await new Promise((resolve) => {
-        iframe.onload = resolve;
-        // Fallback if onload doesn't trigger
-        setTimeout(resolve, 1000);
-      });
+        // Write content to iframe and wait for resources to load
+        iframe.contentDocument.write(response.data);
+        iframe.contentDocument.close();
 
-      notification.success({
-        message: "Form Ready",
-        description: "Opening print dialog...",
-        duration: 2,
-      });
+        // Wait for all resources to load
+        await new Promise((resolve) => {
+          iframe.onload = resolve;
+          // Fallback if onload doesn't trigger
+          setTimeout(resolve, 1000);
+        });
 
-      // Create the actual print window with loaded content
-      const printWindow = window.open("", "_blank");
-      printWindow.document.write(response.data);
-      printWindow.document.close();
+        notification.success({
+          message: "Form Ready",
+          description: "Opening print dialog...",
+          duration: 2,
+        });
 
-      // Add print styles for smooth transition
-      const style = printWindow.document.createElement("style");
-      style.textContent = `
-        @media print {
-          body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+        // Create the actual print window with loaded content
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(response.data);
+        printWindow.document.close();
+
+        // Add print styles for smooth transition
+        const style = printWindow.document.createElement("style");
+        style.textContent = `
+          @media print {
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
           }
-        }
-      `;
-      printWindow.document.head.appendChild(style);
+        `;
+        printWindow.document.head.appendChild(style);
 
-      // Wait a bit for the window to fully render
-      setTimeout(() => {
-        printWindow.print();
+        // Wait a bit for the window to fully render
+        setTimeout(() => {
+          printWindow.print();
 
-        // Monitor print dialog
-        const checkPrintDialogClosed = setInterval(() => {
-          if (printWindow.document.readyState === "complete") {
-            clearInterval(checkPrintDialogClosed);
-            // Give user time to see the content before closing
-            setTimeout(() => {
-              printWindow.close();
-              // Clean up the preload iframe
-              document.body.removeChild(iframe);
-            }, 500);
-          }
-        }, 1000);
-      }, 500);
+          // Monitor print dialog
+          const checkPrintDialogClosed = setInterval(() => {
+            if (printWindow.document.readyState === "complete") {
+              clearInterval(checkPrintDialogClosed);
+              // Give user time to see the content before closing
+              setTimeout(() => {
+                printWindow.close();
+                // Clean up the preload iframe
+                document.body.removeChild(iframe);
+              }, 500);
+            }
+          }, 1000);
+        }, 500);
+      }
     } catch (error) {
       notification.error({
         message: "Print Failed",
@@ -402,6 +427,21 @@ const OauthLogin = () => {
         confirmLoading={printLoading}
       >
         <Space direction="vertical" style={{ width: "100%" }} size="middle">
+          <div>
+            <div style={{ marginBottom: "8px" }}>Output Format</div>
+            <Radio.Group
+              value={printSettings.outputFormat}
+              onChange={(e) =>
+                setPrintSettings({
+                  ...printSettings,
+                  outputFormat: e.target.value,
+                })
+              }
+            >
+              <Radio.Button value="pdf">PDF</Radio.Button>
+              <Radio.Button value="docx">DOCX</Radio.Button>
+            </Radio.Group>
+          </div>
           <div>
             <div style={{ marginBottom: "8px" }}>Page Orientation</div>
             <Radio.Group
